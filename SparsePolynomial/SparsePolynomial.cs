@@ -128,6 +128,21 @@ namespace SparsePolynomialLibrary
 			return result.ToList();
 		}
 
+		public static IPolynomial FromRoots(params BigInteger[] roots)
+		{
+			return SparsePolynomial.Product(
+				roots.Select(
+					zero => new SparsePolynomial(
+						new PolynomialTerm[]
+						{
+						new PolynomialTerm( 1, 1),
+						new PolynomialTerm( BigInteger.Negate(zero), 0)
+						}
+					)
+				)
+			);
+		}
+
 		public BigInteger Evaluate(BigInteger indeterminateValue)
 		{
 			return Evaluate(Terms, indeterminateValue);
