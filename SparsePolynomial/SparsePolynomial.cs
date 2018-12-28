@@ -283,7 +283,7 @@ namespace SparsePolynomialLibrary
 				return poly;
 			}
 
-			IPolynomial remainder = new SparsePolynomial();
+			IPolynomial remainder = SparsePolynomial.Zero;
 			Divide(poly, mod, out remainder);
 
 			return remainder;
@@ -309,6 +309,10 @@ namespace SparsePolynomialLibrary
 
 			// Recalculate the degree
 			ITerm[] termArray = terms.SkipWhile(t => t.CoEfficient.Sign == 0).ToArray();
+			if (!termArray.Any())
+			{
+				termArray = PolynomialTerm.GetTerms(new BigInteger[] { 0 });
+			}
 			IPolynomial result = new SparsePolynomial(termArray);
 			return result;
 		}
@@ -317,12 +321,16 @@ namespace SparsePolynomialLibrary
 		{
 			SparsePolynomial poly = (SparsePolynomial)polynomial;
 			poly._terms.RemoveAll(t => t.CoEfficient == 0);
+			if (!poly._terms.Any())
+			{
+				poly._terms = PolynomialTerm.GetTerms(new BigInteger[] { 0 }).ToList();
+			}
 			poly.SetDegree();
 		}
 
 		public static IPolynomial Divide(IPolynomial left, IPolynomial right)
 		{
-			IPolynomial remainder = new SparsePolynomial();
+			IPolynomial remainder = SparsePolynomial.Zero;
 			return SparsePolynomial.Divide(left, right, out remainder);
 		}
 
