@@ -52,12 +52,11 @@ namespace SparsePolynomialLibrary
 			}
 		}
 
-		public SparsePolynomial() { }
+		public SparsePolynomial() { _terms = new List<ITerm>() { new PolynomialTerm(0, 0) }; Degree = 0; }
 
 		public SparsePolynomial(ITerm[] terms)
 		{
 			SetTerms(terms);
-			SetDegree();
 		}
 
 		public SparsePolynomial(BigInteger n, BigInteger polynomialBase)
@@ -74,8 +73,19 @@ namespace SparsePolynomialLibrary
 		private void SetTerms(IEnumerable<ITerm> terms)
 		{
 			_terms = terms.OrderBy(t => t.Exponent).ToList();
+			RemoveZeros();
 		}
 
+		private void RemoveZeros()
+		{
+			_terms.RemoveAll(t => t.CoEfficient == 0);
+			if (!_terms.Any())
+			{
+				_terms = PolynomialTerm.GetTerms(new BigInteger[] { 0 }).ToList();
+			}
+			SetDegree();
+		}
+		
 		private void SetDegree()
 		{
 			if (_terms.Any())
@@ -87,7 +97,7 @@ namespace SparsePolynomialLibrary
 				Degree = 0;
 			}
 		}
-
+		
 		private static List<ITerm> GetPolynomialTerms(BigInteger value, BigInteger polynomialBase, int degree)
 		{
 			int d = degree; // (int)Math.Truncate(BigInteger.Log(value, (double)polynomialBase)+ 1);
@@ -271,6 +281,35 @@ namespace SparsePolynomialLibrary
 			}
 		}
 
+		public static IPolynomial GCD(IPolynomial left, IPolynomial right, BigInteger modulus)
+		{
+			IPolynomial a = left.Clone();
+			IPolynomial b = right.Clone();
+
+			if (b.Degree > a.Degree)
+			{
+				IPolynomial swap = b;
+				b = a;
+				a = swap;
+			}
+
+			while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
+			{
+				IPolynomial temp = a;
+				a = b;
+				b = SparsePolynomial.ModMod(temp, b, modulus);
+			}
+
+			if (a.Degree == 0)
+			{
+				return SparsePolynomial.One;
+			}
+			else
+			{
+				return a;
+			}
+		}
+
 		public static IPolynomial ModMod(IPolynomial toReduce, IPolynomial modPoly, BigInteger modPrime)
 		{
 			return SparsePolynomial.Modulus(SparsePolynomial.Mod(toReduce, modPoly), modPrime);
@@ -278,9 +317,14 @@ namespace SparsePolynomialLibrary
 
 		public static IPolynomial Mod(IPolynomial poly, IPolynomial mod)
 		{
-			if (mod.Degree > poly.Degree)
+			int sortOrder = mod.CompareTo(poly);        
+			if (sortOrder > 0)
 			{
 				return poly;
+			}
+			else if(sortOrder == 0)
+			{
+				return SparsePolynomial.Zero;
 			}
 
 			IPolynomial remainder = SparsePolynomial.Zero;
@@ -317,17 +361,6 @@ namespace SparsePolynomialLibrary
 			return result;
 		}
 
-		private static void RemoveZeros(IPolynomial polynomial)
-		{
-			SparsePolynomial poly = (SparsePolynomial)polynomial;
-			poly._terms.RemoveAll(t => t.CoEfficient == 0);
-			if (!poly._terms.Any())
-			{
-				poly._terms = PolynomialTerm.GetTerms(new BigInteger[] { 0 }).ToList();
-			}
-			poly.SetDegree();
-		}
-
 		public static IPolynomial Divide(IPolynomial left, IPolynomial right)
 		{
 			IPolynomial remainder = SparsePolynomial.Zero;
@@ -347,8 +380,8 @@ namespace SparsePolynomialLibrary
 			int quotientDegree = (left.Degree - rightDegree) + 1;
 			BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray());
 
-			IPolynomial rem = left.Clone();
-			IPolynomial quotient = SparsePolynomial.Zero;
+			SparsePolynomial rem = (SparsePolynomial)left.Clone();
+			SparsePolynomial quotient = (SparsePolynomial)SparsePolynomial.Zero;
 
 			// The leading coefficient is the only number we ever divide by
 			// (so if right is monic, polynomial division does not involve division at all!)
@@ -364,8 +397,45 @@ namespace SparsePolynomialLibrary
 			}
 
 			// Remove zeros
-			SparsePolynomial.RemoveZeros(rem);
-			SparsePolynomial.RemoveZeros(quotient);
+			rem.RemoveZeros();
+			quotient.RemoveZeros();
+
+			remainder = rem;
+			return quotient;
+		}
+
+		public static IPolynomial DivideMod(IPolynomial left, IPolynomial right, BigInteger mod, out IPolynomial remainder)
+		{
+			if (left == null) throw new ArgumentNullException(nameof(left));
+			if (right == null) throw new ArgumentNullException(nameof(right));
+			if (right.Degree > left.Degree || right.CompareTo(left) == 1)
+			{
+				remainder = SparsePolynomial.Zero; return left;
+			}
+
+			int rightDegree = right.Degree;
+			int quotientDegree = (left.Degree - rightDegree) + 1;
+			BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray()).Mod(mod);
+
+			SparsePolynomial rem = (SparsePolynomial)left.Clone();
+			SparsePolynomial quotient = (SparsePolynomial)SparsePolynomial.Zero;
+
+			// The leading coefficient is the only number we ever divide by
+			// (so if right is monic, polynomial division does not involve division at all!)
+			for (int i = quotientDegree - 1; i >= 0; i--)
+			{
+				quotient[i] = BigInteger.Divide(rem[rightDegree + i], leadingCoefficent).Mod(mod);
+				rem[rightDegree + i] = BigInteger.Zero;
+
+				for (int j = rightDegree + i - 1; j >= i; j--)
+				{
+					rem[j] = BigInteger.Subtract(rem[j], BigInteger.Multiply(quotient[i], right[j - i]).Mod(mod)).Mod(mod);
+				}
+			}
+
+			// Remove zeros
+			rem.RemoveZeros();
+			quotient.RemoveZeros();
 
 			remainder = rem;
 			return quotient;
@@ -394,11 +464,11 @@ namespace SparsePolynomialLibrary
 
 			foreach (ITerm term in result.Terms)
 			{
-				BigInteger coEfficient = term.CoEfficient;
-				if (coEfficient != 0)
+				BigInteger newCoefficient = term.CoEfficient;
+				if (newCoefficient != 0)
 				{
-					coEfficient = (coEfficient * multiplier);
-					term.CoEfficient = (coEfficient.Mod(mod));
+					newCoefficient = (newCoefficient * multiplier);
+					term.CoEfficient = (newCoefficient.Mod(mod));
 				}
 			}
 
@@ -411,15 +481,15 @@ namespace SparsePolynomialLibrary
 
 			foreach (ITerm term in result.Terms)
 			{
-				BigInteger value = term.CoEfficient;
-				if (value != 0)
+				BigInteger newCoefficient = term.CoEfficient;
+				if (newCoefficient != 0)
 				{
-					value = BigInteger.ModPow(value, exp, mod);
-					if (value.Sign == -1)
+					newCoefficient = BigInteger.ModPow(newCoefficient, exp, mod);
+					if (newCoefficient.Sign == -1)
 					{
 						throw new Exception("BigInteger.ModPow returned negative number");
 					}
-					term.CoEfficient = value;
+					term.CoEfficient = newCoefficient;
 				}
 			}
 
