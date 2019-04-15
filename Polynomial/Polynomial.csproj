@@ -45,7 +45,8 @@
     <Compile Include="ICloneable.cs" />
     <Compile Include="IPolynomial.cs" />
     <Compile Include="ITerm.cs" />
-    <Compile Include="PolynomialAlgorithms.cs" />
+    <Compile Include="Polynomial.Algorithms.cs" />
+    <Compile Include="Polynomial.Field.cs" />
     <Compile Include="Term.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Polynomial.cs" />
