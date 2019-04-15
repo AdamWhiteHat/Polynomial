@@ -5,11 +5,13 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SparsePolynomialLibrary
+namespace PolynomialLibrary
 {
-	public static class MiscMaths
+	public static class PolynomialAlgorithms
 	{
-
+		/// <summary>
+		/// Returns a^(p-1/2) (mod p)
+		/// </summary>
 		public static BigInteger EulersCriterion(BigInteger a, BigInteger p)
 		{
 			BigInteger exponent = (p - 1) / 2;
@@ -19,7 +21,7 @@ namespace SparsePolynomialLibrary
 		}
 
 		/// <summary>
-		///  Legendre Symbol returns 1 for a (nonzero) quadratic residue mod p, and -1 for a non-quadratic residue (non-residue). Returns 0 on zero.
+		///  Legendre Symbol returns 1 for a (nonzero) quadratic residue mod p, -1 for a non-quadratic residue (non-residue), or 0 on zero.
 		/// </summary>
 		public static int LegendreSymbol(BigInteger a, BigInteger p)
 		{
@@ -48,7 +50,7 @@ namespace SparsePolynomialLibrary
 		}
 
 		/// <summary>
-		/// Find r such that (r | m) = goal, where  (r | m) is the legendre symbol
+		/// Find r such that (r | m) = goal, where  (r | m) is the Legendre symbol
 		/// </summary>
 		public static BigInteger LegendreSymbolSearch(BigInteger start, BigInteger modulus, BigInteger goal)
 		{
@@ -133,7 +135,7 @@ namespace SparsePolynomialLibrary
 		}
 
 		/// <summary>
-		/// Finds the modulus such that each N, mod the mystery modulus, equal each corresponding A
+		/// Finds the modulus m such that N ≡ a[i] (mod m) for all a[i] with 0 < i < a.Length
 		/// </summary>
 		public static BigInteger ChineseRemainderTheorem(BigInteger[] n, BigInteger[] a)
 		{
@@ -148,12 +150,15 @@ namespace SparsePolynomialLibrary
 			return sm % prod;
 		}
 
-		private static BigInteger ModularMultiplicativeInverse(BigInteger a, BigInteger mod)
+		/// <summary>
+		/// Returns x such that a*x ≡ 1 (mod m)
+		/// </summary>
+		private static BigInteger ModularMultiplicativeInverse(BigInteger a, BigInteger m)
 		{
-			BigInteger b = a % mod;
-			for (int x = 1; x < mod; x++)
+			BigInteger b = a % m;
+			for (int x = 1; x < m; x++)
 			{
-				if ((b * x) % mod == 1)
+				if ((b * x) % m == 1)
 				{
 					return x;
 				}

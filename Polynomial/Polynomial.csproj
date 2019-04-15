@@ -7,8 +7,8 @@
     <ProjectGuid>{1A033CB7-2166-4DA1-9870-6AE1F23DA512}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SparsePolynomialLibrary</RootNamespace>
-    <AssemblyName>SparsePolynomialLibrary</AssemblyName>
+    <RootNamespace>PolynomialLibrary</RootNamespace>
+    <AssemblyName>PolynomialLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -45,10 +45,10 @@
     <Compile Include="ICloneable.cs" />
     <Compile Include="IPolynomial.cs" />
     <Compile Include="ITerm.cs" />
-    <Compile Include="MiscMaths.cs" />
-    <Compile Include="PolynomialTerm.cs" />
+    <Compile Include="PolynomialAlgorithms.cs" />
+    <Compile Include="Term.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SparsePolynomial.cs" />
+    <Compile Include="Polynomial.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

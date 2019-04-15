@@ -5,15 +5,15 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SparsePolynomialLibrary
+namespace PolynomialLibrary
 {
-	public class PolynomialTerm : ITerm
+	public class Term : ITerm
 	{
 		public int Exponent { get; private set; }
 		public BigInteger CoEfficient { get; set; }
 		private static string IndeterminateSymbol = "X";
 
-		public PolynomialTerm(BigInteger coefficient, int exponent)
+		public Term(BigInteger coefficient, int exponent)
 		{
 			Exponent = exponent;
 			CoEfficient = coefficient;
@@ -26,7 +26,7 @@ namespace SparsePolynomialLibrary
 			int degree = 0;
 			foreach (BigInteger term in terms)
 			{
-				results.Add(new PolynomialTerm(term, degree));
+				results.Add(new Term(term, degree));
 
 				degree += 1;
 			}
@@ -41,7 +41,7 @@ namespace SparsePolynomialLibrary
 
 		public ITerm Clone()
 		{
-			return new PolynomialTerm(this.CoEfficient, this.Exponent);
+			return new Term(this.CoEfficient, this.Exponent);
 		}
 
 		public override string ToString()

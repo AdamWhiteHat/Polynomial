@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace SparsePolynomialLibrary
+namespace PolynomialLibrary
 {
 	public interface IPolynomial : ICloneable<IPolynomial>, IComparable, IComparable<IPolynomial>
 	{

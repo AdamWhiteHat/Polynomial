@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace SparsePolynomialLibrary
+namespace PolynomialLibrary
 {
 	public interface ITerm : ICloneable<ITerm>
 	{

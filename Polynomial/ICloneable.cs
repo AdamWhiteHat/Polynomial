@@ -1,4 +1,4 @@
-﻿namespace SparsePolynomialLibrary
+﻿namespace PolynomialLibrary
 {
 	public interface ICloneable<T>
 	{

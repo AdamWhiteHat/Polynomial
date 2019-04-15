@@ -4,13 +4,13 @@ using System.Numerics;
 using System.Collections.Generic;
 using System.Collections;
 
-namespace SparsePolynomialLibrary
+namespace PolynomialLibrary
 {
-	public class SparsePolynomial : IPolynomial
+	public class Polynomial : IPolynomial
 	{
-		public static IPolynomial Zero = new SparsePolynomial(PolynomialTerm.GetTerms(new BigInteger[] { 0 }));
-		public static IPolynomial One = new SparsePolynomial(PolynomialTerm.GetTerms(new BigInteger[] { 1 }));
-		public static IPolynomial Two = new SparsePolynomial(PolynomialTerm.GetTerms(new BigInteger[] { 2 }));
+		public static IPolynomial Zero = new Polynomial(Term.GetTerms(new BigInteger[] { 0 }));
+		public static IPolynomial One = new Polynomial(Term.GetTerms(new BigInteger[] { 1 }));
+		public static IPolynomial Two = new Polynomial(Term.GetTerms(new BigInteger[] { 2 }));
 
 		public ITerm[] Terms { get { return _terms.ToArray(); } }
 		private List<ITerm> _terms;
@@ -39,7 +39,7 @@ namespace SparsePolynomialLibrary
 				{
 					if (value != BigInteger.Zero)
 					{
-						ITerm newTerm = new PolynomialTerm(value, degree);
+						ITerm newTerm = new Term(value, degree);
 						List<ITerm> terms = _terms;
 						terms.Add(newTerm);
 						SetTerms(terms);
@@ -52,19 +52,19 @@ namespace SparsePolynomialLibrary
 			}
 		}
 
-		public SparsePolynomial() { _terms = new List<ITerm>() { new PolynomialTerm(0, 0) }; Degree = 0; }
+		public Polynomial() { _terms = new List<ITerm>() { new Term(0, 0) }; Degree = 0; }
 
-		public SparsePolynomial(ITerm[] terms)
+		public Polynomial(ITerm[] terms)
 		{
 			SetTerms(terms);
 		}
 
-		public SparsePolynomial(BigInteger n, BigInteger polynomialBase)
+		public Polynomial(BigInteger n, BigInteger polynomialBase)
 			: this(n, polynomialBase, (int)Math.Truncate(BigInteger.Log(n, (double)polynomialBase) + 1))
 		{
 		}
 
-		public SparsePolynomial(BigInteger n, BigInteger polynomialBase, int forceDegree)
+		public Polynomial(BigInteger n, BigInteger polynomialBase, int forceDegree)
 		{
 			Degree = forceDegree;
 			SetTerms(GetPolynomialTerms(n, polynomialBase, Degree));
@@ -81,7 +81,7 @@ namespace SparsePolynomialLibrary
 			_terms.RemoveAll(t => t.CoEfficient == 0);
 			if (!_terms.Any())
 			{
-				_terms = PolynomialTerm.GetTerms(new BigInteger[] { 0 }).ToList();
+				_terms = Term.GetTerms(new BigInteger[] { 0 }).ToList();
 			}
 			SetDegree();
 		}
@@ -109,12 +109,12 @@ namespace SparsePolynomialLibrary
 
 				if (placeValue == 1)
 				{
-					result.Add(new PolynomialTerm(toAdd, d));
+					result.Add(new Term(toAdd, d));
 					toAdd = 0;
 				}
 				else if (placeValue == toAdd)
 				{
-					result.Add(new PolynomialTerm(1, d));
+					result.Add(new Term(1, d));
 					toAdd -= placeValue;
 				}
 				else if (placeValue < BigInteger.Abs(toAdd))
@@ -127,7 +127,7 @@ namespace SparsePolynomialLibrary
 						quotient = placeValue;
 					}
 
-					result.Add(new PolynomialTerm(quotient, d));
+					result.Add(new Term(quotient, d));
 					BigInteger toSubtract = BigInteger.Multiply(quotient, placeValue);
 
 					toAdd -= toSubtract;
@@ -140,13 +140,13 @@ namespace SparsePolynomialLibrary
 
 		public static IPolynomial FromRoots(params BigInteger[] roots)
 		{
-			return SparsePolynomial.Product(
+			return Polynomial.Product(
 				roots.Select(
-					zero => new SparsePolynomial(
-						new PolynomialTerm[]
+					zero => new Polynomial(
+						new Term[]
 						{
-						new PolynomialTerm( 1, 1),
-						new PolynomialTerm( BigInteger.Negate(zero), 0)
+						new Term( 1, 1),
+						new Term( BigInteger.Negate(zero), 0)
 						}
 					)
 				)
@@ -205,25 +205,25 @@ namespace SparsePolynomialLibrary
 				{
 					continue;
 				}
-				terms.Add(new PolynomialTerm(term.CoEfficient * term.Exponent, d));
+				terms.Add(new Term(term.CoEfficient * term.Exponent, d));
 			}
 
-			IPolynomial result = new SparsePolynomial(terms.ToArray());
+			IPolynomial result = new Polynomial(terms.ToArray());
 			return result;
 		}
 
 		public static bool IsIrreducibleOverField(IPolynomial f, BigInteger p)
 		{
-			IPolynomial splittingField = new SparsePolynomial(
-			new PolynomialTerm[] {
-			new PolynomialTerm(  1, (int)p),
-			new PolynomialTerm( -1, 1)
+			IPolynomial splittingField = new Polynomial(
+			new Term[] {
+			new Term(  1, (int)p),
+			new Term( -1, 1)
 			});
 
-			IPolynomial reducedField = SparsePolynomial.ModMod(splittingField, f, p);
+			IPolynomial reducedField = Polynomial.ModMod(splittingField, f, p);
 
-			IPolynomial gcd = SparsePolynomial.GCD(reducedField, f);
-			return (gcd.CompareTo(SparsePolynomial.One) == 0);
+			IPolynomial gcd = Polynomial.GCD(reducedField, f);
+			return (gcd.CompareTo(Polynomial.One) == 0);
 		}
 
 		public static bool IsIrreducibleOverP(IPolynomial poly, BigInteger p)
@@ -268,12 +268,12 @@ namespace SparsePolynomialLibrary
 			{
 				IPolynomial temp = a;
 				a = b;
-				b = SparsePolynomial.Mod(temp, b);
+				b = Polynomial.Mod(temp, b);
 			}
 
 			if (a.Degree == 0)
 			{
-				return SparsePolynomial.One;
+				return Polynomial.One;
 			}
 			else
 			{
@@ -297,12 +297,12 @@ namespace SparsePolynomialLibrary
 			{
 				IPolynomial temp = a;
 				a = b;
-				b = SparsePolynomial.ModMod(temp, b, modulus);
+				b = Polynomial.ModMod(temp, b, modulus);
 			}
 
 			if (a.Degree == 0)
 			{
-				return SparsePolynomial.One;
+				return Polynomial.One;
 			}
 			else
 			{
@@ -312,7 +312,7 @@ namespace SparsePolynomialLibrary
 
 		public static IPolynomial ModMod(IPolynomial toReduce, IPolynomial modPoly, BigInteger modPrime)
 		{
-			return SparsePolynomial.Modulus(SparsePolynomial.Mod(toReduce, modPoly), modPrime);
+			return Polynomial.Modulus(Polynomial.Mod(toReduce, modPoly), modPrime);
 		}
 
 		public static IPolynomial Mod(IPolynomial poly, IPolynomial mod)
@@ -324,10 +324,10 @@ namespace SparsePolynomialLibrary
 			}
 			else if(sortOrder == 0)
 			{
-				return SparsePolynomial.Zero;
+				return Polynomial.Zero;
 			}
 
-			IPolynomial remainder = SparsePolynomial.Zero;
+			IPolynomial remainder = Polynomial.Zero;
 			Divide(poly, mod, out remainder);
 
 			return remainder;
@@ -348,23 +348,23 @@ namespace SparsePolynomialLibrary
 					remainder = (remainder + mod);
 				}
 
-				terms.Add(new PolynomialTerm(remainder, term.Exponent));
+				terms.Add(new Term(remainder, term.Exponent));
 			}
 
 			// Recalculate the degree
 			ITerm[] termArray = terms.SkipWhile(t => t.CoEfficient.Sign == 0).ToArray();
 			if (!termArray.Any())
 			{
-				termArray = PolynomialTerm.GetTerms(new BigInteger[] { 0 });
+				termArray = Term.GetTerms(new BigInteger[] { 0 });
 			}
-			IPolynomial result = new SparsePolynomial(termArray);
+			IPolynomial result = new Polynomial(termArray);
 			return result;
 		}
 
 		public static IPolynomial Divide(IPolynomial left, IPolynomial right)
 		{
-			IPolynomial remainder = SparsePolynomial.Zero;
-			return SparsePolynomial.Divide(left, right, out remainder);
+			IPolynomial remainder = Polynomial.Zero;
+			return Polynomial.Divide(left, right, out remainder);
 		}
 
 		public static IPolynomial Divide(IPolynomial left, IPolynomial right, out IPolynomial remainder)
@@ -373,15 +373,15 @@ namespace SparsePolynomialLibrary
 			if (right == null) throw new ArgumentNullException(nameof(right));
 			if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 			{
-				remainder = SparsePolynomial.Zero; return left;
+				remainder = Polynomial.Zero; return left;
 			}
 
 			int rightDegree = right.Degree;
 			int quotientDegree = (left.Degree - rightDegree) + 1;
 			BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray());
 
-			SparsePolynomial rem = (SparsePolynomial)left.Clone();
-			SparsePolynomial quotient = (SparsePolynomial)SparsePolynomial.Zero;
+			Polynomial rem = (Polynomial)left.Clone();
+			Polynomial quotient = (Polynomial)Polynomial.Zero;
 
 			// The leading coefficient is the only number we ever divide by
 			// (so if right is monic, polynomial division does not involve division at all!)
@@ -410,15 +410,15 @@ namespace SparsePolynomialLibrary
 			if (right == null) throw new ArgumentNullException(nameof(right));
 			if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 			{
-				remainder = SparsePolynomial.Zero; return left;
+				remainder = Polynomial.Zero; return left;
 			}
 
 			int rightDegree = right.Degree;
 			int quotientDegree = (left.Degree - rightDegree) + 1;
 			BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray()).Mod(mod);
 
-			SparsePolynomial rem = (SparsePolynomial)left.Clone();
-			SparsePolynomial quotient = (SparsePolynomial)SparsePolynomial.Zero;
+			Polynomial rem = (Polynomial)left.Clone();
+			Polynomial quotient = (Polynomial)Polynomial.Zero;
 
 			// The leading coefficient is the only number we ever divide by
 			// (so if right is monic, polynomial division does not involve division at all!)
@@ -455,7 +455,7 @@ namespace SparsePolynomialLibrary
 					terms[(i + j)] += BigInteger.Multiply(left[i], right[j]);
 				}
 			}
-			return new SparsePolynomial(PolynomialTerm.GetTerms(terms));
+			return new Polynomial(Term.GetTerms(terms));
 		}
 
 		public static IPolynomial MultiplyMod(IPolynomial poly, BigInteger multiplier, BigInteger mod)
@@ -513,7 +513,7 @@ namespace SparsePolynomialLibrary
 				}
 				else
 				{
-					result = SparsePolynomial.Multiply(result, p);
+					result = Polynomial.Multiply(result, p);
 				}
 			}
 
@@ -522,7 +522,7 @@ namespace SparsePolynomialLibrary
 
 		public static IPolynomial Square(IPolynomial poly)
 		{
-			return SparsePolynomial.Multiply(poly, poly);
+			return Polynomial.Multiply(poly, poly);
 		}
 
 		public static IPolynomial Pow(IPolynomial poly, int exponent)
@@ -533,7 +533,7 @@ namespace SparsePolynomialLibrary
 			}
 			else if (exponent == 0)
 			{
-				return new SparsePolynomial(new PolynomialTerm[] { new PolynomialTerm(1, 0) });
+				return new Polynomial(new Term[] { new Term(1, 0) });
 			}
 			else if (exponent == 1)
 			{
@@ -544,12 +544,12 @@ namespace SparsePolynomialLibrary
 				return Square(poly);
 			}
 
-			IPolynomial total = SparsePolynomial.Square(poly);
+			IPolynomial total = Polynomial.Square(poly);
 
 			int counter = exponent - 2;
 			while (counter != 0)
 			{
-				total = SparsePolynomial.Multiply(total, poly);
+				total = Polynomial.Multiply(total, poly);
 				counter -= 1;
 			}
 
@@ -558,7 +558,7 @@ namespace SparsePolynomialLibrary
 
 		public static IPolynomial ExponentiateMod(IPolynomial startPoly, BigInteger s2, IPolynomial f, BigInteger p)
 		{
-			IPolynomial result = SparsePolynomial.One;
+			IPolynomial result = Polynomial.One;
 			if (s2 == 0) { return result; }
 
 			IPolynomial A = startPoly.Clone();
@@ -576,10 +576,10 @@ namespace SparsePolynomialLibrary
 			int t = bitArray.Length;
 			while (i < t)
 			{
-				A = SparsePolynomial.ModMod(SparsePolynomial.Square(A), f, p);
+				A = Polynomial.ModMod(Polynomial.Square(A), f, p);
 				if (bitArray[i] == true)
 				{
-					result = SparsePolynomial.ModMod(SparsePolynomial.Multiply(A, result), f, p);
+					result = Polynomial.ModMod(Polynomial.Multiply(A, result), f, p);
 				}
 				i++;
 			}
@@ -595,7 +595,7 @@ namespace SparsePolynomialLibrary
 			}
 			else if (exponent == 0)
 			{
-				return SparsePolynomial.One;
+				return Polynomial.One;
 			}
 			else if (exponent == 1)
 			{
@@ -603,10 +603,10 @@ namespace SparsePolynomialLibrary
 			}
 			else if (exponent == 2)
 			{
-				return SparsePolynomial.Square(poly);
+				return Polynomial.Square(poly);
 			}
 
-			IPolynomial total = SparsePolynomial.Square(poly);
+			IPolynomial total = Polynomial.Square(poly);
 
 			BigInteger counter = exponent - 2;
 			while (counter != 0)
@@ -615,7 +615,7 @@ namespace SparsePolynomialLibrary
 
 				if (total.CompareTo(modulus) < 0)
 				{
-					total = SparsePolynomial.Mod(total, modulus);
+					total = Polynomial.Mod(total, modulus);
 				}
 
 				counter -= 1;
@@ -638,7 +638,7 @@ namespace SparsePolynomialLibrary
 				terms[i] = (l - r);
 			}
 
-			IPolynomial result = new SparsePolynomial(PolynomialTerm.GetTerms(terms.ToArray()));
+			IPolynomial result = new Polynomial(Term.GetTerms(terms.ToArray()));
 
 			return result;
 		}
@@ -660,7 +660,7 @@ namespace SparsePolynomialLibrary
 				}
 				else
 				{
-					result = SparsePolynomial.Add(result, p);
+					result = Polynomial.Add(result, p);
 				}
 			}
 
@@ -678,7 +678,7 @@ namespace SparsePolynomialLibrary
 				terms[i] = (left[i] + right[i]);
 			}
 
-			IPolynomial result = new SparsePolynomial(PolynomialTerm.GetTerms(terms.ToArray()));
+			IPolynomial result = new Polynomial(Term.GetTerms(terms.ToArray()));
 			return result;
 		}
 
@@ -745,7 +745,7 @@ namespace SparsePolynomialLibrary
 		public static IPolynomial MakeMonic(IPolynomial polynomial, BigInteger polynomialBase)
 		{
 			int deg = polynomial.Degree;
-			IPolynomial result = new SparsePolynomial(polynomial.Terms.ToArray());
+			IPolynomial result = new Polynomial(polynomial.Terms.ToArray());
 			if (BigInteger.Abs(result.Terms[deg].CoEfficient) > 1)
 			{
 				BigInteger toAdd = (result.Terms[deg].CoEfficient - 1) * polynomialBase;
@@ -792,12 +792,12 @@ namespace SparsePolynomialLibrary
 
 		public IPolynomial Clone()
 		{
-			return new SparsePolynomial(Terms.Select(pt => pt.Clone()).ToArray());
+			return new Polynomial(Terms.Select(pt => pt.Clone()).ToArray());
 		}
 
 		public override string ToString()
 		{
-			return SparsePolynomial.FormatString(this);
+			return Polynomial.FormatString(this);
 		}
 
 		public static string FormatString(IPolynomial polynomial)

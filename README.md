@@ -1,4 +1,4 @@
-# SparsePolynomial
+# Polynomial
 Univariate polynomial class that only tracks non-zero terms. 
 
 
