@@ -154,7 +154,7 @@ namespace PolynomialLibrary
 			/// <summary>
 			/// Returns x such that a*x ≡ 1 (mod m)
 			/// </summary>
-			private static BigInteger ModularMultiplicativeInverse(BigInteger a, BigInteger m)
+			public static BigInteger ModularMultiplicativeInverse(BigInteger a, BigInteger m)
 			{
 				BigInteger b = a % m;
 				for (int x = 1; x < m; x++)
@@ -165,6 +165,38 @@ namespace PolynomialLibrary
 					}
 				}
 				return 1;
+			}
+
+			public static int EulersTotientPhi(int n)
+			{
+				if (n < 3) { return 1; }
+				if (n == 3) { return 2; }
+
+				int totient = n;
+
+				if ((n & 1) == 0)
+				{
+					totient >>= 1;
+					while (((n >>= 1) & 1) == 0)
+						;
+				}
+
+				for (int i = 3; i * i <= n; i += 2)
+				{
+					if (n % i == 0)
+					{
+						totient -= totient / i;
+						while ((n /= i) % i == 0)
+							;
+					}
+				}
+
+				if (n > 1)
+				{
+					totient -= totient / n;
+				}
+
+				return totient;
 			}
 		}
 	}
