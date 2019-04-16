@@ -17,13 +17,13 @@ namespace PolynomialLibrary
 	{
 		public static BigInteger Mod(this BigInteger n, BigInteger mod)
 		{
-			BigInteger r = n % mod;
+			BigInteger r = (n >= mod) ? n % mod : n;
 			return (r < 0) ? r + mod : r;
 		}
 
 		public static BigInteger Square(this BigInteger input)
 		{
-			return input * input;
+			return (input * input);
 		}
 
 		// Roots
