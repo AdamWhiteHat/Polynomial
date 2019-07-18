@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SparsePolynomialLibrary")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("PolynomialLibrary")]
+[assembly: AssemblyDescription("Sparse Polynomial Library")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SparsePolynomialLibrary")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCompany("Adam White")]
+[assembly: AssemblyProduct("PolynomialLibrary")]
+[assembly: AssemblyCopyright("https://github.com/AdamWhiteHat")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
