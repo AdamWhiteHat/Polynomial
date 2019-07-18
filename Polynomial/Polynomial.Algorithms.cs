@@ -167,6 +167,9 @@ namespace PolynomialLibrary
 				return 1;
 			}
 
+			/// <summary>
+			/// Euler's Totient Phi Function. Returns the number of integers less than n that are co-prime to n
+			/// </summary>
 			public static int EulersTotientPhi(int n)
 			{
 				if (n < 3) { return 1; }
