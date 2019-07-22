@@ -52,6 +52,8 @@ namespace PolynomialLibrary
 			}
 		}
 
+		#region Constructors
+
 		public Polynomial() { _terms = new List<ITerm>() { new Term(0, 0) }; Degree = 0; }
 
 		public Polynomial(ITerm[] terms)
@@ -153,6 +155,66 @@ namespace PolynomialLibrary
 			);
 		}
 
+		public static IPolynomial Parse(string input)
+		{
+			if (string.IsNullOrWhiteSpace(input)) { throw new ArgumentException(); }
+
+			string inputString = input.Replace(" ", "").Replace("-", "+-");
+			string[] stringTerms = inputString.Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
+
+			if (!stringTerms.Any()) { throw new FormatException(); }
+
+			List<Term> polyTerms = new List<Term>();
+			foreach (string stringTerm in stringTerms)
+			{
+				string[] termParts = stringTerm.Split(new char[] { '*' });
+
+				if (termParts.Count() != 2)
+				{
+					if (termParts.Count() != 1) { throw new FormatException(); }
+
+					string temp = termParts[0];
+					if (temp.All(c => char.IsDigit(c) || c == '-'))
+					{
+						termParts = new string[] { temp, "X^0" };
+					}
+					else if (temp.All(c => char.IsLetter(c) || c == '^' || c == '-' || char.IsDigit(c)))
+					{
+						if (temp.Contains("-"))
+						{
+							temp = temp.Replace("-", "");
+							termParts = new string[] { "-1", temp };
+						}
+						else { termParts = new string[] { "1", temp }; }
+					}
+					else { throw new FormatException(); }
+				}
+
+				BigInteger coefficient = BigInteger.Parse(termParts[0]);
+
+				string[] variableParts = termParts[1].Split(new char[] { '^' });
+				if (variableParts.Count() != 2)
+				{
+					if (variableParts.Count() != 1) { throw new FormatException(); }
+
+					string tmp = variableParts[0];
+					if (tmp.All(c => char.IsLetter(c)))
+					{
+						variableParts = new string[] { tmp, "1" };
+					}
+				}
+				int exponent = int.Parse(variableParts[1]);
+				polyTerms.Add(new Term(coefficient, exponent));
+			}
+
+			if (!polyTerms.Any()) { throw new FormatException(); }
+			return new Polynomial(polyTerms.ToArray());
+		}
+
+		#endregion
+
+		#region Evaluate
+
 		public BigInteger Evaluate(BigInteger indeterminateValue)
 		{
 			return Evaluate(Terms, indeterminateValue);
@@ -194,6 +256,10 @@ namespace PolynomialLibrary
 			return result;
 		}
 
+		#endregion
+
+		#region Change Forms
+
 		public static IPolynomial GetDerivativePolynomial(IPolynomial poly)
 		{
 			int d = 0;
@@ -211,6 +277,58 @@ namespace PolynomialLibrary
 			IPolynomial result = new Polynomial(terms.ToArray());
 			return result;
 		}
+
+		public static IPolynomial MakeMonic(IPolynomial polynomial, BigInteger polynomialBase)
+		{
+			int deg = polynomial.Degree;
+			IPolynomial result = new Polynomial(polynomial.Terms.ToArray());
+			if (BigInteger.Abs(result.Terms[deg].CoEfficient) > 1)
+			{
+				BigInteger toAdd = (result.Terms[deg].CoEfficient - 1) * polynomialBase;
+				result.Terms[deg].CoEfficient = 1;
+				result.Terms[deg - 1].CoEfficient += toAdd;
+			}
+			return result;
+		}
+
+		public static void MakeCoefficientsSmaller(IPolynomial polynomial, BigInteger polynomialBase, BigInteger maxCoefficientSize = default(BigInteger))
+		{
+			BigInteger maxSize = maxCoefficientSize;
+
+			if (maxSize == default(BigInteger))
+			{
+				maxSize = polynomialBase;
+			}
+
+			int pos = 0;
+			int deg = polynomial.Degree;
+
+			while (pos < deg)
+			{
+				if (pos + 1 > deg)
+				{
+					return;
+				}
+
+				if (polynomial[pos] > maxSize &&
+					polynomial[pos] > polynomial[pos + 1])
+				{
+					BigInteger diff = polynomial[pos] - maxSize;
+
+					BigInteger toAdd = (diff / polynomialBase) + 1;
+					BigInteger toRemove = toAdd * polynomialBase;
+
+					polynomial[pos] -= toRemove;
+					polynomial[pos + 1] += toAdd;
+				}
+
+				pos++;
+			}
+		}
+
+		#endregion
+
+		#region Arithmetic
 
 		public static IPolynomial GCD(IPolynomial left, IPolynomial right)
 		{
@@ -448,6 +566,10 @@ namespace PolynomialLibrary
 			return result;
 		}
 
+		#endregion
+
+		#region Overrides and Interface implementations		
+
 		public int CompareTo(object obj)
 		{
 			if (obj == null)
@@ -508,54 +630,6 @@ namespace PolynomialLibrary
 			}
 		}
 
-		public static IPolynomial MakeMonic(IPolynomial polynomial, BigInteger polynomialBase)
-		{
-			int deg = polynomial.Degree;
-			IPolynomial result = new Polynomial(polynomial.Terms.ToArray());
-			if (BigInteger.Abs(result.Terms[deg].CoEfficient) > 1)
-			{
-				BigInteger toAdd = (result.Terms[deg].CoEfficient - 1) * polynomialBase;
-				result.Terms[deg].CoEfficient = 1;
-				result.Terms[deg - 1].CoEfficient += toAdd;
-			}
-			return result;
-		}
-
-		public static void MakeCoefficientsSmaller(IPolynomial polynomial, BigInteger polynomialBase, BigInteger maxCoefficientSize = default(BigInteger))
-		{
-			BigInteger maxSize = maxCoefficientSize;
-
-			if (maxSize == default(BigInteger))
-			{
-				maxSize = polynomialBase;
-			}
-
-			int pos = 0;
-			int deg = polynomial.Degree;
-
-			while (pos < deg)
-			{
-				if (pos + 1 > deg)
-				{
-					return;
-				}
-
-				if (polynomial[pos] > maxSize &&
-					polynomial[pos] > polynomial[pos + 1])
-				{
-					BigInteger diff = polynomial[pos] - maxSize;
-
-					BigInteger toAdd = (diff / polynomialBase) + 1;
-					BigInteger toRemove = toAdd * polynomialBase;
-
-					polynomial[pos] -= toRemove;
-					polynomial[pos + 1] += toAdd;
-				}
-
-				pos++;
-			}
-		}
-
 		public IPolynomial Clone()
 		{
 			return new Polynomial(Terms.Select(pt => pt.Clone()).ToArray());
@@ -609,5 +683,8 @@ namespace PolynomialLibrary
 			}
 			return string.Join(" + ", stringTerms).Replace("+ -", "- ");
 		}
+
+		#endregion
+
 	}
 }
