@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polynomial", "Polynomial.csproj", "{1A033CB7-2166-4DA1-9870-6AE1F23DA512}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPolynomial", "TestPolynomial\TestPolynomial.csproj", "{2C784BDC-4752-4D47-9733-7A11797A0BE9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{1A033CB7-2166-4DA1-9870-6AE1F23DA512}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A033CB7-2166-4DA1-9870-6AE1F23DA512}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A033CB7-2166-4DA1-9870-6AE1F23DA512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C784BDC-4752-4D47-9733-7A11797A0BE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C784BDC-4752-4D47-9733-7A11797A0BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C784BDC-4752-4D47-9733-7A11797A0BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C784BDC-4752-4D47-9733-7A11797A0BE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

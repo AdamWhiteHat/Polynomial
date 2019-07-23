@@ -513,7 +513,7 @@ namespace PolynomialLibrary
 			if (left == null) throw new ArgumentNullException(nameof(left));
 			if (right == null) throw new ArgumentNullException(nameof(right));
 
-			BigInteger[] terms = new BigInteger[Math.Min(left.Degree, right.Degree) + 1];
+			BigInteger[] terms = new BigInteger[Math.Max(left.Degree, right.Degree) + 1];
 			for (int i = 0; i < terms.Length; i++)
 			{
 				BigInteger l = left[i];
