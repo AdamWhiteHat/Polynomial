@@ -357,36 +357,7 @@ namespace PolynomialLibrary
 			{
 				return a;
 			}
-		}
-
-		public static IPolynomial GCD(IPolynomial left, IPolynomial right, BigInteger modulus)
-		{
-			IPolynomial a = left.Clone();
-			IPolynomial b = right.Clone();
-
-			if (b.Degree > a.Degree)
-			{
-				IPolynomial swap = b;
-				b = a;
-				a = swap;
-			}
-
-			while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
-			{
-				IPolynomial temp = a;
-				a = b;
-				b = Field.ModMod(temp, b, modulus);
-			}
-
-			if (a.Degree == 0)
-			{
-				return Polynomial.One;
-			}
-			else
-			{
-				return a;
-			}
-		}
+		} 
 
 		public static IPolynomial Divide(IPolynomial left, IPolynomial right)
 		{

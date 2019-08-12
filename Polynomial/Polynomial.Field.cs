@@ -10,9 +10,38 @@ namespace PolynomialLibrary
 	{
 		public static class Field
 		{
-			public static IPolynomial ModMod(IPolynomial toReduce, IPolynomial modPoly, BigInteger modPrime)
+			public static IPolynomial GCD(IPolynomial left, IPolynomial right, BigInteger modulus)
 			{
-				return Field.Modulus(Field.Modulus(toReduce, modPoly), modPrime);
+				IPolynomial a = left.Clone();
+				IPolynomial b = right.Clone();
+
+				if (b.Degree > a.Degree)
+				{
+					IPolynomial swap = b;
+					b = a;
+					a = swap;
+				}
+
+				while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
+				{
+					IPolynomial temp = a;
+					a = b;
+					b = Field.ModMod(temp, b, modulus);
+				}
+
+				if (a.Degree == 0)
+				{
+					return Polynomial.One;
+				}
+				else
+				{
+					return a;
+				}
+			}
+
+			public static IPolynomial ModMod(IPolynomial toReduce, IPolynomial modPoly, BigInteger primeModulus)
+			{
+				return Field.Modulus(Field.Modulus(toReduce, modPoly), primeModulus);
 			}
 
 			public static IPolynomial Modulus(IPolynomial poly, IPolynomial mod)
