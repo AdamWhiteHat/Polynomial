@@ -1,37 +1,38 @@
 ﻿using System;
+using System.Text;
 using System.Linq;
 using System.Numerics;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace PolynomialLibrary
 {
-	public partial class Polynomial : IPolynomial
+	public abstract partial class Polynomial<TAlgebra, TNumber> : IPolynomial<TAlgebra, TNumber> where TAlgebra : IArithmetic<TAlgebra, TNumber>
 	{
 		public static class Field
 		{
-			public static IPolynomial GCD(IPolynomial left, IPolynomial right, BigInteger modulus)
+			public static IPolynomial<TAlgebra, TNumber> GCD(IPolynomial<TAlgebra, TNumber> left, IPolynomial<TAlgebra, TNumber> right, TAlgebra modulus)
 			{
-				IPolynomial a = left.Clone();
-				IPolynomial b = right.Clone();
+				IPolynomial<TAlgebra, TNumber> a = left.Clone();
+				IPolynomial<TAlgebra, TNumber> b = right.Clone();
 
 				if (b.Degree > a.Degree)
 				{
-					IPolynomial swap = b;
+					IPolynomial<TAlgebra, TNumber> swap = b;
 					b = a;
 					a = swap;
 				}
 
-				while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
+				while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient.Equals(0)))
 				{
-					IPolynomial temp = a;
+					IPolynomial<TAlgebra, TNumber> temp = a;
 					a = b;
 					b = Field.ModMod(temp, b, modulus);
 				}
 
 				if (a.Degree == 0)
 				{
-					return Polynomial.One;
+					return Polynomial<TAlgebra, TNumber>.One;
 				}
 				else
 				{
@@ -39,12 +40,12 @@ namespace PolynomialLibrary
 				}
 			}
 
-			public static IPolynomial ModMod(IPolynomial toReduce, IPolynomial modPoly, BigInteger primeModulus)
+			public static IPolynomial<TAlgebra, TNumber> ModMod(IPolynomial<TAlgebra, TNumber> toReduce, IPolynomial<TAlgebra, TNumber> modPoly, TAlgebra primeModulus)
 			{
 				return Field.Modulus(Field.Modulus(toReduce, modPoly), primeModulus);
 			}
 
-			public static IPolynomial Modulus(IPolynomial poly, IPolynomial mod)
+			public static IPolynomial<TAlgebra, TNumber> Modulus(IPolynomial<TAlgebra, TNumber> poly, IPolynomial<TAlgebra, TNumber> mod)
 			{
 				int sortOrder = mod.CompareTo(poly);
 				if (sortOrder > 0)
@@ -53,69 +54,69 @@ namespace PolynomialLibrary
 				}
 				else if (sortOrder == 0)
 				{
-					return Polynomial.Zero;
+					return Polynomial<TAlgebra, TNumber>.Zero;
 				}
 
-				IPolynomial remainder = Polynomial.Zero;
-				Polynomial.Divide(poly, mod, out remainder);
+				IPolynomial<TAlgebra, TNumber> remainder = Polynomial<TAlgebra, TNumber>.Zero;
+				Polynomial<TAlgebra, TNumber>.Divide(poly, mod, out remainder);
 
 				return remainder;
 			}
 
-			public static IPolynomial Modulus(IPolynomial poly, BigInteger mod)
+			public static IPolynomial<TAlgebra, TNumber> Modulus(IPolynomial<TAlgebra, TNumber> poly, TAlgebra mod)
 			{
-				IPolynomial clone = poly.Clone();
-				List<ITerm> terms = new List<ITerm>();
+				IPolynomial<TAlgebra, TNumber> clone = poly.Clone();
+				List<ITerm<TAlgebra, TNumber>> terms = new List<ITerm<TAlgebra, TNumber>>();
 
-				foreach (ITerm term in clone.Terms)
+				foreach (ITerm<TAlgebra, TNumber> term in clone.Terms)
 				{
-					BigInteger remainder = 0;
-					BigInteger.DivRem(term.CoEfficient, mod, out remainder);
+					TAlgebra remainder = ArithmeticType<TAlgebra, TNumber>.Instance.Zero;
+					TAlgebra quotient = term.CoEfficient.DivRem(mod, out remainder);
 
-					if (remainder.Sign == -1)
+					if (remainder.Sign() == -1)
 					{
-						remainder = (remainder + mod);
+						remainder = remainder.Add(mod);
 					}
 
-					terms.Add(new Term(remainder, term.Exponent));
+					terms.Add(Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(remainder, term.Exponent));
 				}
 
 				// Recalculate the degree
-				ITerm[] termArray = terms.SkipWhile(t => t.CoEfficient.Sign == 0).ToArray();
+				ITerm<TAlgebra, TNumber>[] termArray = terms.SkipWhile(t => t.CoEfficient.Sign() == 0).ToArray();
 				if (!termArray.Any())
 				{
-					termArray = Term.GetTerms(new BigInteger[] { 0 });
+					termArray = GetTerms(new TAlgebra[] { ArithmeticType<TAlgebra, TNumber>.Instance.Zero });
 				}
-				IPolynomial result = new Polynomial(termArray);
+				IPolynomial<TAlgebra, TNumber> result = ConstructPolynomial.Invoke(termArray);
 				return result;
 			}
 
-			public static IPolynomial Divide(IPolynomial left, IPolynomial right, BigInteger mod, out IPolynomial remainder)
+			public static IPolynomial<TAlgebra, TNumber> Divide(IPolynomial<TAlgebra, TNumber> left, IPolynomial<TAlgebra, TNumber> right, TAlgebra mod, out IPolynomial<TAlgebra, TNumber> remainder)
 			{
 				if (left == null) throw new ArgumentNullException(nameof(left));
 				if (right == null) throw new ArgumentNullException(nameof(right));
 				if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 				{
-					remainder = Polynomial.Zero; return left;
+					remainder = Polynomial<TAlgebra, TNumber>.Zero; return left;
 				}
 
 				int rightDegree = right.Degree;
 				int quotientDegree = (left.Degree - rightDegree) + 1;
-				BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray()).Mod(mod);
+				TAlgebra leadingCoefficent = right[rightDegree].Mod(mod);
 
-				Polynomial rem = (Polynomial)left.Clone();
-				Polynomial quotient = (Polynomial)Polynomial.Zero;
+				Polynomial<TAlgebra, TNumber> rem = (Polynomial<TAlgebra, TNumber>)left.Clone();
+				Polynomial<TAlgebra, TNumber> quotient = (Polynomial<TAlgebra, TNumber>)Polynomial<TAlgebra, TNumber>.Zero;
 
 				// The leading coefficient is the only number we ever divide by
 				// (so if right is monic, polynomial division does not involve division at all!)
 				for (int i = quotientDegree - 1; i >= 0; i--)
 				{
-					quotient[i] = BigInteger.Divide(rem[rightDegree + i], leadingCoefficent).Mod(mod);
-					rem[rightDegree + i] = BigInteger.Zero;
+					quotient[i] = rem[rightDegree + i].Divide(leadingCoefficent).Mod(mod);
+					rem[rightDegree + i] = ArithmeticType<TAlgebra, TNumber>.Instance.Zero;
 
 					for (int j = rightDegree + i - 1; j >= i; j--)
 					{
-						rem[j] = BigInteger.Subtract(rem[j], BigInteger.Multiply(quotient[i], right[j - i]).Mod(mod)).Mod(mod);
+						rem[j] = rem[j].Subtract(quotient[i].Multiply(right[j - i]).Mod(mod)).Mod(mod);
 					}
 				}
 
@@ -127,36 +128,36 @@ namespace PolynomialLibrary
 				return quotient;
 			}
 
-			public static IPolynomial Multiply(IPolynomial poly, BigInteger multiplier, BigInteger mod)
+			public static IPolynomial<TAlgebra, TNumber> Multiply(IPolynomial<TAlgebra, TNumber> poly, TAlgebra multiplier, TAlgebra mod)
 			{
-				IPolynomial result = poly.Clone();
+				IPolynomial<TAlgebra, TNumber> result = poly.Clone();
 
-				foreach (ITerm term in result.Terms)
+				foreach (ITerm<TAlgebra, TNumber> term in result.Terms)
 				{
-					BigInteger newCoefficient = term.CoEfficient;
-					if (newCoefficient != 0)
+					TAlgebra newCoefficient = term.CoEfficient;
+					if (!newCoefficient.Equals(ArithmeticType<TAlgebra, TNumber>.Instance.Zero))
 					{
-						newCoefficient = (newCoefficient * multiplier);
-						term.CoEfficient = (newCoefficient.Mod(mod));
+						newCoefficient = newCoefficient.Multiply(multiplier);
+						term.CoEfficient = newCoefficient.Mod(mod);
 					}
 				}
 
 				return result;
 			}
 
-			public static IPolynomial PowMod(IPolynomial poly, BigInteger exponent, BigInteger mod)
+			public static IPolynomial<TAlgebra, TNumber> PowMod(IPolynomial<TAlgebra, TNumber> poly, TAlgebra exponent, TAlgebra mod)
 			{
-				IPolynomial result = poly.Clone();
+				IPolynomial<TAlgebra, TNumber> result = poly.Clone();
 
-				foreach (ITerm term in result.Terms)
+				foreach (ITerm<TAlgebra, TNumber> term in result.Terms)
 				{
-					BigInteger newCoefficient = term.CoEfficient;
-					if (newCoefficient != 0)
+					TAlgebra newCoefficient = term.CoEfficient;
+					if (!newCoefficient.Equals(ArithmeticType<TAlgebra, TNumber>.Instance.Zero))
 					{
-						newCoefficient = BigInteger.ModPow(newCoefficient, exponent, mod);
-						if (newCoefficient.Sign == -1)
+						newCoefficient = newCoefficient.ModPow(exponent, mod);
+						if (newCoefficient.Sign() == -1)
 						{
-							throw new Exception("BigInteger.ModPow returned negative number");
+							throw new Exception("T.ModPow returned negative number");
 						}
 						term.CoEfficient = newCoefficient;
 					}
@@ -165,14 +166,14 @@ namespace PolynomialLibrary
 				return result;
 			}
 
-			public static IPolynomial ExponentiateMod(IPolynomial startPoly, BigInteger s2, IPolynomial f, BigInteger p)
+			public static IPolynomial<TAlgebra, TNumber> ExponentiateMod(IPolynomial<TAlgebra, TNumber> startPoly, TAlgebra s2, IPolynomial<TAlgebra, TNumber> f, TAlgebra p)
 			{
-				IPolynomial result = Polynomial.One;
-				if (s2 == 0) { return result; }
+				IPolynomial<TAlgebra, TNumber> result = Polynomial<TAlgebra, TNumber>.One;
+				if (s2.Equals(ArithmeticType<TAlgebra, TNumber>.Instance.Zero)) { return result; }
 
-				IPolynomial A = startPoly.Clone();
+				IPolynomial<TAlgebra, TNumber> A = startPoly.Clone();
 
-				byte[] byteArray = s2.ToByteArray();
+				byte[] byteArray = BigInteger.Parse(s2.ToString()).ToByteArray(); //Encoding.ASCII.GetBytes(s2);   // BitConverter.GetBytes(s2);
 				bool[] bitArray = new BitArray(byteArray).Cast<bool>().ToArray();
 
 				// Remove trailing zeros ?
@@ -185,10 +186,10 @@ namespace PolynomialLibrary
 				int t = bitArray.Length;
 				while (i < t)
 				{
-					A = Field.ModMod(Polynomial.Square(A), f, p);
+					A = Field.ModMod(Polynomial<TAlgebra, TNumber>.Square(A), f, p);
 					if (bitArray[i] == true)
 					{
-						result = Field.ModMod(Polynomial.Multiply(A, result), f, p);
+						result = Field.ModMod(Polynomial<TAlgebra, TNumber>.Multiply(A, result), f, p);
 					}
 					i++;
 				}
@@ -196,81 +197,55 @@ namespace PolynomialLibrary
 				return result;
 			}
 
-			public static IPolynomial ModPow(IPolynomial poly, BigInteger exponent, IPolynomial mod)
+			public static IPolynomial<TAlgebra, TNumber> ModPow(IPolynomial<TAlgebra, TNumber> poly, TAlgebra exponent, IPolynomial<TAlgebra, TNumber> mod)
 			{
-				if (exponent < 0)
+				if (exponent.Compare(ArithmeticType<TAlgebra, TNumber>.Instance.Zero) < 0)
 				{
 					throw new NotImplementedException("Raising a polynomial to a negative exponent not supported. Build this functionality if it is needed.");
 				}
-				else if (exponent == 0)
+				else if (exponent.Equals(ArithmeticType<TAlgebra, TNumber>.Instance.Zero))
 				{
-					return Polynomial.One;
+					return Polynomial<TAlgebra, TNumber>.One;
 				}
-				else if (exponent == 1)
+				else if (exponent.Equals(ArithmeticType<TAlgebra, TNumber>.Instance.One))
 				{
 					return poly.Clone();
 				}
-				else if (exponent == 2)
+				else if (exponent.Equals(ArithmeticType<TAlgebra, TNumber>.Instance.Two))
 				{
-					return Polynomial.Square(poly);
+					return Polynomial<TAlgebra, TNumber>.Square(poly);
 				}
 
-				IPolynomial total = Polynomial.Square(poly);
+				IPolynomial<TAlgebra, TNumber> total = Polynomial<TAlgebra, TNumber>.Square(poly);
 
-				BigInteger counter = exponent - 2;
-				while (counter != 0)
+				TAlgebra counter = exponent.Subtract(ArithmeticType<TAlgebra, TNumber>.Instance.Two);
+				while (!counter.Equals(ArithmeticType<TAlgebra, TNumber>.Instance.Zero))
 				{
-					total = Polynomial.Multiply(poly, total);
+					total = Polynomial<TAlgebra, TNumber>.Multiply(poly, total);
 
 					if (total.CompareTo(mod) < 0)
 					{
 						total = Field.Modulus(total, mod);
 					}
 
-					counter -= 1;
+					counter = counter.Subtract(ArithmeticType<TAlgebra, TNumber>.Instance.One);
 				}
 
 				return total;
 			}
 
-			public static bool IsIrreducibleOverField(IPolynomial f, BigInteger p)
+			public static bool IsIrreducibleOverField(IPolynomial<TAlgebra, TNumber> f, TAlgebra p)
 			{
-				IPolynomial splittingField = new Polynomial(
-					new Term[] {
-						new Term(  1, (int)p),
-						new Term( -1, 1)
-					});
+				IPolynomial<TAlgebra, TNumber> splittingField = ConstructPolynomial.Invoke(
+					new List<ITerm<TAlgebra, TNumber>>() {
+						Term<TAlgebra, TNumber>.InstanceConstructor.Invoke( ArithmeticType<TAlgebra, TNumber>.Instance.One, int.Parse(p.Value.ToString())),
+						Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(ArithmeticType<TAlgebra, TNumber>.Instance.MinusOne, 1)
+					}.ToArray());
 
-				IPolynomial reducedField = Field.ModMod(splittingField, f, p);
+				IPolynomial<TAlgebra, TNumber> reducedField = Field.ModMod(splittingField, f, p);
 
-				IPolynomial gcd = Polynomial.GCD(reducedField, f);
-				return (gcd.CompareTo(Polynomial.One) == 0);
-			}
-
-			public static bool IsIrreducibleOverP(IPolynomial poly, BigInteger p)
-			{
-				List<BigInteger> coefficients = poly.Terms.Select(t => t.CoEfficient).ToList();
-
-				BigInteger leadingCoefficient = coefficients.Last();
-				BigInteger constantCoefficient = coefficients.First();
-
-				coefficients.Remove(leadingCoefficient);
-				coefficients.Remove(constantCoefficient);
-
-				BigInteger leadingRemainder = -1;
-				BigInteger.DivRem(leadingCoefficient, p, out leadingRemainder);
-
-				BigInteger constantRemainder = -1;
-				BigInteger.DivRem(constantCoefficient, p.Square(), out constantRemainder);
-
-				bool result = (leadingRemainder != 0); // p does not divide leading coefficient
-
-				result &= (constantRemainder != 0);    // p^2 does not divide constant coefficient
-
-				coefficients.Add(p);
-				result &= (coefficients.GCD() == 1); // GCD == 1
-
-				return result;
+				IPolynomial<TAlgebra, TNumber> gcd = Polynomial<TAlgebra, TNumber>.GCD(reducedField, f);
+				return (gcd.CompareTo(Polynomial<TAlgebra, TNumber>.One) == 0);
 			}
 		}
 	}
