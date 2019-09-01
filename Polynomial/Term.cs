@@ -9,14 +9,10 @@ namespace PolynomialLibrary
 {
 	public class Term<TAlgebra, TNumber> : ITerm<TAlgebra, TNumber> where TAlgebra : IArithmetic<TAlgebra, TNumber>
 	{
-
 		public int Exponent { get; protected set; }
 		public TAlgebra CoEfficient { get; set; }
 
 		protected static string IndeterminateSymbol { get { return "X"; } }
-
-		//public Func<TAlgebra, int, Term<TAlgebra, TNumber>> TermConstructorMethod;
-		//public static Func<TAlgebra, int, Term<TAlgebra, TNumber>> InstanceConstructor = new Func<TAlgebra, int, ITerm<TAlgebra, TNumber>>((a,i) => new Term<TAlgebra,TNumber>(a,i));
 
 		public Term(TAlgebra coefficient, int exponent)
 		{

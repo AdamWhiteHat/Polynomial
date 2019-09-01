@@ -16,8 +16,6 @@ namespace PolynomialLibrary
 		}
 
 		TAlgebra Evaluate(TAlgebra indeterminateValue);
-
-		//IPolynomial<TAlgebra, TNumber> Parse(string value);
 	}
 
 }

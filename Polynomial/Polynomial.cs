@@ -66,11 +66,11 @@ namespace PolynomialLibrary
 			SetTerms(terms);
 		}
 
-		//public Polynomial(T n, T polynomialBase, int forceDegree)
-		//{
-		//	Degree = forceDegree;
-		//	SetTerms(GetPolynomialTerms(n, polynomialBase, Degree));
-		//}
+		public Polynomial(TAlgebra n, TAlgebra polynomialBase, int forceDegree)
+		{
+			Degree = forceDegree;
+			SetTerms(GetPolynomialTerms(n, polynomialBase, Degree));
+		}
 
 		private void SetTerms(IEnumerable<ITerm<TAlgebra, TNumber>> terms)
 		{
@@ -115,38 +115,37 @@ namespace PolynomialLibrary
 			}
 		}
 
-		/*
-		private static List<ITerm<U,T>> GetPolynomialTerms(T value, T polynomialBase, int degree)
+		private static List<ITerm<TAlgebra, TNumber>> GetPolynomialTerms(TAlgebra value, TAlgebra polynomialBase, int degree)
 		{
-			int d = degree; // (int)Math.Truncate(T.Log(value, (double)polynomialBase)+ 1);
-			T toAdd = value;
-			List<ITerm<U,T>> result = new List<ITerm<U,T>>();
+			int d = degree;
+			TAlgebra toAdd = value;
+			List<ITerm<TAlgebra, TNumber>> result = new List<ITerm<TAlgebra, TNumber>>();
 			while (d >= 0 && toAdd.Compare(ArithmeticType<TAlgebra, TNumber>.Instance.Zero) > 0)
 			{
-				T placeValue = polynomialBase.Pow(d);
+				TAlgebra placeValue = polynomialBase.Pow(d);
 
 				if (placeValue.Equals(ArithmeticType<TAlgebra, TNumber>.Instance.One))
 				{
-					result.Add(new Term<U,T>(toAdd, d));
+					result.Add(new Term<TAlgebra, TNumber>(toAdd, d));
 					toAdd = ArithmeticType<TAlgebra, TNumber>.Instance.Zero;
 				}
 				else if (placeValue.Equals(toAdd))
 				{
-					result.Add(new Term<U,T>(ArithmeticType<TAlgebra, TNumber>.Instance.One, d));
+					result.Add(new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.One, d));
 					toAdd = toAdd.Subtract(placeValue);
 				}
 				else if (placeValue.Compare(toAdd.Abs()) < 0)
 				{
-					T remainder = ArithmeticType<TAlgebra, TNumber>.Instance.Zero;
-					T quotient = toAdd.DivRem(placeValue, out remainder);
+					TAlgebra remainder = ArithmeticType<TAlgebra, TNumber>.Instance.Zero;
+					TAlgebra quotient = toAdd.DivRem(placeValue, out remainder);
 
 					if (quotient.Compare(placeValue) > 0)
 					{
 						quotient = placeValue;
 					}
 
-					result.Add(new Term<U,T>(quotient, d));
-					T toSubtract = quotient.Multiply(placeValue);
+					result.Add(new Term<TAlgebra, TNumber>(quotient, d));
+					TAlgebra toSubtract = quotient.Multiply(placeValue);
 
 					toAdd = toAdd.Subtract(toSubtract);
 				}
@@ -155,23 +154,21 @@ namespace PolynomialLibrary
 			}
 			return result.ToList();
 		}
-	
 
-		public static IPolynomial<U,T> FromRoots(params T[] roots)
+		public static IPolynomial<TAlgebra, TNumber> FromRoots(params TAlgebra[] roots)
 		{
-			return Polynomial<U,T>.Product(
+			return Polynomial<TAlgebra, TNumber>.Product(
 				roots.Select(
-					zero => new Polynomial<U,T>(
-						new Term<U,T>[]
+					root => new Polynomial<TAlgebra, TNumber>(
+						new Term<TAlgebra, TNumber>[]
 						{
-							new Term<U,T>( ArithmeticType<TAlgebra, TNumber>.Instance.One, ArithmeticType<TAlgebra, TNumber>.Instance.One),
-							new Term<U,T>( T.Negate(zero), ArithmeticType<TAlgebra, TNumber>.Instance.Zero)
+							new Term<TAlgebra, TNumber>( ArithmeticType<TAlgebra, TNumber>.Instance.One, 1),
+							new Term<TAlgebra, TNumber>( root.Negate(), 0)
 						}
 					)
 				)
 			);
 		}
-	*/
 
 		public static IPolynomial<TAlgebra, TNumber> Parse(string input)
 		{

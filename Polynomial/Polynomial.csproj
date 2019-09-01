@@ -43,17 +43,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\ArithmeticType.cs" />
+    <Compile Include="Concrete\ComplexArithmeticType.cs" />
     <Compile Include="Concrete\BigIntegerArithmeticType.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Interface\IArithmetic.cs" />
     <Compile Include="Interface\ICloneable.cs" />
     <Compile Include="Interface\IPolynomial.cs" />
     <Compile Include="Interface\ITerm.cs" />
-    <Compile Include="Abstract\Term.cs" />
+    <Compile Include="Term.cs" />
     <Compile Include="Polynomial.Algorithms.cs" />
     <Compile Include="Polynomial.Field.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Abstract\Polynomial.cs" />
+    <Compile Include="Polynomial.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
