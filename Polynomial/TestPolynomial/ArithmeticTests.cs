@@ -12,16 +12,23 @@ namespace TestPolynomial
 		private TestContext m_testContext;
 		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
 
+		static Arithmetic()
+		{
+			BigIntegerArithmeticType.Initialize();
+		}
+
 		[TestMethod]
 		public void TestAddition()
 		{
 			string expecting = "24*X - 1";
 
+			BigIntegerArithmeticType test = new BigIntegerArithmeticType(BigInteger.Zero);
 
-			var first = IPolynomial<BigIntegerArithmeticType<>, BigInteger>.Parse("12*X + 2");
-			var second = Polynomial<TAlgebra, TNumber>.Parse("12*X - 3");
 
-			IPolynomial<TAlgebra, TNumber> result = Polynomial<TAlgebra, TNumber>.Add(first, second);
+			var first = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("12*X + 2");
+			var second = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("12*X - 3");
+
+			var result = Polynomial<BigIntegerArithmeticType, BigInteger>.Add(first, second);
 
 			TestContext.WriteLine($"({first}) + ({second})");
 			TestContext.WriteLine("");
@@ -34,12 +41,12 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestSubtraction()
 		{
-			string expecting = "7*X^2 + X";
+			string expecting = "7*X^2 + 1*X";
 
-			IPolynomial<TAlgebra, TNumber> first = Polynomial<TAlgebra, TNumber>.Parse("7*X^2 + 3*X - 2");
-			IPolynomial<TAlgebra, TNumber> second = Polynomial<TAlgebra, TNumber>.Parse("2*X - 2");
+			var first = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("7*X^2 + 3*X - 2");
+			var second = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("2*X - 2");
 
-			IPolynomial<TAlgebra, TNumber> result = Polynomial<TAlgebra, TNumber>.Subtract(first, second);
+			var result = Polynomial<BigIntegerArithmeticType, BigInteger>.Subtract(first, second);
 
 			TestContext.WriteLine($"({first}) - ({second})");
 			TestContext.WriteLine("");
@@ -54,10 +61,10 @@ namespace TestPolynomial
 		{
 			string expecting = "144*X^2 - 12*X - 6";
 
-			IPolynomial<TAlgebra, TNumber> first = Polynomial<TAlgebra, TNumber>.Parse("12*X + 2");
-			IPolynomial<TAlgebra, TNumber> second = Polynomial<TAlgebra, TNumber>.Parse("12*X - 3");
+			var first = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("12*X + 2");
+			var second = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("12*X - 3");
 
-			IPolynomial<TAlgebra, TNumber> result = Polynomial<TAlgebra, TNumber>.Multiply(first, second);
+			var result = Polynomial<BigIntegerArithmeticType, BigInteger>.Multiply(first, second);
 
 			TestContext.WriteLine($"({first}) * ({second})");
 			TestContext.WriteLine("");
@@ -72,10 +79,10 @@ namespace TestPolynomial
 		{
 			string expecting = "24*X - 1";
 
-			IPolynomial<TAlgebra, TNumber> first = Polynomial<TAlgebra, TNumber>.Parse("288*X^2 + 36*X - 2");
-			IPolynomial<TAlgebra, TNumber> second = Polynomial<TAlgebra, TNumber>.Parse("12*X + 2");
+			var first = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("288*X^2 + 36*X - 2");
+			var second = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("12*X + 2");
 
-			IPolynomial<TAlgebra, TNumber> result = Polynomial<TAlgebra, TNumber>.Divide(first, second);
+			var result = Polynomial<BigIntegerArithmeticType, BigInteger>.Divide(first, second);
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
@@ -90,9 +97,9 @@ namespace TestPolynomial
 		{
 			string expecting = "144*X^2 + 24*X + 1";
 
-			IPolynomial<TAlgebra, TNumber> first = Polynomial<TAlgebra, TNumber>.Parse("12*X + 1");
+			var first = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("12*X + 1");
 
-			IPolynomial<TAlgebra, TNumber> result = Polynomial<TAlgebra, TNumber>.Square(first);
+			var result = Polynomial<BigIntegerArithmeticType, BigInteger>.Square(first);
 
 			TestContext.WriteLine($"({first})^2");
 			TestContext.WriteLine("");
@@ -107,11 +114,10 @@ namespace TestPolynomial
 		{
 			string expecting = "X^2 + 3*X + 2";
 
-			IPolynomial<TAlgebra, TNumber> first = Polynomial<TAlgebra, TNumber>.Parse("X^4 + 8*X^3 + 21*X^2 + 22*X + 8");
-			IPolynomial<TAlgebra, TNumber> second = Polynomial<TAlgebra, TNumber>.Parse("X^3 + 6*X^2 + 11*X + 6");
+			var first = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("X^4 + 8*X^3 + 21*X^2 + 22*X + 8");
+			var second = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("X^3 + 6*X^2 + 11*X + 6");
 
-			//IPolynomial result = Polynomial.Multiply(mult, Polynomial.Parse("X + 1"));
-			IPolynomial<TAlgebra, TNumber> result = Polynomial<TAlgebra, TNumber>.GCD(first, second);
+			var result = Polynomial<BigIntegerArithmeticType, BigInteger>.GCD(first, second);
 
 			TestContext.WriteLine($"GCD({first} , {second})");
 			TestContext.WriteLine("");
@@ -126,9 +132,9 @@ namespace TestPolynomial
 		{
 			string expecting = "576*X + 36";
 
-			IPolynomial<TAlgebra, TNumber> first = Polynomial<TAlgebra, TNumber>.Parse("288*X^2 + 36*X - 2");
+			var first = Polynomial<BigIntegerArithmeticType, BigInteger>.Parse("288*X^2 + 36*X - 2");
 
-			IPolynomial<TAlgebra, TNumber> result = Polynomial<TAlgebra, TNumber>.GetDerivativePolynomial(first);
+			var result = Polynomial<BigIntegerArithmeticType, BigInteger>.GetDerivativePolynomial(first);
 
 			TestContext.WriteLine($"f' where f(x) = ({first})");
 			TestContext.WriteLine("");

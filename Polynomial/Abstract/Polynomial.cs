@@ -6,28 +6,12 @@ using System.Collections.Generic;
 
 namespace PolynomialLibrary
 {
-	public abstract partial class Polynomial<TAlgebra, TNumber> : IPolynomial<TAlgebra, TNumber> where TAlgebra : IArithmetic<TAlgebra, TNumber>
+	public partial class Polynomial<TAlgebra, TNumber> : IPolynomial<TAlgebra, TNumber> where TAlgebra : IArithmetic<TAlgebra, TNumber>
 	{
 
-		public static IPolynomial<TAlgebra, TNumber> MinusOne = Polynomial<TAlgebra, TNumber>.ConstructPolynomial(new List<ITerm<TAlgebra, TNumber>>() { Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(ArithmeticType<TAlgebra, TNumber>.Instance.MinusOne, 0) }.ToArray());
-		public static IPolynomial<TAlgebra, TNumber> Zero = Polynomial<TAlgebra, TNumber>.ConstructPolynomial(new List<ITerm<TAlgebra, TNumber>>() { Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(ArithmeticType<TAlgebra, TNumber>.Instance.Zero, 0) }.ToArray());
-		public static IPolynomial<TAlgebra, TNumber> One = Polynomial<TAlgebra, TNumber>.ConstructPolynomial(new List<ITerm<TAlgebra, TNumber>>() { Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(ArithmeticType<TAlgebra, TNumber>.Instance.One, 0) }.ToArray());
-		//public static IPolynomial<U,T> Two = Polynomial<U,T>.ConstructPolynomial(new List<ITerm<U,T>>() { Term<U,T>.InstanceConstructor.Invoke(ArithmeticType<TAlgebra, TNumber>.Instance.One.Add(ArithmeticType<TAlgebra, TNumber>.Instance.One), 0) }.ToArray());
-
-
-		protected abstract Func<IPolynomial<TAlgebra, TNumber>, IPolynomial<TAlgebra, TNumber>, IPolynomial<TAlgebra, TNumber>> AdditionMethod { get; }
-		protected abstract Func<IPolynomial<TAlgebra, TNumber>, IPolynomial<TAlgebra, TNumber>, IPolynomial<TAlgebra, TNumber>> SubtractionMethod { get; }
-		protected abstract Func<IPolynomial<TAlgebra, TNumber>, IPolynomial<TAlgebra, TNumber>, IPolynomial<TAlgebra, TNumber>> MultiplicationMethod { get; }
-		protected abstract Func<IPolynomial<TAlgebra, TNumber>, IPolynomial<TAlgebra, TNumber>, IPolynomial<TAlgebra, TNumber>> DivisionMethod { get; }
-		protected abstract Func<IPolynomial<TAlgebra, TNumber>, IPolynomial<TAlgebra, TNumber>, IPolynomial<TAlgebra, TNumber>> PowMethod { get; }
-
-
-		protected abstract Func<TAlgebra, int, ITerm<TAlgebra, TNumber>> TermConstructorMethod { get; }
-		protected abstract Func<ITerm<TAlgebra, TNumber>[], IPolynomial<TAlgebra, TNumber>> PolynomialConstructorMethod { get; }
-
-
-		public static Func<ITerm<TAlgebra, TNumber>[], IPolynomial<TAlgebra, TNumber>> ConstructPolynomial;
-
+		public static IPolynomial<TAlgebra, TNumber> MinusOne = new Polynomial<TAlgebra, TNumber>(new List<ITerm<TAlgebra, TNumber>>() { (ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.MinusOne, 0) }.ToArray());
+		public static IPolynomial<TAlgebra, TNumber> Zero = new Polynomial<TAlgebra, TNumber>(new List<ITerm<TAlgebra, TNumber>>() { (ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.Zero, 0) }.ToArray());
+		public static IPolynomial<TAlgebra, TNumber> One = new Polynomial<TAlgebra, TNumber>(new List<ITerm<TAlgebra, TNumber>>() { (ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.One, 0) }.ToArray());
 
 		public ITerm<TAlgebra, TNumber>[] Terms { get { return _terms.ToArray(); } }
 		private List<ITerm<TAlgebra, TNumber>> _terms;
@@ -56,7 +40,7 @@ namespace PolynomialLibrary
 				{
 					if (!value.Equals(ArithmeticType<TAlgebra, TNumber>.Instance.Zero))
 					{
-						ITerm<TAlgebra, TNumber> newTerm = Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(value, degree);
+						ITerm<TAlgebra, TNumber> newTerm = new Term<TAlgebra, TNumber>(value, degree);
 						List<ITerm<TAlgebra, TNumber>> terms = _terms;
 						terms.Add(newTerm);
 						SetTerms(terms);
@@ -71,12 +55,9 @@ namespace PolynomialLibrary
 
 		#region Constructors
 
-
 		public Polynomial()
 		{
-			ConstructPolynomial = (trms) => { return PolynomialConstructorMethod(trms); };
-
-			_terms = new List<ITerm<TAlgebra, TNumber>>() { TermConstructorMethod.Invoke(ArithmeticType<TAlgebra, TNumber>.Instance.Zero, 0) };
+			_terms = new List<ITerm<TAlgebra, TNumber>>() { new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.Zero, 0) };
 			Degree = 0;
 		}
 
@@ -104,7 +85,7 @@ namespace PolynomialLibrary
 			int degree = 0;
 			foreach (TAlgebra term in terms)
 			{
-				results.Add(Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(term, degree));
+				results.Add(new Term<TAlgebra, TNumber>(term, degree));
 
 				degree += 1;
 			}
@@ -241,11 +222,11 @@ namespace PolynomialLibrary
 					}
 				}
 				int exponent = int.Parse(variableParts[1]);
-				polyTerms.Add(Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(coefficient, exponent));
+				polyTerms.Add((ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(coefficient, exponent));
 			}
 
 			if (!polyTerms.Any()) { throw new FormatException(); }
-			return ConstructPolynomial.Invoke(polyTerms.ToArray());
+			return new Polynomial<TAlgebra, TNumber>(polyTerms.ToArray());
 		}
 
 		#endregion
@@ -284,17 +265,17 @@ namespace PolynomialLibrary
 				{
 					continue;
 				}
-				terms.Add(Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(term.CoEfficient.Multiply(ArithmeticType<TAlgebra, TNumber>.Instance.Parse(term.Exponent.ToString())), d));
+				terms.Add((ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(term.CoEfficient.Multiply(ArithmeticType<TAlgebra, TNumber>.Instance.Parse(term.Exponent.ToString())), d));
 			}
 
-			IPolynomial<TAlgebra, TNumber> result = ConstructPolynomial.Invoke(terms.ToArray());
+			IPolynomial<TAlgebra, TNumber> result = new Polynomial<TAlgebra, TNumber>(terms.ToArray());
 			return result;
 		}
 
 		public static IPolynomial<TAlgebra, TNumber> MakeMonic(IPolynomial<TAlgebra, TNumber> polynomial, TAlgebra polynomialBase)
 		{
 			int deg = polynomial.Degree;
-			IPolynomial<TAlgebra, TNumber> result = ConstructPolynomial.Invoke(polynomial.Terms.ToArray());
+			IPolynomial<TAlgebra, TNumber> result = new Polynomial<TAlgebra, TNumber>(polynomial.Terms.ToArray());
 			if (result.Terms[deg].CoEfficient.Abs().Compare(ArithmeticType<TAlgebra, TNumber>.Instance.One) > 0)
 			{
 				TAlgebra toAdd = result.Terms[deg].CoEfficient.Subtract(ArithmeticType<TAlgebra, TNumber>.Instance.One).Multiply(polynomialBase);
@@ -421,7 +402,7 @@ namespace PolynomialLibrary
 			if (left == null) { throw new ArgumentNullException(nameof(left)); }
 			if (right == null) { throw new ArgumentNullException(nameof(right)); }
 
-			TAlgebra[] terms = new TAlgebra[left.Degree + right.Degree + 1];
+			TAlgebra[] terms = Enumerable.Repeat(ArithmeticType<TAlgebra, TNumber>.Instance.Zero, (left.Degree + right.Degree + 1)).ToArray();
 
 			for (int i = 0; i <= left.Degree; i++)
 			{
@@ -430,7 +411,7 @@ namespace PolynomialLibrary
 					terms[(i + j)] = terms[(i + j)].Add(left[i].Multiply(right[j]));
 				}
 			}
-			return ConstructPolynomial.Invoke(GetTerms(terms));
+			return new Polynomial<TAlgebra, TNumber>(GetTerms(terms));
 		}
 
 		public static IPolynomial<TAlgebra, TNumber> Product(params IPolynomial<TAlgebra, TNumber>[] polys)
@@ -471,7 +452,7 @@ namespace PolynomialLibrary
 			else if (exponent == 0)
 			{
 
-				return Polynomial<TAlgebra, TNumber>.ConstructPolynomial(new List<ITerm<TAlgebra, TNumber>>() { Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(ArithmeticType<TAlgebra, TNumber>.Instance.One, 0) }.ToArray());
+				return new Polynomial<TAlgebra, TNumber>(new List<ITerm<TAlgebra, TNumber>>() { (ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.One, 0) }.ToArray());
 			}
 			else if (exponent == 1)
 			{
@@ -508,7 +489,7 @@ namespace PolynomialLibrary
 				terms[i] = l.Subtract(r);
 			}
 
-			IPolynomial<TAlgebra, TNumber> result = ConstructPolynomial.Invoke(Polynomial<TAlgebra, TNumber>.GetTerms(terms.ToArray()));
+			IPolynomial<TAlgebra, TNumber> result = new Polynomial<TAlgebra, TNumber>(Polynomial<TAlgebra, TNumber>.GetTerms(terms.ToArray()));
 
 			return result;
 		}
@@ -548,7 +529,7 @@ namespace PolynomialLibrary
 				terms[i] = left[i].Add(right[i]);
 			}
 
-			IPolynomial<TAlgebra, TNumber> result = ConstructPolynomial.Invoke(Polynomial<TAlgebra, TNumber>.GetTerms(terms.ToArray()));
+			IPolynomial<TAlgebra, TNumber> result = new Polynomial<TAlgebra, TNumber>(Polynomial<TAlgebra, TNumber>.GetTerms(terms.ToArray()));
 			return result;
 		}
 
@@ -618,7 +599,7 @@ namespace PolynomialLibrary
 
 		public IPolynomial<TAlgebra, TNumber> Clone()
 		{
-			return ConstructPolynomial.Invoke(Terms.Select(pt => ((Term<TAlgebra, TNumber>)pt).Clone()).ToArray());
+			return new Polynomial<TAlgebra, TNumber>(Terms.Select(pt => ((Term<TAlgebra, TNumber>)pt).Clone()).ToArray());
 		}
 
 		public override string ToString()

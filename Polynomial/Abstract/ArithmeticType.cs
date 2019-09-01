@@ -8,6 +8,7 @@ namespace PolynomialLibrary
 	{
 		protected ArithmeticType()
 		{
+			Instance = (IArithmetic<TAlgebra, TNumber>)this;
 			this.Value = (TAlgebra)(IArithmetic<TAlgebra, TNumber>)this;
 		}
 
@@ -16,7 +17,6 @@ namespace PolynomialLibrary
 		{
 			this.InternalValue = value;
 		}
-
 
 		public static IArithmetic<TAlgebra, TNumber> Instance { get; protected set; }
 
@@ -27,7 +27,6 @@ namespace PolynomialLibrary
 		public abstract TAlgebra Zero { get; }
 		public abstract TAlgebra One { get; }
 		public abstract TAlgebra Two { get; }
-
 
 		protected abstract Func<TNumber, TAlgebra> ConstructionMethod { get; }
 
@@ -123,6 +122,11 @@ namespace PolynomialLibrary
 		public bool Equals(TAlgebra other)
 		{
 			return EqualsMethod.Invoke(Value, other);
+		}
+
+		public override string ToString()
+		{
+			return InternalValue.ToString();
 		}
 	}
 }

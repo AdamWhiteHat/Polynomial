@@ -17,7 +17,7 @@ namespace PolynomialLibrary
 
 		TAlgebra Evaluate(TAlgebra indeterminateValue);
 
-		//IPolynomial<U, T> Parse(string value);
+		//IPolynomial<TAlgebra, TNumber> Parse(string value);
 	}
 
 }

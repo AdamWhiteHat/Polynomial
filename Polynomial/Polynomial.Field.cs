@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace PolynomialLibrary
 {
-	public abstract partial class Polynomial<TAlgebra, TNumber> : IPolynomial<TAlgebra, TNumber> where TAlgebra : IArithmetic<TAlgebra, TNumber>
+	public partial class Polynomial<TAlgebra, TNumber> : IPolynomial<TAlgebra, TNumber> where TAlgebra : IArithmetic<TAlgebra, TNumber>
 	{
 		public static class Field
 		{
@@ -78,7 +78,7 @@ namespace PolynomialLibrary
 						remainder = remainder.Add(mod);
 					}
 
-					terms.Add(Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(remainder, term.Exponent));
+					terms.Add((ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(remainder, term.Exponent));
 				}
 
 				// Recalculate the degree
@@ -87,7 +87,7 @@ namespace PolynomialLibrary
 				{
 					termArray = GetTerms(new TAlgebra[] { ArithmeticType<TAlgebra, TNumber>.Instance.Zero });
 				}
-				IPolynomial<TAlgebra, TNumber> result = ConstructPolynomial.Invoke(termArray);
+				IPolynomial<TAlgebra, TNumber> result = new Polynomial<TAlgebra, TNumber>(termArray);
 				return result;
 			}
 
@@ -236,10 +236,10 @@ namespace PolynomialLibrary
 
 			public static bool IsIrreducibleOverField(IPolynomial<TAlgebra, TNumber> f, TAlgebra p)
 			{
-				IPolynomial<TAlgebra, TNumber> splittingField = ConstructPolynomial.Invoke(
+				IPolynomial<TAlgebra, TNumber> splittingField = new Polynomial<TAlgebra, TNumber>(
 					new List<ITerm<TAlgebra, TNumber>>() {
-						Term<TAlgebra, TNumber>.InstanceConstructor.Invoke( ArithmeticType<TAlgebra, TNumber>.Instance.One, int.Parse(p.Value.ToString())),
-						Term<TAlgebra, TNumber>.InstanceConstructor.Invoke(ArithmeticType<TAlgebra, TNumber>.Instance.MinusOne, 1)
+						(ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>( ArithmeticType<TAlgebra, TNumber>.Instance.One, int.Parse(p.Value.ToString())),
+						(ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.MinusOne, 1)
 					}.ToArray());
 
 				IPolynomial<TAlgebra, TNumber> reducedField = Field.ModMod(splittingField, f, p);
