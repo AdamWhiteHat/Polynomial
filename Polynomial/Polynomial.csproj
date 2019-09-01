@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\ArithmeticType.cs" />
+    <Compile Include="Concrete\DecimalArithmeticType.cs" />
     <Compile Include="Concrete\ComplexArithmeticType.cs" />
     <Compile Include="Concrete\BigIntegerArithmeticType.cs" />
     <Compile Include="ExtensionMethods.cs" />
