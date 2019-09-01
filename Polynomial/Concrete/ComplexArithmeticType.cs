@@ -62,6 +62,7 @@ namespace PolynomialLibrary
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType> NegateMethod { get { return Wrap(Complex.Negate); } }
 		protected override Func<string, ComplexArithmeticType> ParseMethod { get { return new Func<string, ComplexArithmeticType>((str) => Wrap(new Complex(double.Parse(str), 0.0d))); } }
 		protected override Func<ComplexArithmeticType, int> SignMethod { get { return new Func<ComplexArithmeticType, int>((bi) => Math.Sign(((Complex)(bi.InternalValue)).Real)); } }
+		protected override Func<ComplexArithmeticType, ComplexArithmeticType, bool> EqualsMethod { get { return new Func<ComplexArithmeticType, ComplexArithmeticType, bool>((l, r) => l.InternalValue.Equals(r.InternalValue)); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, int> CompareMethod
 		{
 			get
@@ -86,7 +87,25 @@ namespace PolynomialLibrary
 				});
 			}
 		}
-		protected override Func<ComplexArithmeticType, ComplexArithmeticType, bool> EqualsMethod { get { return new Func<ComplexArithmeticType, ComplexArithmeticType, bool>((l, r) => l.InternalValue.Equals(r.InternalValue)); } }
+
+		public override string ToString()
+		{
+			Complex value = this.InternalValue;
+
+			if (value.Imaginary == 0)
+			{
+				return value.Real.ToString();
+			}
+			else if (value.Imaginary < 0)
+			{
+				return $"({value.Real} - {Math.Abs(value.Imaginary)}i)";
+			}
+			else
+			{
+				return $"({value.Real} + {value.Imaginary}i)";
+			}
+		}
+
 
 		// delegate ComplexArithmeticType DivRemDelegate(ComplexArithmeticType dividend, ComplexArithmeticType divisor, out ComplexArithmeticType rem);
 		protected override DivRemDelegate DivRemMethod { get { throw new NotImplementedException(); } }

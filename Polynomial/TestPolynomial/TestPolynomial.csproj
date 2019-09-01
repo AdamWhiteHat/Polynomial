@@ -51,7 +51,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="ArithmeticTests.cs" />
+    <Compile Include="ComplexArithmeticTests.cs" />
+    <Compile Include="DecimalArithmeticTests.cs" />
+    <Compile Include="BigIntegerArithmeticTests.cs" />
     <Compile Include="FieldTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

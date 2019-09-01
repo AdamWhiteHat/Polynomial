@@ -7,12 +7,12 @@ namespace TestPolynomial
 	using PolynomialLibrary;
 
 	[TestClass]
-	public class Arithmetic
+	public class BigIntegerArithmeticTests
 	{
 		private TestContext m_testContext;
 		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
 
-		static Arithmetic()
+		static BigIntegerArithmeticTests()
 		{
 			BigIntegerArithmeticType.Initialize();
 		}
