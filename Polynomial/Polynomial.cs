@@ -173,11 +173,55 @@ namespace PolynomialLibrary
 		public static IPolynomial<TAlgebra, TNumber> Parse(string input)
 		{
 			if (string.IsNullOrWhiteSpace(input)) { throw new ArgumentException(); }
+			string inputString = input.Replace(" ", "");
 
-			string inputString = input.Replace(" ", "").Replace("-", "+-");
-			string[] stringTerms = inputString.Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
+			List<string> stringTerms = new List<string>();
 
-			if (!stringTerms.Any()) { throw new FormatException(); }
+			int index = -1;
+			int max = inputString.Length;
+			bool insideParenthesis = false;
+
+			string buffer = "";
+			while(++index < max)
+			{
+				char c = inputString[index];
+
+				if (c == '(')
+				{
+					insideParenthesis = true;
+				}
+				else if (c == ')')
+				{
+					insideParenthesis = false;
+				}
+				else if(insideParenthesis == false)
+				{
+					if (c == '+')
+					{
+						stringTerms.Add(buffer);
+						buffer = "";
+						continue;
+					}
+					else if (c == '-')
+					{
+						stringTerms.Add(buffer);
+						buffer = "";
+					}
+				}
+
+				buffer += c;				
+			}
+
+			stringTerms.Add(buffer);
+
+
+			//inputString = input.Replace("-", "+-");
+			//stringTerms.AddRange(inputString.Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries));
+
+			if (!stringTerms.Any())
+			{
+				throw new FormatException("Trouble splitting polynomial into terms by: '+'");
+			}
 
 			List<ITerm<TAlgebra, TNumber>> polyTerms = new List<ITerm<TAlgebra, TNumber>>();
 			foreach (string stringTerm in stringTerms)
@@ -186,7 +230,10 @@ namespace PolynomialLibrary
 
 				if (termParts.Count() != 2)
 				{
-					if (termParts.Count() != 1) { throw new FormatException(); }
+					if (termParts.Count() != 1)
+					{
+						throw new FormatException($"Was expecting only 1 or 2 parts to the term. Found {termParts.Count()} instead.");
+					}
 
 					string temp = termParts[0];
 					if (temp.All(c => char.IsDigit(c) || c == '-'))
@@ -200,29 +247,50 @@ namespace PolynomialLibrary
 							temp = temp.Replace("-", "");
 							termParts = new string[] { "-1", temp };
 						}
-						else { termParts = new string[] { "1", temp }; }
+						else
+						{
+							termParts = new string[] { "1", temp };
+						}
 					}
-					else { throw new FormatException(); }
+					else
+					{
+						//throw new FormatException("Trouble recognizing valid characters.");
+					}
 				}
 
 				TAlgebra coefficient = ArithmeticType<TAlgebra, TNumber>.Instance.Parse(termParts[0]);
 
-				string[] variableParts = termParts[1].Split(new char[] { '^' });
-				if (variableParts.Count() != 2)
+				int exponent = 0;
+				if (termParts.Length == 2)
 				{
-					if (variableParts.Count() != 1) { throw new FormatException(); }
-
-					string tmp = variableParts[0];
-					if (tmp.All(c => char.IsLetter(c)))
+					string[] variableParts = termParts[1].Split(new char[] { '^' });
+					if (variableParts.Count() != 2)
 					{
-						variableParts = new string[] { tmp, "1" };
+						if (variableParts.Count() != 1)
+						{
+							throw new FormatException("Trouble splitting term by: '^'");
+						}
+
+						string tmp = variableParts[0];
+						if (tmp.All(c => char.IsLetter(c)))
+						{
+							variableParts = new string[] { tmp, "1" };
+						}
+					}
+
+					if (!int.TryParse(variableParts[1], out exponent))
+					{
+						throw new FormatException($"Trouble parsing exponent: '{variableParts[1]}'");
 					}
 				}
-				int exponent = int.Parse(variableParts[1]);
+
 				polyTerms.Add((ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(coefficient, exponent));
 			}
 
-			if (!polyTerms.Any()) { throw new FormatException(); }
+			if (!polyTerms.Any())
+			{
+				throw new FormatException("Trouble parsing terms: None parsed!");
+			}
 			return new Polynomial<TAlgebra, TNumber>(polyTerms.ToArray());
 		}
 

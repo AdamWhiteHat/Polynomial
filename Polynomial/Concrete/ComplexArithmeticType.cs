@@ -60,7 +60,6 @@ namespace PolynomialLibrary
 		protected override Func<ComplexArithmeticType, int, ComplexArithmeticType> PowMethod { get { return new Func<ComplexArithmeticType, int, ComplexArithmeticType>((b, e) => Wrap(Complex.Pow(b.InternalValue, e))); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType> AbsMethod { get { return new Func<ComplexArithmeticType, ComplexArithmeticType>((ct) => Wrap(new Complex(Complex.Abs(ct.InternalValue), 0.0d))); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType> NegateMethod { get { return Wrap(Complex.Negate); } }
-		protected override Func<string, ComplexArithmeticType> ParseMethod { get { return new Func<string, ComplexArithmeticType>((str) => Wrap(new Complex(double.Parse(str), 0.0d))); } }
 		protected override Func<ComplexArithmeticType, int> SignMethod { get { return new Func<ComplexArithmeticType, int>((bi) => Math.Sign(((Complex)(bi.InternalValue)).Real)); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, bool> EqualsMethod { get { return new Func<ComplexArithmeticType, ComplexArithmeticType, bool>((l, r) => l.InternalValue.Equals(r.InternalValue)); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, int> CompareMethod
@@ -87,6 +86,37 @@ namespace PolynomialLibrary
 				});
 			}
 		}
+
+		protected override Func<string, ComplexArithmeticType> ParseMethod
+		{
+			get
+			{
+				return new Func<string, ComplexArithmeticType>(
+					(str) =>
+					{
+						string input = str.Replace("(", "").Replace(")", "");
+						Complex result = Complex.Zero; ;
+
+						if (input.Contains(","))
+						{
+							string[] splitString = input.Split(new char[] { ',', ' ', 'i' }, StringSplitOptions.RemoveEmptyEntries);
+
+							double real = double.Parse(splitString[0]);
+							double im = double.Parse(splitString[1]);
+
+							result = new Complex(real, im);
+						}
+						else
+						{
+							result = new Complex(double.Parse(input), 0.0d);
+						}
+
+						return Wrap(result);
+					}
+				);
+			}
+		}
+
 
 		public override string ToString()
 		{

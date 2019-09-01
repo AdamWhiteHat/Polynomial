@@ -20,13 +20,13 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestAddition()
 		{
-			string expecting = "24*X - 1";
+			string expecting = "(24 - 3i)*X + (-1 + 3i)";
 
 			ComplexArithmeticType test = new ComplexArithmeticType(Complex.Zero);
 
+			var second = Polynomial<ComplexArithmeticType, Complex>.Parse("12*X - (3, 3)");
+			var first = Polynomial<ComplexArithmeticType, Complex>.Parse("(12, -3)*X + 2");
 
-			var first = Polynomial<ComplexArithmeticType, Complex>.Parse("12*X + 2");
-			var second = Polynomial<ComplexArithmeticType, Complex>.Parse("12*X - 3");
 
 			var result = Polynomial<ComplexArithmeticType, Complex>.Add(first, second);
 
@@ -59,10 +59,10 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestMultiply()
 		{
-			string expecting = "144*X^2 - 12*X - 6";
+			string expecting = "(141 + 48i)*X^2 + (54 + 35i)*X + (6 + 4i)";
 
-			var first = Polynomial<ComplexArithmeticType, Complex>.Parse("12*X + 2");
-			var second = Polynomial<ComplexArithmeticType, Complex>.Parse("12*X - 3");
+			var first = Polynomial<ComplexArithmeticType, Complex>.Parse("(12, 3)*X + (2, 0)");
+			var second = Polynomial<ComplexArithmeticType, Complex>.Parse("(12, 1)*X + (3, 2)");
 
 			var result = Polynomial<ComplexArithmeticType, Complex>.Multiply(first, second);
 
@@ -77,10 +77,10 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestDivide()
 		{
-			string expecting = "24*X - 1";
+			string expecting = "(23.3513513513514 - 3.89189189189189i)*X + (-0.762600438276114 + 0.775748721694668i)";
 
 			var first = Polynomial<ComplexArithmeticType, Complex>.Parse("288*X^2 + 36*X - 2");
-			var second = Polynomial<ComplexArithmeticType, Complex>.Parse("12*X + 2");
+			var second = Polynomial<ComplexArithmeticType, Complex>.Parse("(12,2)*X + 2");
 
 			var result = Polynomial<ComplexArithmeticType, Complex>.Divide(first, second);
 
@@ -95,9 +95,9 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestSquare()
 		{
-			string expecting = "144*X^2 + 24*X + 1";
+			string expecting = "(-3 + 4i)*X^2 + (-2 - 4i)*X + 1";
 
-			var first = Polynomial<ComplexArithmeticType, Complex>.Parse("12*X + 1");
+			var first = Polynomial<ComplexArithmeticType, Complex>.Parse("(1,2)*X - 1");
 
 			var result = Polynomial<ComplexArithmeticType, Complex>.Square(first);
 
