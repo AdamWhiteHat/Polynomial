@@ -18,6 +18,25 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
+		public void TestRandomPolynomial()
+		{
+			int degree = 4;
+			int coefficientMin = 2;
+			int coefficientMax = 20;
+
+			TestContext.WriteLine("");
+
+			int quantity = 5;
+			while (quantity-- > 0)
+			{
+				var random = Polynomial<BigIntegerArithmeticType, BigInteger>.Random(degree, coefficientMin, coefficientMax);
+				TestContext.WriteLine($"Random Polynomial = {random.ToString()}");
+			}
+
+			TestContext.WriteLine("");
+		}
+
+		[TestMethod]
 		public void TestAddition()
 		{
 			string expecting = "24*X - 1";

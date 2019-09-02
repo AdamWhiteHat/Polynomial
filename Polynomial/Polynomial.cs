@@ -170,6 +170,42 @@ namespace PolynomialLibrary
 			);
 		}
 
+		private static Random random = null;
+
+		public static IPolynomial<TAlgebra, TNumber> Random(int degree, int coefficientMin, int coefficientMax)
+		{
+			if (random == null)
+			{
+				random = new System.Random();
+
+				int cnt = 20;
+				while (cnt-- > 0)
+				{
+					random.Next();
+				}
+			}
+
+			List<Term<TAlgebra, TNumber>> terms = new List<Term<TAlgebra, TNumber>>();
+
+			int counter = degree;
+			while (counter-- > 0)
+			{
+				int coefficient = random.Next(coefficientMin, coefficientMax);				
+				int cnt = coefficient;
+
+				TAlgebra number = ArithmeticType<TAlgebra, TNumber>.Instance.One;
+				while (--cnt > 0)
+				{
+					number = number.Add(ArithmeticType<TAlgebra, TNumber>.Instance.One);
+				}
+
+				Term<TAlgebra, TNumber> term = new Term<TAlgebra, TNumber>(number, counter);
+				terms.Add(term);
+			}
+
+			return new Polynomial<TAlgebra, TNumber>(terms.ToArray());
+		}
+
 		public static IPolynomial<TAlgebra, TNumber> Parse(string input)
 		{
 			if (string.IsNullOrWhiteSpace(input)) { throw new ArgumentException(); }
@@ -182,7 +218,7 @@ namespace PolynomialLibrary
 			bool insideParenthesis = false;
 
 			string buffer = "";
-			while(++index < max)
+			while (++index < max)
 			{
 				char c = inputString[index];
 
@@ -194,7 +230,7 @@ namespace PolynomialLibrary
 				{
 					insideParenthesis = false;
 				}
-				else if(insideParenthesis == false)
+				else if (insideParenthesis == false)
 				{
 					if (c == '+')
 					{
@@ -209,14 +245,10 @@ namespace PolynomialLibrary
 					}
 				}
 
-				buffer += c;				
+				buffer += c;
 			}
 
 			stringTerms.Add(buffer);
-
-
-			//inputString = input.Replace("-", "+-");
-			//stringTerms.AddRange(inputString.Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries));
 
 			if (!stringTerms.Any())
 			{
