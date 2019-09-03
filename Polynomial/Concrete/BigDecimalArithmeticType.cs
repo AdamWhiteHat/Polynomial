@@ -57,7 +57,6 @@ namespace PolynomialLibrary
 		protected override Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType> SubtractionMethod { get { return Wrap(BigDecimal.Subtract); } }
 		protected override Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType> MultiplicationMethod { get { return Wrap(BigDecimal.Multiply); } }
 		protected override Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType> DivisionMethod { get { return Wrap(BigDecimal.Divide); } }
-		protected override Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType> ModPowMethod { get { throw new NotImplementedException(); /* return new Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType>((val, exp, mod) => Wrap(BigDecimal.ModPow(val.InternalValue, exp.InternalValue, mod.InternalValue))); */ } }
 		protected override Func<BigDecimalArithmeticType, int, BigDecimalArithmeticType> PowMethod { get { return new Func<BigDecimalArithmeticType, int, BigDecimalArithmeticType>((b, e) => Wrap(BigDecimal.Pow(b.InternalValue, e))); } }
 		protected override Func<BigDecimalArithmeticType, BigDecimalArithmeticType> AbsMethod { get { return Wrap(BigDecimal.Abs); } }
 		protected override Func<BigDecimalArithmeticType, BigDecimalArithmeticType> NegateMethod { get { return Wrap(new Func<BigDecimal, BigDecimal>((bi) => BigDecimal.Subtract(0, bi))); } }
@@ -69,28 +68,17 @@ namespace PolynomialLibrary
 		{
 			get
 			{
-				return new Func<BigDecimalArithmeticType, BigDecimalArithmeticType, int>(
-				(l, r) =>
-				{
-					BigDecimal left = (BigDecimal)(l.InternalValue);
-					BigDecimal right = (BigDecimal)(r.InternalValue);
-					if (left == right)
-					{
-						return 0;
-					}
-					else if (left > right)
-					{
-						return 1;
-					}
-					else
-					{
-						return -1;
-					}
-				});
+				return new Func<BigDecimalArithmeticType, BigDecimalArithmeticType, int>((l, r) =>
+		  {
+			  BigDecimal left = (BigDecimal)(l.InternalValue);
+			  BigDecimal right = (BigDecimal)(r.InternalValue);
+			  if (left == right) { return 0; }
+			  else if (left > right) { return 1; }
+			  else { return -1; }
+		  });
 			}
 		}
 
-		// delegate BigDecimalArithmeticType DivRemDelegate(BigDecimalArithmeticType dividend, BigDecimalArithmeticType divisor, out BigDecimalArithmeticType rem);
 		protected override DivRemDelegate DivRemMethod { get { return DivRemFunction; } }
 		private BigDecimalArithmeticType DivRemFunction(BigDecimalArithmeticType dividend, BigDecimalArithmeticType divisor, out BigDecimalArithmeticType rem)
 		{
@@ -118,6 +106,8 @@ namespace PolynomialLibrary
 				);
 			}
 		}
+
+		protected override Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType> ModPowMethod { get { throw new NotImplementedException(); /* return new Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType>((val, exp, mod) => Wrap(BigDecimal.ModPow(val.InternalValue, exp.InternalValue, mod.InternalValue))); */ } }
 
 	}
 }

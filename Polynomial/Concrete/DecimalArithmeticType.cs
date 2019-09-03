@@ -56,14 +56,6 @@ namespace PolynomialLibrary
 		protected override Func<DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType> SubtractionMethod { get { return Wrap(Decimal.Subtract); } }
 		protected override Func<DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType> MultiplicationMethod { get { return Wrap(Decimal.Multiply); } }
 		protected override Func<DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType> DivisionMethod { get { return Wrap(Decimal.Divide); } }
-		protected override Func<DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType> ModPowMethod
-		{
-			get
-			{
-				throw new NotImplementedException();
-				//return new Func<DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType>((val, exp, mod) => Wrap(Decimal.ModPow(val.InternalValue, exp.InternalValue, mod.InternalValue)));
-			}
-		}
 		protected override Func<DecimalArithmeticType, int, DecimalArithmeticType> PowMethod { get { return new Func<DecimalArithmeticType, int, DecimalArithmeticType>((b, e) => Wrap((decimal)Math.Pow(((double)b.InternalValue), e))); } }
 		protected override Func<DecimalArithmeticType, DecimalArithmeticType> AbsMethod { get { return Wrap(Math.Abs); } }
 		protected override Func<DecimalArithmeticType, DecimalArithmeticType> NegateMethod { get { return Wrap(Decimal.Negate); } }
@@ -101,5 +93,6 @@ namespace PolynomialLibrary
 			}
 		}
 
+		protected override Func<DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType> ModPowMethod { get { throw new NotImplementedException(); } }
 	}
 }

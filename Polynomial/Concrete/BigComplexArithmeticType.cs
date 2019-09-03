@@ -57,13 +57,13 @@ namespace PolynomialLibrary
 		protected override Func<BigComplexArithmeticType, BigComplexArithmeticType, BigComplexArithmeticType> SubtractionMethod { get { return Wrap(BigComplex.Subtract); } }
 		protected override Func<BigComplexArithmeticType, BigComplexArithmeticType, BigComplexArithmeticType> MultiplicationMethod { get { return Wrap(BigComplex.Multiply); } }
 		protected override Func<BigComplexArithmeticType, BigComplexArithmeticType, BigComplexArithmeticType> DivisionMethod { get { return Wrap(BigComplex.Divide); } }
-		protected override Func<BigComplexArithmeticType, BigComplexArithmeticType, BigComplexArithmeticType, BigComplexArithmeticType> ModPowMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on BiComplex numbers."); } }
 		protected override Func<BigComplexArithmeticType, int, BigComplexArithmeticType> PowMethod { get { return new Func<BigComplexArithmeticType, int, BigComplexArithmeticType>((b, e) => Wrap(BigComplex.Pow(b.InternalValue, e))); } }
 		protected override Func<BigComplexArithmeticType, BigComplexArithmeticType> AbsMethod { get { return new Func<BigComplexArithmeticType, BigComplexArithmeticType>((bc) => Wrap(new BigComplex(BigComplex.Abs(bc.InternalValue)))); } }
 		protected override Func<BigComplexArithmeticType, BigComplexArithmeticType> NegateMethod { get { return Wrap(BigComplex.Negate); } }
 		protected override Func<string, BigComplexArithmeticType> ParseMethod { get { return new Func<string, BigComplexArithmeticType>((str) => Wrap(new BigComplex(BigInteger.Parse(str)))); } }
 		protected override Func<BigComplexArithmeticType, int> SignMethod { get { return new Func<BigComplexArithmeticType, int>((bi) => bi.InternalValue.Sign); } }
 		protected override Func<BigComplexArithmeticType, BigComplexArithmeticType, bool> EqualsMethod { get { return new Func<BigComplexArithmeticType, BigComplexArithmeticType, bool>((l, r) => l.InternalValue.Equals(r.InternalValue)); } }
+		protected override DivRemDelegate DivRemMethod { get { return DivRemFunction; } }
 		protected override Func<BigComplexArithmeticType, BigComplexArithmeticType, int> CompareMethod
 		{
 			get
@@ -89,8 +89,7 @@ namespace PolynomialLibrary
 			}
 		}
 
-		// delegate BigComplexArithmeticType DivRemDelegate(BigComplexArithmeticType dividend, BigComplexArithmeticType divisor, out BigComplexArithmeticType rem);
-		protected override DivRemDelegate DivRemMethod { get { return DivRemFunction; } }
+		protected override Func<BigComplexArithmeticType, BigComplexArithmeticType, BigComplexArithmeticType, BigComplexArithmeticType> ModPowMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on BiComplex numbers."); } }
 		private BigComplexArithmeticType DivRemFunction(BigComplexArithmeticType dividend, BigComplexArithmeticType divisor, out BigComplexArithmeticType rem)
 		{
 			throw new NotImplementedException("Modulus/Remainder function not defined on BiComplex numbers.");

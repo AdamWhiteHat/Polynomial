@@ -65,7 +65,6 @@ namespace PolynomialLibrary
 		protected override Func<BigIntegerArithmeticType, BigIntegerArithmeticType, int> CompareMethod { get { return new Func<BigIntegerArithmeticType, BigIntegerArithmeticType, int>((l, r) => BigInteger.Compare(l.InternalValue, r.InternalValue)); } }
 		protected override Func<BigIntegerArithmeticType, BigIntegerArithmeticType, bool> EqualsMethod { get { return new Func<BigIntegerArithmeticType, BigIntegerArithmeticType, bool>((l, r) => l.InternalValue.Equals(r.InternalValue)); } }
 
-		// delegate BigIntegerArithmeticType DivRemDelegate(BigIntegerArithmeticType dividend, BigIntegerArithmeticType divisor, out BigIntegerArithmeticType rem);
 		protected override DivRemDelegate DivRemMethod { get { return DivRemFunction; } }
 		private BigIntegerArithmeticType DivRemFunction(BigIntegerArithmeticType dividend, BigIntegerArithmeticType divisor, out BigIntegerArithmeticType rem)
 		{

@@ -57,7 +57,6 @@ namespace PolynomialLibrary
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType> SubtractionMethod { get { return Wrap(BigRational.Subtract); } }
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType> MultiplicationMethod { get { return Wrap(BigRational.Multiply); } }
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType> DivisionMethod { get { return Wrap(BigRational.Divide); } }
-		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType> ModPowMethod { get { throw new NotImplementedException(); } }
 		protected override Func<BigRationalArithmeticType, int, BigRationalArithmeticType> PowMethod { get { return new Func<BigRationalArithmeticType, int, BigRationalArithmeticType>((b, e) => Wrap(BigRational.Pow(b.InternalValue, e))); } }
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType> AbsMethod { get { return Wrap(BigRational.Abs); } }
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType> NegateMethod { get { return Wrap(BigRational.Negate); } }
@@ -65,11 +64,10 @@ namespace PolynomialLibrary
 		protected override Func<BigRationalArithmeticType, int> SignMethod { get { return new Func<BigRationalArithmeticType, int>((bi) => bi.InternalValue.Sign); } }
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, int> CompareMethod { get { return new Func<BigRationalArithmeticType, BigRationalArithmeticType, int>((l, r) => BigRational.Compare(l.InternalValue, r.InternalValue)); } }
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, bool> EqualsMethod { get { return new Func<BigRationalArithmeticType, BigRationalArithmeticType, bool>((l, r) => l.InternalValue.Equals(r.InternalValue)); } }
-
-		// delegate BigRationalArithmeticType DivRemDelegate(BigRationalArithmeticType dividend, BigRationalArithmeticType divisor, out BigRationalArithmeticType rem);
 		protected override DivRemDelegate DivRemMethod { get { return DivRemFunction; } }
-		private BigRationalArithmeticType DivRemFunction(BigRationalArithmeticType dividend, BigRationalArithmeticType divisor, out BigRationalArithmeticType rem) { throw new NotImplementedException(); }
 
+		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType> ModPowMethod { get { throw new NotImplementedException(); } }
+		private BigRationalArithmeticType DivRemFunction(BigRationalArithmeticType dividend, BigRationalArithmeticType divisor, out BigRationalArithmeticType rem) { throw new NotImplementedException(); }
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType> ModMethod { get { throw new NotImplementedException(); } }
 
 	}

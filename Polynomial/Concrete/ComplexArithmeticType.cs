@@ -56,7 +56,6 @@ namespace PolynomialLibrary
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> SubtractionMethod { get { return Wrap(Complex.Subtract); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> MultiplicationMethod { get { return Wrap(Complex.Multiply); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> DivisionMethod { get { return Wrap(Complex.Divide); } }
-		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> ModPowMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on Complex numbers."); } }
 		protected override Func<ComplexArithmeticType, int, ComplexArithmeticType> PowMethod { get { return new Func<ComplexArithmeticType, int, ComplexArithmeticType>((b, e) => Wrap(Complex.Pow(b.InternalValue, e))); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType> AbsMethod { get { return new Func<ComplexArithmeticType, ComplexArithmeticType>((ct) => Wrap(new Complex(Complex.Abs(ct.InternalValue), 0.0d))); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType> NegateMethod { get { return Wrap(Complex.Negate); } }
@@ -134,7 +133,9 @@ namespace PolynomialLibrary
 				return $"({value.Real} + {value.Imaginary}i)";
 			}
 		}
+
 		protected override DivRemDelegate DivRemMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on Complex numbers."); } }
+		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> ModPowMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on Complex numbers."); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> ModMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on Complex numbers."); } }
 
 	}
