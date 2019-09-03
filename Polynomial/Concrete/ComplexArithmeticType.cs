@@ -56,7 +56,7 @@ namespace PolynomialLibrary
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> SubtractionMethod { get { return Wrap(Complex.Subtract); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> MultiplicationMethod { get { return Wrap(Complex.Multiply); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> DivisionMethod { get { return Wrap(Complex.Divide); } }
-		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> ModPowMethod { get { throw new NotImplementedException(); /* return new Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType>((val, exp, mod) => Wrap(Complex.ModPow(val.InternalValue, exp.InternalValue, mod.InternalValue))); */ } }
+		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> ModPowMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on Complex numbers."); } }
 		protected override Func<ComplexArithmeticType, int, ComplexArithmeticType> PowMethod { get { return new Func<ComplexArithmeticType, int, ComplexArithmeticType>((b, e) => Wrap(Complex.Pow(b.InternalValue, e))); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType> AbsMethod { get { return new Func<ComplexArithmeticType, ComplexArithmeticType>((ct) => Wrap(new Complex(Complex.Abs(ct.InternalValue), 0.0d))); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType> NegateMethod { get { return Wrap(Complex.Negate); } }
@@ -117,7 +117,6 @@ namespace PolynomialLibrary
 			}
 		}
 
-
 		public override string ToString()
 		{
 			Complex value = this.InternalValue;
@@ -135,39 +134,8 @@ namespace PolynomialLibrary
 				return $"({value.Real} + {value.Imaginary}i)";
 			}
 		}
-
-
-		// delegate ComplexArithmeticType DivRemDelegate(ComplexArithmeticType dividend, ComplexArithmeticType divisor, out ComplexArithmeticType rem);
-		protected override DivRemDelegate DivRemMethod { get { throw new NotImplementedException(); } }
-
-		/*
-		private ComplexArithmeticType DivRemFunction(ComplexArithmeticType dividend, ComplexArithmeticType divisor, out ComplexArithmeticType rem)
-		{
-			Complex outRemainder = -1;
-			Complex result = Complex.Divide(dividend.InternalValue, divisor.InternalValue, out outRemainder);
-			rem = Wrap(outRemainder);
-			return Wrap(result);			
-		}
-		*/
-
-		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> ModMethod
-		{
-			get
-			{
-				throw new NotImplementedException();
-				/*
-				return new Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType>(
-					(input, modulus) =>
-					{
-						Complex mod = modulus.InternalValue;
-						if (mod.Equals(Complex.Zero)) { throw new DivideByZeroException($"Parameter '{nameof(mod)}' must not be zero."); }
-						Complex src = input.InternalValue;
-						Complex r = (src >= mod) ? src % mod : src;
-						return Wrap((r < 0) ? r + mod : r);
-					});
-				*/
-			}
-		}
+		protected override DivRemDelegate DivRemMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on Complex numbers."); } }
+		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> ModMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on Complex numbers."); } }
 
 	}
 }

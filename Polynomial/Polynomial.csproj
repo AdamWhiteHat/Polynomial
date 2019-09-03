@@ -31,6 +31,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BigComplex, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\ExtendedNumerics.BigComplex.1.0.0\lib\net45\BigComplex.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BigDecimal, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\ExtendedNumerics.BigDecimal.1.0.0\lib\net45\BigDecimal.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BigRational, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\ExtendedNumerics.BigRational.1.0.0\lib\net45\BigRational.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -43,9 +55,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\ArithmeticType.cs" />
+    <Compile Include="Concrete\BigComplexArithmeticType.cs" />
+    <Compile Include="Concrete\BigDecimalArithmeticType.cs" />
+    <Compile Include="Concrete\BigRationalArithmeticType.cs" />
+    <Compile Include="Concrete\BigIntegerArithmeticType.cs" />
     <Compile Include="Concrete\DecimalArithmeticType.cs" />
     <Compile Include="Concrete\ComplexArithmeticType.cs" />
-    <Compile Include="Concrete\BigIntegerArithmeticType.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Interface\IArithmetic.cs" />
     <Compile Include="Interface\ICloneable.cs" />
@@ -57,7 +72,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Polynomial.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
