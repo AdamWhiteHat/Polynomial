@@ -190,7 +190,7 @@ namespace PolynomialLibrary
 			int counter = degree;
 			while (counter-- > 0)
 			{
-				int coefficient = random.Next(coefficientMin, coefficientMax);				
+				int coefficient = random.Next(coefficientMin, coefficientMax);
 				int cnt = coefficient;
 
 				TAlgebra number = ArithmeticType<TAlgebra, TNumber>.Instance.One;
@@ -420,6 +420,26 @@ namespace PolynomialLibrary
 		#endregion
 
 		#region Arithmetic
+
+		public static IPolynomial<TAlgebra, TNumber> operator +(Polynomial<TAlgebra, TNumber> right, Polynomial<TAlgebra, TNumber> left)
+		{
+			return Polynomial<TAlgebra, TNumber>.Add(right, left);
+		}
+
+		public static IPolynomial<TAlgebra, TNumber> operator -(Polynomial<TAlgebra, TNumber> right, Polynomial<TAlgebra, TNumber> left)
+		{
+			return Polynomial<TAlgebra, TNumber>.Subtract(right, left);
+		}
+
+		public static IPolynomial<TAlgebra, TNumber> operator *(Polynomial<TAlgebra, TNumber> right, Polynomial<TAlgebra, TNumber> left)
+		{
+			return Polynomial<TAlgebra, TNumber>.Multiply(right, left);
+		}
+
+		public static IPolynomial<TAlgebra, TNumber> operator /(Polynomial<TAlgebra, TNumber> right, Polynomial<TAlgebra, TNumber> left)
+		{
+			return Polynomial<TAlgebra, TNumber>.Divide(right, left);
+		}
 
 		public static IPolynomial<TAlgebra, TNumber> GCD(IPolynomial<TAlgebra, TNumber> left, IPolynomial<TAlgebra, TNumber> right)
 		{

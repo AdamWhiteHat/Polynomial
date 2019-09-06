@@ -54,6 +54,27 @@ namespace PolynomialLibrary
 		protected delegate TAlgebra DivRemDelegate(TAlgebra dividend, TAlgebra divisor, out TAlgebra rem);
 
 
+		public static TAlgebra operator +(ArithmeticType<TAlgebra, TNumber> left, ArithmeticType<TAlgebra, TNumber> right)
+		{
+			return left.Add(right.Value);
+		}
+
+		public static TAlgebra operator -(ArithmeticType<TAlgebra, TNumber> left, ArithmeticType<TAlgebra, TNumber> right)
+		{
+			return left.Subtract(right.Value);
+		}
+
+		public static TAlgebra operator *(ArithmeticType<TAlgebra, TNumber> left, ArithmeticType<TAlgebra, TNumber> right)
+		{
+			return left.Multiply(right.Value);
+		}
+
+		public static TAlgebra operator /(ArithmeticType<TAlgebra, TNumber> left, ArithmeticType<TAlgebra, TNumber> right)
+		{
+			return left.Divide(right.Value);
+		}
+
+
 		public TAlgebra Add(TAlgebra addend)
 		{
 			return AdditionMethod.Invoke(Value, addend);
