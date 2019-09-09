@@ -104,7 +104,7 @@ namespace TestPolynomial
 		{
 			string expecting = "X^2 + 3*X + 2";
 
-			IPolynomial first = Polynomial.Parse("X^4 + 8*X^3 + 21*X^2 + 22*X + 8"); 
+			IPolynomial first = Polynomial.Parse("X^4 + 8*X^3 + 21*X^2 + 22*X + 8");
 			IPolynomial second = Polynomial.Parse("X^3 + 6*X^2 + 11*X + 6");
 
 			//IPolynomial result = Polynomial.Multiply(mult, Polynomial.Parse("X + 1"));

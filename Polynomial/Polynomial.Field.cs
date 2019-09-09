@@ -8,45 +8,25 @@ namespace PolynomialLibrary
 {
 	public partial class Polynomial : IPolynomial
 	{
-		public static class Field
+		public class Field
 		{
-			public static IPolynomial GCD(IPolynomial left, IPolynomial right, BigInteger modulus)
+			public IPolynomial ModulusPolynomial { get; private set; }
+			public BigInteger ModulusInteger { get; private set; }
+
+			public Field(IPolynomial modulus, BigInteger mod)
 			{
-				IPolynomial a = left.Clone();
-				IPolynomial b = right.Clone();
-
-				if (b.Degree > a.Degree)
-				{
-					IPolynomial swap = b;
-					b = a;
-					a = swap;
-				}
-
-				while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
-				{
-					IPolynomial temp = a;
-					a = b;
-					b = Field.ModMod(temp, b, modulus);
-				}
-
-				if (a.Degree == 0)
-				{
-					return Polynomial.One;
-				}
-				else
-				{
-					return a;
-				}
+				ModulusPolynomial = modulus;
+				ModulusInteger = mod;
 			}
 
-			public static IPolynomial ModMod(IPolynomial toReduce, IPolynomial modPoly, BigInteger primeModulus)
+			public static IPolynomial ReduceFully(IPolynomial toReduce, IPolynomial modPoly, BigInteger modInt)
 			{
-				return Field.Modulus(Field.Modulus(toReduce, modPoly), primeModulus);
+				return ReduceInteger(ReducePolynomial(toReduce, modPoly), modInt);
 			}
 
-			public static IPolynomial Modulus(IPolynomial poly, IPolynomial mod)
+			public static IPolynomial ReducePolynomial(IPolynomial poly, IPolynomial modPoly)
 			{
-				int sortOrder = mod.CompareTo(poly);
+				int sortOrder = modPoly.CompareTo(poly);
 				if (sortOrder > 0)
 				{
 					return poly;
@@ -57,12 +37,12 @@ namespace PolynomialLibrary
 				}
 
 				IPolynomial remainder = Polynomial.Zero;
-				Polynomial.Divide(poly, mod, out remainder);
+				Polynomial.Divide(poly, modPoly, out remainder);
 
 				return remainder;
 			}
 
-			public static IPolynomial Modulus(IPolynomial poly, BigInteger mod)
+			public static IPolynomial ReduceInteger(IPolynomial poly, BigInteger modInt)
 			{
 				IPolynomial clone = poly.Clone();
 				List<ITerm> terms = new List<ITerm>();
@@ -70,11 +50,11 @@ namespace PolynomialLibrary
 				foreach (ITerm term in clone.Terms)
 				{
 					BigInteger remainder = 0;
-					BigInteger.DivRem(term.CoEfficient, mod, out remainder);
+					BigInteger.DivRem(term.CoEfficient, modInt, out remainder);
 
 					if (remainder.Sign == -1)
 					{
-						remainder = (remainder + mod);
+						remainder = (remainder + modInt);
 					}
 
 					terms.Add(new Term(remainder, term.Exponent));
@@ -90,7 +70,46 @@ namespace PolynomialLibrary
 				return result;
 			}
 
-			public static IPolynomial Divide(IPolynomial left, IPolynomial right, BigInteger mod, out IPolynomial remainder)
+			public IPolynomial GCD(IPolynomial left, IPolynomial right)
+			{
+				IPolynomial a = left.Clone();
+				IPolynomial b = right.Clone();
+
+				if (b.Degree > a.Degree)
+				{
+					IPolynomial swap = b;
+					b = a;
+					a = swap;
+				}
+
+				while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
+				{
+					IPolynomial temp = a;
+					a = b;
+					b = ReduceFully(temp, b, ModulusInteger);
+				}
+
+				if (a.Degree == 0)
+				{
+					return Polynomial.One;
+				}
+				else
+				{
+					return a;
+				}
+			}
+
+			public IPolynomial Add(IPolynomial left, IPolynomial right)
+			{
+				return ReduceFully(Polynomial.Add(left, right), ModulusPolynomial, ModulusInteger);
+			}
+
+			public IPolynomial Subtract(IPolynomial left, IPolynomial right)
+			{
+				return ReduceFully(Polynomial.Subtract(left, right), ModulusPolynomial, ModulusInteger);
+			}
+
+			public IPolynomial Divide(IPolynomial left, IPolynomial right, out IPolynomial remainder)
 			{
 				if (left == null) throw new ArgumentNullException(nameof(left));
 				if (right == null) throw new ArgumentNullException(nameof(right));
@@ -101,7 +120,7 @@ namespace PolynomialLibrary
 
 				int rightDegree = right.Degree;
 				int quotientDegree = (left.Degree - rightDegree) + 1;
-				BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray()).Mod(mod);
+				BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray()).Mod(ModulusInteger);
 
 				Polynomial rem = (Polynomial)left.Clone();
 				Polynomial quotient = (Polynomial)Polynomial.Zero;
@@ -110,12 +129,12 @@ namespace PolynomialLibrary
 				// (so if right is monic, polynomial division does not involve division at all!)
 				for (int i = quotientDegree - 1; i >= 0; i--)
 				{
-					quotient[i] = BigInteger.Divide(rem[rightDegree + i], leadingCoefficent).Mod(mod);
+					quotient[i] = BigInteger.Divide(rem[rightDegree + i], leadingCoefficent).Mod(ModulusInteger);
 					rem[rightDegree + i] = BigInteger.Zero;
 
 					for (int j = rightDegree + i - 1; j >= i; j--)
 					{
-						rem[j] = BigInteger.Subtract(rem[j], BigInteger.Multiply(quotient[i], right[j - i]).Mod(mod)).Mod(mod);
+						rem[j] = BigInteger.Subtract(rem[j], BigInteger.Multiply(quotient[i], right[j - i]).Mod(ModulusInteger)).Mod(ModulusInteger);
 					}
 				}
 
@@ -124,10 +143,10 @@ namespace PolynomialLibrary
 				quotient.RemoveZeros();
 
 				remainder = rem;
-				return quotient;
+				return ReduceFully(quotient, ModulusPolynomial, ModulusInteger);
 			}
 
-			public static IPolynomial Multiply(IPolynomial poly, BigInteger multiplier, BigInteger mod)
+			public IPolynomial MultiplyScalar(IPolynomial poly, BigInteger multiplier)
 			{
 				IPolynomial result = poly.Clone();
 
@@ -137,14 +156,55 @@ namespace PolynomialLibrary
 					if (newCoefficient != 0)
 					{
 						newCoefficient = (newCoefficient * multiplier);
-						term.CoEfficient = (newCoefficient.Mod(mod));
+						term.CoEfficient = (newCoefficient.Mod(ModulusInteger));
 					}
+				}
+
+				return ReduceFully(result, ModulusPolynomial, ModulusInteger);
+			}
+
+			public IPolynomial Multiply(IPolynomial left, IPolynomial right)
+			{
+				return ReduceFully(Polynomial.Multiply(left, right), ModulusPolynomial, ModulusInteger);
+			}
+
+			public IPolynomial Square(IPolynomial poly)
+			{
+				return ReduceFully(Polynomial.Square(poly), ModulusPolynomial, ModulusInteger);
+			}
+
+			public IPolynomial Pow(IPolynomial poly, BigInteger exponent)
+			{
+				IPolynomial result = Polynomial.One;
+				if (exponent == 0) { return result; }
+
+				IPolynomial A = poly.Clone();
+
+				bool[] bitArray = exponent.ConvertToBase2();
+
+				// Remove trailing zeros ?
+				if (bitArray[0] == true)
+				{
+					result = poly.Clone();
+				}
+
+				int i = 1;
+				int t = bitArray.Length;
+				while (i < t)
+				{
+					A = Square(A);
+					if (bitArray[i] == true)
+					{
+						result = Multiply(A, result);
+					}
+					i++;
 				}
 
 				return result;
 			}
 
-			public static IPolynomial PowMod(IPolynomial poly, BigInteger exponent, BigInteger mod)
+			/*
+			public IPolynomial PowMod(IPolynomial poly, BigInteger exponent)
 			{
 				IPolynomial result = poly.Clone();
 
@@ -153,7 +213,7 @@ namespace PolynomialLibrary
 					BigInteger newCoefficient = term.CoEfficient;
 					if (newCoefficient != 0)
 					{
-						newCoefficient = BigInteger.ModPow(newCoefficient, exponent, mod);
+						newCoefficient = BigInteger.ModPow(newCoefficient, exponent, ModulusInteger);
 						if (newCoefficient.Sign == -1)
 						{
 							throw new Exception("BigInteger.ModPow returned negative number");
@@ -164,38 +224,9 @@ namespace PolynomialLibrary
 
 				return result;
 			}
+			*/
 
-			public static IPolynomial ExponentiateMod(IPolynomial startPoly, BigInteger s2, IPolynomial f, BigInteger p)
-			{
-				IPolynomial result = Polynomial.One;
-				if (s2 == 0) { return result; }
-
-				IPolynomial A = startPoly.Clone();
-
-				byte[] byteArray = s2.ToByteArray();
-				bool[] bitArray = new BitArray(byteArray).Cast<bool>().ToArray();
-
-				// Remove trailing zeros ?
-				if (bitArray[0] == true)
-				{
-					result = startPoly;
-				}
-
-				int i = 1;
-				int t = bitArray.Length;
-				while (i < t)
-				{
-					A = Field.ModMod(Polynomial.Square(A), f, p);
-					if (bitArray[i] == true)
-					{
-						result = Field.ModMod(Polynomial.Multiply(A, result), f, p);
-					}
-					i++;
-				}
-
-				return result;
-			}
-
+			/*
 			public static IPolynomial ModPow(IPolynomial poly, BigInteger exponent, IPolynomial mod)
 			{
 				if (exponent < 0)
@@ -224,7 +255,7 @@ namespace PolynomialLibrary
 
 					if (total.CompareTo(mod) < 0)
 					{
-						total = Field.Modulus(total, mod);
+						total = Field.ReducePolynomial(total, mod);
 					}
 
 					counter -= 1;
@@ -232,24 +263,25 @@ namespace PolynomialLibrary
 
 				return total;
 			}
+			*/
 
-			public static bool IsIrreducibleOverField(IPolynomial f, BigInteger p)
+			public bool IsIrreducible()
 			{
 				IPolynomial splittingField = new Polynomial(
 					new Term[] {
-						new Term(  1, (int)p),
+						new Term(  1, (int)ModulusInteger),
 						new Term( -1, 1)
 					});
 
-				IPolynomial reducedField = Field.ModMod(splittingField, f, p);
+				IPolynomial reducedField = Field.ReduceFully(splittingField, ModulusPolynomial, ModulusInteger);
 
-				IPolynomial gcd = Polynomial.GCD(reducedField, f);
+				IPolynomial gcd = Polynomial.GCD(reducedField, ModulusPolynomial);
 				return (gcd.CompareTo(Polynomial.One) == 0);
 			}
 
-			public static bool IsIrreducibleOverP(IPolynomial poly, BigInteger p)
+			public bool IsIrreducible_Eisenstein()
 			{
-				List<BigInteger> coefficients = poly.Terms.Select(t => t.CoEfficient).ToList();
+				List<BigInteger> coefficients = ModulusPolynomial.Terms.Select(t => t.CoEfficient).ToList();
 
 				BigInteger leadingCoefficient = coefficients.Last();
 				BigInteger constantCoefficient = coefficients.First();
@@ -258,16 +290,16 @@ namespace PolynomialLibrary
 				coefficients.Remove(constantCoefficient);
 
 				BigInteger leadingRemainder = -1;
-				BigInteger.DivRem(leadingCoefficient, p, out leadingRemainder);
+				BigInteger.DivRem(leadingCoefficient, ModulusInteger, out leadingRemainder);
 
 				BigInteger constantRemainder = -1;
-				BigInteger.DivRem(constantCoefficient, p.Square(), out constantRemainder);
+				BigInteger.DivRem(constantCoefficient, ModulusInteger.Square(), out constantRemainder);
 
 				bool result = (leadingRemainder != 0); // p does not divide leading coefficient
 
 				result &= (constantRemainder != 0);    // p^2 does not divide constant coefficient
 
-				coefficients.Add(p);
+				coefficients.Add(ModulusInteger);
 				result &= (coefficients.GCD() == 1); // GCD == 1
 
 				return result;

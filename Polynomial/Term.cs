@@ -34,6 +34,25 @@ namespace PolynomialLibrary
 			return results.ToArray();
 		}
 
+		public static ITerm[] FromBits(bool[] bitArray)
+		{
+			List<ITerm> results = new List<ITerm>();
+
+			int degree = 0;
+			foreach (bool bit in bitArray)
+			{
+				if (bit)
+				{
+					results.Add(new Term(BigInteger.One, degree));
+				}
+
+				degree += 1;
+			}
+
+			return results.ToArray();
+		}
+
+
 		public BigInteger Evaluate(BigInteger indeterminate)
 		{
 			return BigInteger.Multiply(CoEfficient, BigInteger.Pow(indeterminate, Exponent));

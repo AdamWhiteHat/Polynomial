@@ -346,7 +346,7 @@ namespace PolynomialLibrary
 			{
 				IPolynomial temp = a;
 				a = b;
-				b = Field.Modulus(temp, b);
+				b = Field.ReducePolynomial(temp, b);
 			}
 
 			if (a.Degree == 0)
@@ -357,7 +357,7 @@ namespace PolynomialLibrary
 			{
 				return a;
 			}
-		} 
+		}
 
 		public static IPolynomial Divide(IPolynomial left, IPolynomial right)
 		{
