@@ -8,9 +8,9 @@ namespace PolynomialLibrary
 {
 	public partial class Polynomial : IPolynomial
 	{
-		public static IPolynomial Zero = new Polynomial(Term.GetTerms(new BigInteger[] { 0 }));
-		public static IPolynomial One = new Polynomial(Term.GetTerms(new BigInteger[] { 1 }));
-		public static IPolynomial Two = new Polynomial(Term.GetTerms(new BigInteger[] { 2 }));
+		public static IPolynomial Zero = null;
+		public static IPolynomial One = null;
+		public static IPolynomial Two = null;
 
 		public ITerm[] Terms { get { return _terms.ToArray(); } }
 		private List<ITerm> _terms;
@@ -54,7 +54,14 @@ namespace PolynomialLibrary
 
 		#region Constructors
 
-		public Polynomial() { _terms = new List<ITerm>() { new Term(0, 0) }; Degree = 0; }
+		static Polynomial()
+		{
+			Zero = new Polynomial(Term.GetTerms(new BigInteger[] { new BigInteger(0) }));
+			One = new Polynomial(Term.GetTerms(new BigInteger[] { new BigInteger(1) }));
+			Two = new Polynomial(Term.GetTerms(new BigInteger[] { new BigInteger(2) }));
+		}
+
+		public Polynomial() { _terms = new List<ITerm>() { new Term(new BigInteger(0), 0) }; Degree = 0; }
 
 		public Polynomial(ITerm[] terms)
 		{
@@ -361,7 +368,7 @@ namespace PolynomialLibrary
 
 		public static IPolynomial Divide(IPolynomial left, IPolynomial right)
 		{
-			IPolynomial remainder = Polynomial.Zero;
+			IPolynomial remainder = new Polynomial();
 			return Polynomial.Divide(left, right, out remainder);
 		}
 
@@ -371,22 +378,23 @@ namespace PolynomialLibrary
 			if (right == null) throw new ArgumentNullException(nameof(right));
 			if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 			{
-				remainder = Polynomial.Zero; return left;
+				remainder = new Polynomial();
+				return left;
 			}
 
 			int rightDegree = right.Degree;
 			int quotientDegree = (left.Degree - rightDegree) + 1;
-			BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray());
+			BigInteger leadingCoefficent = right[rightDegree].Clone();
 
 			Polynomial rem = (Polynomial)left.Clone();
-			Polynomial quotient = (Polynomial)Polynomial.Zero;
+			Polynomial quotient = (Polynomial)new Polynomial();
 
 			// The leading coefficient is the only number we ever divide by
 			// (so if right is monic, polynomial division does not involve division at all!)
 			for (int i = quotientDegree - 1; i >= 0; i--)
 			{
 				quotient[i] = BigInteger.Divide(rem[rightDegree + i], leadingCoefficent);
-				rem[rightDegree + i] = BigInteger.Zero;
+				rem[rightDegree + i] = new BigInteger(0);
 
 				for (int j = rightDegree + i - 1; j >= i; j--)
 				{
@@ -398,8 +406,8 @@ namespace PolynomialLibrary
 			rem.RemoveZeros();
 			quotient.RemoveZeros();
 
-			remainder = rem;
-			return quotient;
+			remainder = rem.Clone();
+			return quotient.Clone();
 		}
 
 		public static IPolynomial Multiply(IPolynomial left, IPolynomial right)
@@ -603,7 +611,8 @@ namespace PolynomialLibrary
 
 		public IPolynomial Clone()
 		{
-			return new Polynomial(Terms.Select(pt => pt.Clone()).ToArray());
+			var terms = _terms.Select(pt => pt.Clone()).ToArray();
+			return new Polynomial(terms);
 		}
 
 		public override string ToString()

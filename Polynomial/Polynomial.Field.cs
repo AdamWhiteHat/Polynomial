@@ -15,8 +15,8 @@ namespace PolynomialLibrary
 
 			public Field(IPolynomial modulus, BigInteger mod)
 			{
-				ModulusPolynomial = modulus;
-				ModulusInteger = mod;
+				ModulusPolynomial = modulus.Clone();
+				ModulusInteger = mod.Clone();
 			}
 
 			public static IPolynomial ReduceFully(IPolynomial toReduce, IPolynomial modPoly, BigInteger modInt)
@@ -36,7 +36,7 @@ namespace PolynomialLibrary
 					return Polynomial.Zero;
 				}
 
-				IPolynomial remainder = Polynomial.Zero;
+				IPolynomial remainder = new Polynomial();
 				Polynomial.Divide(poly, modPoly, out remainder);
 
 				return remainder;
@@ -49,7 +49,7 @@ namespace PolynomialLibrary
 
 				foreach (ITerm term in clone.Terms)
 				{
-					BigInteger remainder = 0;
+					BigInteger remainder = new BigInteger(0);
 					BigInteger.DivRem(term.CoEfficient, modInt, out remainder);
 
 					if (remainder.Sign == -1)
@@ -115,7 +115,8 @@ namespace PolynomialLibrary
 				if (right == null) throw new ArgumentNullException(nameof(right));
 				if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 				{
-					remainder = Polynomial.Zero; return left;
+					remainder = new Polynomial();
+					return left;
 				}
 
 				int rightDegree = right.Degree;
@@ -123,14 +124,14 @@ namespace PolynomialLibrary
 				BigInteger leadingCoefficent = right[rightDegree].Clone().Mod(ModulusInteger);
 
 				Polynomial rem = (Polynomial)left.Clone();
-				Polynomial quotient = (Polynomial)Polynomial.Zero;
+				Polynomial quotient = (Polynomial)new Polynomial();
 
 				// The leading coefficient is the only number we ever divide by
 				// (so if right is monic, polynomial division does not involve division at all!)
 				for (int i = quotientDegree - 1; i >= 0; i--)
 				{
 					quotient[i] = BigInteger.Divide(rem[rightDegree + i], leadingCoefficent).Mod(ModulusInteger);
-					rem[rightDegree + i] = BigInteger.Zero;
+					rem[rightDegree + i] = new BigInteger(0);
 
 					for (int j = rightDegree + i - 1; j >= i; j--)
 					{
@@ -142,7 +143,7 @@ namespace PolynomialLibrary
 				rem.RemoveZeros();
 				quotient.RemoveZeros();
 
-				remainder = rem;
+				remainder = rem.Clone();
 				return ReduceFully(quotient, ModulusPolynomial, ModulusInteger);
 			}
 

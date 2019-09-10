@@ -101,6 +101,26 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
+		public void TestDivide003()
+		{
+			string expected = "X + 2";
+
+			IPolynomial a = Polynomial.Parse("X^2 - 3*X - 10");
+			IPolynomial b = Polynomial.Parse("X - 5");
+
+
+			IPolynomial c = Polynomial.Divide(a, b);
+
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"({a}) / ({b})");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result:    {c}");
+			TestContext.WriteLine($"Expecting: {expected}");
+
+			Assert.AreEqual(expected, c.ToString());
+		}
+
+		[TestMethod]
 		public void TestDivideRemainder()
 		{
 			string expected = "301*X + 57";
