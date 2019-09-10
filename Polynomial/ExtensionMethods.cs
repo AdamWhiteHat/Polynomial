@@ -1,79 +1,85 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace PolynomialLibrary
 {
-	public static class ITermExtensionMethods
-	{
-		public static TAlgebra[] GetCoefficients<TAlgebra, TNumber>(this ITerm<TAlgebra, TNumber>[] source) where TAlgebra : IArithmetic<TAlgebra, TNumber>
-		{
-			return source.Select(trm => trm.CoEfficient).ToArray();
-		}
-	}
-
 	public static class BigIntegerExtensionMethods
 	{
-		public static BigInteger Mod(this BigInteger n, BigInteger mod)
+		public static BigInteger Mod(this BigInteger source, BigInteger mod)
 		{
 			if (mod.Equals(BigInteger.Zero))
 			{
 				throw new DivideByZeroException($"Parameter '{nameof(mod)}' must not be zero.");
 			}
+			BigInteger n = source.Clone();
 			BigInteger r = (n >= mod) ? n % mod : n;
-			return (r < 0) ? r + mod : r;
+			return (r < 0) ? (r + mod) : r;
 		}
 
-		public static BigInteger Square(this BigInteger input)
+		public static BigInteger Clone(this BigInteger source)
 		{
-			return (input * input);
+			return new BigInteger(source.ToByteArray());
+		}
+
+		public static bool[] ConvertToBase2(this BigInteger value)
+		{
+			byte[] byteArray = value.ToByteArray();
+			bool[] bitArray = new BitArray(byteArray).Cast<bool>().ToArray();
+			return bitArray;
+		}
+
+		public static BigInteger Square(this BigInteger source)
+		{
+			return (source * source);
 		}
 
 		// Roots
-		public static BigInteger SquareRoot(this BigInteger input)
+		public static BigInteger SquareRoot(this BigInteger source)
 		{
-			if (input.IsZero) return new BigInteger(0);
+			if (source.IsZero) return new BigInteger(0);
 
 			BigInteger n = new BigInteger(0);
 			BigInteger p = new BigInteger(0);
 			BigInteger low = new BigInteger(0);
-			BigInteger high = BigInteger.Abs(input);
+			BigInteger high = BigInteger.Abs(source);
 
 			while (high > low + 1)
 			{
 				n = (high + low) >> 1;
 				p = n * n;
 
-				if (input < p)
+				if (source < p)
 					high = n;
-				else if (input > p)
+				else if (source > p)
 					low = n;
 				else
 					break;
 			}
-			return input == p ? n : low;
+			return source == p ? n : low;
 		}
 
 		// Returns the NTHs root of a BigInteger with Remainder.
 		// The root must be greater than or equal to 1 or value must be a positive integer.
-		public static BigInteger NthRoot(this BigInteger value, int root)
+		public static BigInteger NthRoot(this BigInteger source, int root)
 		{
 			BigInteger remainder = new BigInteger();
-			return value.NthRoot(root, out remainder);
+			return source.NthRoot(root, out remainder);
 		}
 
-		public static BigInteger NthRoot(this BigInteger value, int root, out BigInteger remainder)
+		public static BigInteger NthRoot(this BigInteger source, int root, out BigInteger remainder)
 		{
 			if (root < 1) throw new Exception("Root must be greater than or equal to 1");
-			if (value.Sign == -1) throw new Exception("Value must be a positive integer");
+			if (source.Sign == -1) throw new Exception("Value must be a positive integer");
 
-			if (value == BigInteger.One)
+			if (source == BigInteger.One)
 			{
 				remainder = 0;
 				return BigInteger.One;
 			}
-			if (value == BigInteger.Zero)
+			if (source == BigInteger.Zero)
 			{
 				remainder = 0;
 				return BigInteger.Zero;
@@ -81,27 +87,27 @@ namespace PolynomialLibrary
 			if (root == 1)
 			{
 				remainder = 0;
-				return value;
+				return source.Clone();
 			}
 
-			BigInteger upperbound = value;
-			BigInteger lowerbound = BigInteger.Zero;
+			BigInteger upperbound = source.Clone();
+			BigInteger lowerbound = new BigInteger(0);
 
 			while (true)
 			{
 				BigInteger nval = (upperbound + lowerbound) >> 1;
 				BigInteger tstsq = BigInteger.Pow(nval, root);
 
-				if (tstsq > value) upperbound = nval;
-				if (tstsq < value) lowerbound = nval;
-				if (tstsq == value)
+				if (tstsq > source) upperbound = nval;
+				if (tstsq < source) lowerbound = nval;
+				if (tstsq == source)
 				{
 					lowerbound = nval;
 					break;
 				}
 				if (lowerbound == upperbound - 1) break;
 			}
-			remainder = value - BigInteger.Pow(lowerbound, root);
+			remainder = source - BigInteger.Pow(lowerbound, root);
 			return lowerbound;
 		}
 
