@@ -9,9 +9,9 @@ namespace PolynomialLibrary
 	public partial class Polynomial<TAlgebra, TNumber> : IPolynomial<TAlgebra, TNumber> where TAlgebra : IArithmetic<TAlgebra, TNumber>
 	{
 
-		public static IPolynomial<TAlgebra, TNumber> MinusOne = new Polynomial<TAlgebra, TNumber>(new List<ITerm<TAlgebra, TNumber>>() { (ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.MinusOne, 0) }.ToArray());
-		public static IPolynomial<TAlgebra, TNumber> Zero = new Polynomial<TAlgebra, TNumber>(new List<ITerm<TAlgebra, TNumber>>() { (ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.Zero, 0) }.ToArray());
-		public static IPolynomial<TAlgebra, TNumber> One = new Polynomial<TAlgebra, TNumber>(new List<ITerm<TAlgebra, TNumber>>() { (ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.One, 0) }.ToArray());
+		public static IPolynomial<TAlgebra, TNumber> MinusOne = null;
+		public static IPolynomial<TAlgebra, TNumber> Zero	  = null;
+		public static IPolynomial<TAlgebra, TNumber> One	  = null;
 
 		public ITerm<TAlgebra, TNumber>[] Terms { get { return _terms.ToArray(); } }
 		private List<ITerm<TAlgebra, TNumber>> _terms;
@@ -54,6 +54,13 @@ namespace PolynomialLibrary
 		}
 
 		#region Constructors
+
+		static Polynomial()
+		{
+			MinusOne = new Polynomial<TAlgebra, TNumber>(new List<ITerm<TAlgebra, TNumber>>() { (ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.MinusOne, 0) }.ToArray());
+			Zero = new Polynomial<TAlgebra, TNumber>(new List<ITerm<TAlgebra, TNumber>>() { (ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.Zero, 0) }.ToArray());
+			One = new Polynomial<TAlgebra, TNumber>(new List<ITerm<TAlgebra, TNumber>>() { (ITerm<TAlgebra, TNumber>)new Term<TAlgebra, TNumber>(ArithmeticType<TAlgebra, TNumber>.Instance.One, 0) }.ToArray());
+		}
 
 		public Polynomial()
 		{
