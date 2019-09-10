@@ -26,6 +26,11 @@ namespace PolynomialLibrary
 			return (r < 0) ? r + mod : r;
 		}
 
+		public static BigInteger Clone(this BigInteger input)
+		{
+			return new BigInteger(input.ToByteArray());
+		}
+
 		public static bool[] ConvertToBase2(this BigInteger value)
 		{
 			byte[] byteArray = value.ToByteArray();

@@ -65,7 +65,7 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestDivide()
+		public void TestDivide001()
 		{
 			string expecting = "24*X - 1";
 
@@ -76,10 +76,49 @@ namespace TestPolynomial
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
+			TestContext.WriteLine($"Result:    {result}");
 			TestContext.WriteLine($"Expecting: {expecting}");
 
 			Assert.AreEqual(expecting, result.ToString());
+		}
+
+		[TestMethod]
+		public void TestDivide002()
+		{
+			string expected = "X^3 + 15*X^2 + 29*X + 8";
+
+			IPolynomial dividend = Polynomial.Parse("X ^ 6 + 30 * X ^ 5 + 283 * X ^ 4 + 886 * X ^ 3 + 1081 * X ^ 2 + 464 * X + 64");
+			IPolynomial divisor = Polynomial.Parse(expected);
+
+			IPolynomial quotient = Polynomial.Divide(dividend, divisor);
+
+			TestContext.WriteLine($"({dividend}) / ({divisor})");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result:    {quotient}");
+			TestContext.WriteLine($"Expecting: {expected}");
+
+			Assert.AreEqual(expected, quotient.ToString());
+		}
+
+		[TestMethod]
+		public void TestDivideRemainder()
+		{
+			string expected = "301*X + 57";
+
+			IPolynomial dividend = Polynomial.Parse("144*X^4 + 744*X^3 + 985*X^2 + 450*X + 63");
+			IPolynomial divisor = Polynomial.Parse("144*X^2 + 24*X + 1");
+			IPolynomial remainder = Polynomial.Zero;
+
+			IPolynomial quotient = Polynomial.Divide(dividend, divisor, out remainder);
+
+			TestContext.WriteLine($"({dividend}) / ({divisor})");
+			TestContext.WriteLine($"= {quotient}");
+			TestContext.WriteLine($"rem: {remainder}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result:    {remainder}");
+			TestContext.WriteLine($"Expecting: {expected}");
+
+			Assert.AreEqual(expected, remainder.ToString());
 		}
 
 		[TestMethod]

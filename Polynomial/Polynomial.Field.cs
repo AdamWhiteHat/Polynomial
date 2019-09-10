@@ -120,7 +120,7 @@ namespace PolynomialLibrary
 
 				int rightDegree = right.Degree;
 				int quotientDegree = (left.Degree - rightDegree) + 1;
-				BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray()).Mod(ModulusInteger);
+				BigInteger leadingCoefficent = right[rightDegree].Clone().Mod(ModulusInteger);
 
 				Polynomial rem = (Polynomial)left.Clone();
 				Polynomial quotient = (Polynomial)Polynomial.Zero;

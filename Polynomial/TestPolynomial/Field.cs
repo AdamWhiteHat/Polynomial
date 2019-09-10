@@ -52,7 +52,7 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestPow()
 		{
-			BigInteger exp = 2;
+			BigInteger exp = 5;
 			BigInteger mod = 45113;
 			IPolynomial f = Polynomial.Parse("X^3 + 15*X^2 + 29*X + 8");
 
@@ -66,6 +66,8 @@ namespace TestPolynomial
 			IPolynomial result = field.Pow(f, exp);
 
 			TestContext.WriteLine("");
+			TestContext.WriteLine($"{Polynomial.Pow(f, 2)}");
+			TestContext.WriteLine("");
 			TestContext.WriteLine($"{f3}");
 			TestContext.WriteLine($"{Polynomial.Field.ReduceInteger(f3, mod)}");
 			TestContext.WriteLine($"{Polynomial.Field.ReducePolynomial(f3, fPrime)}");
@@ -74,9 +76,11 @@ namespace TestPolynomial
 			TestContext.WriteLine($"f = {f}");
 			TestContext.WriteLine($"g =  {mod}");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"f^5 mod g =");
-			TestContext.WriteLine($"{result}");
+			TestContext.WriteLine($"f^5 mod g = {result}");
+			TestContext.WriteLine("Expecting =  34448*X + 38064");
 			TestContext.WriteLine("");
+			TestContext.WriteLine("");
+
 
 		}
 
