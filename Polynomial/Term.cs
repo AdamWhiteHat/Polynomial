@@ -16,7 +16,7 @@ namespace PolynomialLibrary
 
 		public Term(TAlgebra coefficient, int exponent)
 		{
-			CoEfficient = coefficient;
+			CoEfficient = coefficient.Clone().Value;
 			Exponent = exponent;
 		}
 
@@ -27,7 +27,7 @@ namespace PolynomialLibrary
 
 		public ITerm<TAlgebra, TNumber> Clone()
 		{
-			return new Term<TAlgebra, TNumber>(CoEfficient, Exponent);
+			return new Term<TAlgebra, TNumber>(this.CoEfficient.Clone().Value, this.Exponent);
 		}
 
 		public override string ToString()

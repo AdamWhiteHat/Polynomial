@@ -10,8 +10,8 @@ namespace PolynomialLibrary
 	{
 
 		public static IPolynomial<TAlgebra, TNumber> MinusOne = null;
-		public static IPolynomial<TAlgebra, TNumber> Zero	  = null;
-		public static IPolynomial<TAlgebra, TNumber> One	  = null;
+		public static IPolynomial<TAlgebra, TNumber> Zero = null;
+		public static IPolynomial<TAlgebra, TNumber> One = null;
 
 		public ITerm<TAlgebra, TNumber>[] Terms { get { return _terms.ToArray(); } }
 		private List<ITerm<TAlgebra, TNumber>> _terms;
@@ -479,7 +479,7 @@ namespace PolynomialLibrary
 
 		public static IPolynomial<TAlgebra, TNumber> Divide(IPolynomial<TAlgebra, TNumber> left, IPolynomial<TAlgebra, TNumber> right)
 		{
-			IPolynomial<TAlgebra, TNumber> remainder = Polynomial<TAlgebra, TNumber>.Zero;
+			IPolynomial<TAlgebra, TNumber> remainder = new Polynomial<TAlgebra, TNumber>();
 			return Polynomial<TAlgebra, TNumber>.Divide(left, right, out remainder);
 		}
 
@@ -489,16 +489,16 @@ namespace PolynomialLibrary
 			if (right == null) throw new ArgumentNullException(nameof(right));
 			if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 			{
-				remainder = Polynomial<TAlgebra, TNumber>.Zero;
-				return left;
+				remainder = new Polynomial<TAlgebra, TNumber>();
+				return left.Clone();
 			}
 
 			int rightDegree = right.Degree;
 			int quotientDegree = (left.Degree - rightDegree) + 1;
-			TAlgebra leadingCoefficent = right[rightDegree].Value;
+			TAlgebra leadingCoefficent = right[rightDegree].Clone().Value;
 
 			Polynomial<TAlgebra, TNumber> rem = (Polynomial<TAlgebra, TNumber>)left.Clone();
-			Polynomial<TAlgebra, TNumber> quotient = (Polynomial<TAlgebra, TNumber>)Polynomial<TAlgebra, TNumber>.Zero;
+			Polynomial<TAlgebra, TNumber> quotient = (Polynomial<TAlgebra, TNumber>)new Polynomial<TAlgebra, TNumber>();
 
 			// The leading coefficient is the only number we ever divide by
 			// (so if right is monic, polynomial division does not involve division at all!)
@@ -517,8 +517,8 @@ namespace PolynomialLibrary
 			rem.RemoveZeros();
 			quotient.RemoveZeros();
 
-			remainder = rem;
-			return quotient;
+			remainder = rem.Clone();
+			return quotient.Clone();
 		}
 
 		public static IPolynomial<TAlgebra, TNumber> Multiply(IPolynomial<TAlgebra, TNumber> left, IPolynomial<TAlgebra, TNumber> right)
@@ -631,7 +631,7 @@ namespace PolynomialLibrary
 			{
 				if (result == null)
 				{
-					result = p;
+					result = p.Clone();
 				}
 				else
 				{
@@ -723,7 +723,8 @@ namespace PolynomialLibrary
 
 		public IPolynomial<TAlgebra, TNumber> Clone()
 		{
-			return new Polynomial<TAlgebra, TNumber>(Terms.Select(pt => ((Term<TAlgebra, TNumber>)pt).Clone()).ToArray());
+			var terms = Terms.Select(pt => ((Term<TAlgebra, TNumber>)pt).Clone()).ToArray();
+			return new Polynomial<TAlgebra, TNumber>(terms);
 		}
 
 		public override string ToString()

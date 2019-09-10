@@ -46,10 +46,10 @@ namespace PolynomialLibrary
 			return new Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType>((l, r) => Wrap(function.Invoke(l.InternalValue, r.InternalValue)));
 		}
 
-		public override ComplexArithmeticType MinusOne { get { return Wrap(new Complex(-(1.0d), 0.0d)); } }
-		public override ComplexArithmeticType Zero { get { return Wrap(Complex.Zero); } }
-		public override ComplexArithmeticType One { get { return Wrap(Complex.One); } }
-		public override ComplexArithmeticType Two { get { return Wrap(Complex.Add(Complex.One, Complex.One)); } }
+		public override ComplexArithmeticType MinusOne { get { return Wrap(new Complex(-1.0d, 0.0d)); } }
+		public override ComplexArithmeticType Zero { get { return Wrap(new Complex(0.0d, 0.0d)); } }
+		public override ComplexArithmeticType One { get { return Wrap(new Complex(1.0d, 0.0d)); } }
+		public override ComplexArithmeticType Two { get { return Wrap(new Complex(2.0d, 0.0d)); } }
 
 		protected override Func<Complex, ComplexArithmeticType> ConstructionMethod { get { return new Func<Complex, ComplexArithmeticType>((n) => Wrap(n)); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> AdditionMethod { get { return Wrap(Complex.Add); } }
@@ -138,5 +138,9 @@ namespace PolynomialLibrary
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> ModPowMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on Complex numbers."); } }
 		protected override Func<ComplexArithmeticType, ComplexArithmeticType, ComplexArithmeticType> ModMethod { get { throw new NotImplementedException("Modulus/Remainder function not defined on Complex numbers."); } }
 
+		public override IArithmetic<ComplexArithmeticType, Complex> Clone()
+		{
+			return new ComplexArithmeticType(new Complex(this.InternalValue.Real, this.InternalValue.Imaginary));
+		}
 	}
 }

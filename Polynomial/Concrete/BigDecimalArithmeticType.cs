@@ -47,10 +47,10 @@ namespace PolynomialLibrary
 			return new Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType>((l, r) => Wrap(function.Invoke(l.InternalValue, r.InternalValue)));
 		}
 
-		public override BigDecimalArithmeticType MinusOne { get { return Wrap(BigDecimal.MinusOne); } }
-		public override BigDecimalArithmeticType Zero { get { return Wrap(BigDecimal.Zero); } }
-		public override BigDecimalArithmeticType One { get { return Wrap(BigDecimal.One); } }
-		public override BigDecimalArithmeticType Two { get { return Wrap(BigDecimal.Add(BigDecimal.One, BigDecimal.One)); } }
+		public override BigDecimalArithmeticType MinusOne { get { return Wrap(new BigDecimal(new BigInteger(-1))); } }
+		public override BigDecimalArithmeticType Zero { get { return Wrap(new BigDecimal(new BigInteger(0))); } }
+		public override BigDecimalArithmeticType One { get { return Wrap(new BigDecimal(new BigInteger(1))); } }
+		public override BigDecimalArithmeticType Two { get { return Wrap(new BigDecimal(new BigInteger(2))); } }
 
 		protected override Func<BigDecimal, BigDecimalArithmeticType> ConstructionMethod { get { return new Func<BigDecimal, BigDecimalArithmeticType>((n) => Wrap(n)); } }
 		protected override Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType> AdditionMethod { get { return Wrap(BigDecimal.Add); } }
@@ -109,5 +109,9 @@ namespace PolynomialLibrary
 
 		protected override Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType> ModPowMethod { get { throw new NotImplementedException(); /* return new Func<BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType, BigDecimalArithmeticType>((val, exp, mod) => Wrap(BigDecimal.ModPow(val.InternalValue, exp.InternalValue, mod.InternalValue))); */ } }
 
+		public override IArithmetic<BigDecimalArithmeticType, BigDecimal> Clone()
+		{
+			return new BigDecimalArithmeticType(new BigDecimal(this.InternalValue.Mantissa.Clone(), this.InternalValue.Exponent));
+		}
 	}
 }

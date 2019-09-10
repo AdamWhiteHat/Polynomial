@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime;
 using System.Numerics;
 using System.Collections.Generic;
 
@@ -46,10 +47,10 @@ namespace PolynomialLibrary
 			return new Func<DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType>((l, r) => Wrap(function.Invoke(l.InternalValue, r.InternalValue)));
 		}
 
-		public override DecimalArithmeticType MinusOne { get { return Wrap(Decimal.MinusOne); } }
-		public override DecimalArithmeticType Zero { get { return Wrap(Decimal.Zero); } }
-		public override DecimalArithmeticType One { get { return Wrap(Decimal.One); } }
-		public override DecimalArithmeticType Two { get { return Wrap(Decimal.Add(Decimal.One, Decimal.One)); } }
+		public override DecimalArithmeticType MinusOne { get { return Wrap(new decimal(-1)); } }
+		public override DecimalArithmeticType Zero { get { return Wrap(new decimal(0)); } }
+		public override DecimalArithmeticType One { get { return Wrap(new decimal(1)); } }
+		public override DecimalArithmeticType Two { get { return Wrap(new decimal(2)); } }
 
 		protected override Func<Decimal, DecimalArithmeticType> ConstructionMethod { get { return new Func<Decimal, DecimalArithmeticType>((n) => Wrap(n)); } }
 		protected override Func<DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType> AdditionMethod { get { return Wrap(Decimal.Add); } }
@@ -94,5 +95,10 @@ namespace PolynomialLibrary
 		}
 
 		protected override Func<DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType, DecimalArithmeticType> ModPowMethod { get { throw new NotImplementedException(); } }
+
+		public override IArithmetic<DecimalArithmeticType, decimal> Clone()
+		{
+			return new DecimalArithmeticType(decimal.Parse(this.InternalValue.ToString()));
+		}
 	}
 }

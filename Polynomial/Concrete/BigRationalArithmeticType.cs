@@ -47,10 +47,10 @@ namespace PolynomialLibrary
 			return new Func<BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType>((l, r) => Wrap(function.Invoke(l.InternalValue, r.InternalValue)));
 		}
 
-		public override BigRationalArithmeticType MinusOne { get { return Wrap(BigRational.MinusOne); } }
-		public override BigRationalArithmeticType Zero { get { return Wrap(BigRational.Zero); } }
-		public override BigRationalArithmeticType One { get { return Wrap(BigRational.One); } }
-		public override BigRationalArithmeticType Two { get { return Wrap(BigRational.Add(BigRational.One, BigRational.One)); } }
+		public override BigRationalArithmeticType MinusOne { get { return Wrap(new BigRational(new BigInteger(-1))); } }
+		public override BigRationalArithmeticType Zero { get { return Wrap(new BigRational(new BigInteger(0))); } }
+		public override BigRationalArithmeticType One { get { return Wrap(new BigRational(new BigInteger(1))); } }
+		public override BigRationalArithmeticType Two { get { return Wrap(new BigRational(new BigInteger(2))); } }
 
 		protected override Func<BigRational, BigRationalArithmeticType> ConstructionMethod { get { return new Func<BigRational, BigRationalArithmeticType>((n) => Wrap(n)); } }
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType> AdditionMethod { get { return Wrap(BigRational.Add); } }
@@ -68,7 +68,12 @@ namespace PolynomialLibrary
 
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType> ModPowMethod { get { throw new NotImplementedException(); } }
 		private BigRationalArithmeticType DivRemFunction(BigRationalArithmeticType dividend, BigRationalArithmeticType divisor, out BigRationalArithmeticType rem) { throw new NotImplementedException(); }
+
 		protected override Func<BigRationalArithmeticType, BigRationalArithmeticType, BigRationalArithmeticType> ModMethod { get { throw new NotImplementedException(); } }
 
+		public override IArithmetic<BigRationalArithmeticType, BigRational> Clone()
+		{
+			return new BigRationalArithmeticType(new BigRational(this.InternalValue.WholePart.Clone(), new Fraction(this.InternalValue.FractionalPart.Numerator.Clone(), this.InternalValue.FractionalPart.Denominator.Clone())));
+		}
 	}
 }

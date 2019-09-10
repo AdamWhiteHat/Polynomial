@@ -46,10 +46,10 @@ namespace PolynomialLibrary
 			return new Func<BigIntegerArithmeticType, BigIntegerArithmeticType, BigIntegerArithmeticType>((l, r) => Wrap(function.Invoke(l.InternalValue, r.InternalValue)));
 		}
 
-		public override BigIntegerArithmeticType MinusOne { get { return Wrap(BigInteger.MinusOne); } }
-		public override BigIntegerArithmeticType Zero { get { return Wrap(BigInteger.Zero); } }
-		public override BigIntegerArithmeticType One { get { return Wrap(BigInteger.One); } }
-		public override BigIntegerArithmeticType Two { get { return Wrap(BigInteger.Add(BigInteger.One, BigInteger.One)); } }
+		public override BigIntegerArithmeticType MinusOne { get { return Wrap(new BigInteger(-1)); } }
+		public override BigIntegerArithmeticType Zero { get { return Wrap(new BigInteger(0)); } }
+		public override BigIntegerArithmeticType One { get { return Wrap(new BigInteger(1)); } }
+		public override BigIntegerArithmeticType Two { get { return Wrap(new BigInteger(2)); } }
 
 		protected override Func<BigInteger, BigIntegerArithmeticType> ConstructionMethod { get { return new Func<BigInteger, BigIntegerArithmeticType>((n) => Wrap(n)); } }
 		protected override Func<BigIntegerArithmeticType, BigIntegerArithmeticType, BigIntegerArithmeticType> AdditionMethod { get { return Wrap(BigInteger.Add); } }
@@ -93,5 +93,9 @@ namespace PolynomialLibrary
 			}
 		}
 
+		public override IArithmetic<BigIntegerArithmeticType, BigInteger> Clone()
+		{
+			return new BigIntegerArithmeticType(this.InternalValue.Clone());
+		}
 	}
 }

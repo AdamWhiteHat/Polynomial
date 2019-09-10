@@ -145,6 +145,8 @@ namespace PolynomialLibrary
 			return EqualsMethod.Invoke(Value, other);
 		}
 
+		public abstract IArithmetic<TAlgebra, TNumber> Clone();
+
 		public override string ToString()
 		{
 			return InternalValue.ToString();

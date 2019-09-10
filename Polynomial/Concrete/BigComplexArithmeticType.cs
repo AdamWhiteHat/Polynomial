@@ -47,10 +47,10 @@ namespace PolynomialLibrary
 			return new Func<BigComplexArithmeticType, BigComplexArithmeticType, BigComplexArithmeticType>((l, r) => Wrap(function.Invoke(l.InternalValue, r.InternalValue)));
 		}
 
-		public override BigComplexArithmeticType MinusOne { get { return Wrap(BigComplex.Negate(BigComplex.One)); } }
-		public override BigComplexArithmeticType Zero { get { return Wrap(BigComplex.Zero); } }
-		public override BigComplexArithmeticType One { get { return Wrap(BigComplex.One); } }
-		public override BigComplexArithmeticType Two { get { return Wrap(BigComplex.Add(BigComplex.One, BigComplex.One)); } }
+		public override BigComplexArithmeticType MinusOne { get { return Wrap(new BigComplex(-1d, 0d)); } }
+		public override BigComplexArithmeticType Zero { get { return Wrap(new BigComplex(0d, 0d)); } }
+		public override BigComplexArithmeticType One { get { return Wrap(new BigComplex(1d, 0d)); } }
+		public override BigComplexArithmeticType Two { get { return Wrap(new BigComplex(2d, 0d)); } }
 
 		protected override Func<BigComplex, BigComplexArithmeticType> ConstructionMethod { get { return new Func<BigComplex, BigComplexArithmeticType>((n) => Wrap(n)); } }
 		protected override Func<BigComplexArithmeticType, BigComplexArithmeticType, BigComplexArithmeticType> AdditionMethod { get { return Wrap(BigComplex.Add); } }
@@ -103,5 +103,9 @@ namespace PolynomialLibrary
 			}
 		}
 
+		public override IArithmetic<BigComplexArithmeticType, BigComplex> Clone()
+		{
+			return new BigComplexArithmeticType(new BigComplex(this.InternalValue.Real.Clone(), this.InternalValue.Imaginary.Clone()));
+		}
 	}
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace PolynomialLibrary
 {
-	public interface IArithmetic<TAlgebra, TNumber> where TAlgebra : IArithmetic<TAlgebra, TNumber>
+	public interface IArithmetic<TAlgebra, TNumber> : ICloneable<IArithmetic<TAlgebra, TNumber>> where TAlgebra : IArithmetic<TAlgebra, TNumber>
 	{
 		TAlgebra MinusOne { get; }
 		TAlgebra Zero { get; }
