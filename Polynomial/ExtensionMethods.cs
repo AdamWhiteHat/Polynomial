@@ -1,158 +1,172 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace PolynomialLibrary
 {
-    public static class ITermExtensionMethods
-    {
-        public static BigInteger[] GetCoefficients(this ITerm[] source)
-        {
-            return source?.Select(trm => trm?.CoEfficient ?? BigInteger.Zero).ToArray() ?? new BigInteger[] { 0 };
-        }
-    }
+	public static class ITermExtensionMethods
+	{
+		public static BigInteger[] GetCoefficients(this ITerm[] source)
+		{
+			return source?.Select(trm => trm?.CoEfficient.Clone() ?? new BigInteger(0)).ToArray() ?? new BigInteger[] { new BigInteger(0) };
+		}
+	}
 
-    public static class BigIntegerExtensionMethods
-    {
-        public static BigInteger Mod(this BigInteger n, BigInteger mod)
-        {
-            if(mod.Equals(BigInteger.Zero))
-            {
-                throw new DivideByZeroException($"Parameter '{nameof(mod)}' must not be zero.");
-            }
-            BigInteger r = (n >= mod) ? n % mod : n;
-            return (r < 0) ? r + mod : r;
-        }
+	public static class BigIntegerExtensionMethods
+	{
+		public static BigInteger Mod(this BigInteger source, BigInteger mod)
+		{
+			if (mod.Equals(BigInteger.Zero))
+			{
+				throw new DivideByZeroException($"Parameter '{nameof(mod)}' must not be zero.");
+			}
+			BigInteger n = source.Clone();
+			BigInteger r = (n >= mod) ? n % mod : n;
+			return (r < 0) ? (r + mod) : r;
+		}
 
-        public static BigInteger Square(this BigInteger input)
-        {
-            return (input * input);
-        }
+		public static BigInteger Clone(this BigInteger source)
+		{
+			return new BigInteger(source.ToByteArray());
+		}
 
-        // Roots
-        public static BigInteger SquareRoot(this BigInteger input)
-        {
-            if (input.IsZero) return new BigInteger(0);
+		public static bool[] ConvertToBase2(this BigInteger value)
+		{
+			byte[] byteArray = value.ToByteArray();
+			bool[] bitArray = new BitArray(byteArray).Cast<bool>().ToArray();
+			return bitArray;
+		}
 
-            BigInteger n = new BigInteger(0);
-            BigInteger p = new BigInteger(0);
-            BigInteger low = new BigInteger(0);
-            BigInteger high = BigInteger.Abs(input);
+		public static BigInteger Square(this BigInteger source)
+		{
+			return (source * source);
+		}
 
-            while (high > low + 1)
-            {
-                n = (high + low) >> 1;
-                p = n * n;
+		// Roots
+		public static BigInteger SquareRoot(this BigInteger source)
+		{
+			if (source.IsZero) return new BigInteger(0);
 
-                if (input < p)
-                    high = n;
-                else if (input > p)
-                    low = n;
-                else
-                    break;
-            }
-            return input == p ? n : low;
-        }
+			BigInteger n = new BigInteger(0);
+			BigInteger p = new BigInteger(0);
+			BigInteger low = new BigInteger(0);
+			BigInteger high = BigInteger.Abs(source);
 
-        // Returns the NTHs root of a BigInteger with Remainder.
-        // The root must be greater than or equal to 1 or value must be a positive integer.
-        public static BigInteger NthRoot(this BigInteger value, int root)
-        {
-            BigInteger remainder = new BigInteger();
-            return value.NthRoot(root, out remainder);
-        }
+			while (high > low + 1)
+			{
+				n = (high + low) >> 1;
+				p = n * n;
 
-        public static BigInteger NthRoot(this BigInteger value, int root, out BigInteger remainder)
-        {
-            if (root < 1) throw new Exception("Root must be greater than or equal to 1");
-            if (value.Sign == -1) throw new Exception("Value must be a positive integer");
+				if (source < p)
+					high = n;
+				else if (source > p)
+					low = n;
+				else
+					break;
+			}
+			return source == p ? n : low;
+		}
 
-            if (value == BigInteger.One)
-            {
-                remainder = 0;
-                return BigInteger.One;
-            }
-            if (value == BigInteger.Zero)
-            {
-                remainder = 0;
-                return BigInteger.Zero;
-            }
-            if (root == 1)
-            {
-                remainder = 0;
-                return value;
-            }
+		// Returns the NTHs root of a BigInteger with Remainder.
+		// The root must be greater than or equal to 1 or value must be a positive integer.
+		public static BigInteger NthRoot(this BigInteger source, int root)
+		{
+			BigInteger remainder = new BigInteger();
+			return source.NthRoot(root, out remainder);
+		}
 
-            BigInteger upperbound = value;
-            BigInteger lowerbound = BigInteger.Zero;
+		public static BigInteger NthRoot(this BigInteger source, int root, out BigInteger remainder)
+		{
+			if (root < 1) throw new Exception("Root must be greater than or equal to 1");
+			if (source.Sign == -1) throw new Exception("Value must be a positive integer");
 
-            while (true)
-            {
-                BigInteger nval = (upperbound + lowerbound) >> 1;
-                BigInteger tstsq = BigInteger.Pow(nval, root);
+			if (source == BigInteger.One)
+			{
+				remainder = 0;
+				return BigInteger.One;
+			}
+			if (source == BigInteger.Zero)
+			{
+				remainder = 0;
+				return BigInteger.Zero;
+			}
+			if (root == 1)
+			{
+				remainder = 0;
+				return source.Clone();
+			}
 
-                if (tstsq > value) upperbound = nval;
-                if (tstsq < value) lowerbound = nval;
-                if (tstsq == value)
-                {
-                    lowerbound = nval;
-                    break;
-                }
-                if (lowerbound == upperbound - 1) break;
-            }
-            remainder = value - BigInteger.Pow(lowerbound, root);
-            return lowerbound;
-        }
+			BigInteger upperbound = source.Clone();
+			BigInteger lowerbound = new BigInteger(0);
 
-        public static bool IsSquare(this BigInteger source)
-        {
-            if (source == null || source == BigInteger.Zero)
-            {
-                return false;
-            }
+			while (true)
+			{
+				BigInteger nval = (upperbound + lowerbound) >> 1;
+				BigInteger tstsq = BigInteger.Pow(nval, root);
 
-            BigInteger input = BigInteger.Abs(source);
+				if (tstsq > source) upperbound = nval;
+				if (tstsq < source) lowerbound = nval;
+				if (tstsq == source)
+				{
+					lowerbound = nval;
+					break;
+				}
+				if (lowerbound == upperbound - 1) break;
+			}
+			remainder = source - BigInteger.Pow(lowerbound, root);
+			return lowerbound;
+		}
 
-            int base16 = (int)(input & Fifteen); // Convert to base 16 number
-            if (base16 > 9)
-            {
-                return false; // return immediately in 6 cases out of 16.
-            }
+		public static bool IsSquare(this BigInteger source)
+		{
+			if (source == null || source == BigInteger.Zero)
+			{
+				return false;
+			}
 
-            // Squares in base 16 end in 0, 1, 4, or 9
-            if (base16 != 2 && base16 != 3 && base16 != 5 && base16 != 6 && base16 != 7 && base16 != 8)
-            {
-                BigInteger remainder = new BigInteger();
-                BigInteger sqrt = input.NthRoot(2, out remainder);
+			BigInteger input = BigInteger.Abs(source);
 
-                return (remainder == 0);
-                // - OR -
-                //return (sqrt.Square() == input);
-            }
-            return false;
-        }
-        private static BigInteger Fifteen = new BigInteger(15);
-    }
+			int base16 = (int)(input & Fifteen); // Convert to base 16 number
+			if (base16 > 9)
+			{
+				return false; // return immediately in 6 cases out of 16.
+			}
 
-    public static class IEnumerableBigIntegerExtensionMethods
-    {
-        // Product
-        public static BigInteger Product(this IEnumerable<int> source)
-        {
-            return source.Select(n => new BigInteger(n)).Aggregate((accumulator, current) => accumulator * current);
-        }
+			// Squares in base 16 end in 0, 1, 4, or 9
+			if (base16 != 2 && base16 != 3 && base16 != 5 && base16 != 6 && base16 != 7 && base16 != 8)
+			{
+				BigInteger remainder = new BigInteger();
+				BigInteger sqrt = input.NthRoot(2, out remainder);
 
-        // Sum
-        public static BigInteger Sum(this IEnumerable<BigInteger> source)
-        {
-            return source.Aggregate((accumulator, current) => accumulator + current);
-        }
+				return (remainder == 0);
+				// - OR -
+				//return (sqrt.Square() == input);
+			}
+			return false;
+		}
+		private static BigInteger Fifteen = new BigInteger(15);
+	}
 
-        // GCD
-        public static BigInteger GCD(this IEnumerable<BigInteger> source)
-        {
-            return source.Aggregate(BigInteger.GreatestCommonDivisor);
-        }
-    }
+	public static class IEnumerableBigIntegerExtensionMethods
+	{
+		// Product
+		public static BigInteger Product(this IEnumerable<int> source)
+		{
+			return source.Select(n => new BigInteger(n)).Aggregate((accumulator, current) => accumulator * current);
+		}
+
+		// Sum
+		public static BigInteger Sum(this IEnumerable<BigInteger> source)
+		{
+			return source.Aggregate((accumulator, current) => accumulator + current);
+		}
+
+		// GCD
+		public static BigInteger GCD(this IEnumerable<BigInteger> source)
+		{
+			return source.Aggregate(BigInteger.GreatestCommonDivisor);
+		}
+	}
 }

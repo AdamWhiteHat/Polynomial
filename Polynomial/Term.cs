@@ -11,12 +11,13 @@ namespace PolynomialLibrary
 	{
 		public int Exponent { get; private set; }
 		public BigInteger CoEfficient { get; set; }
-		private static string IndeterminateSymbol = "X";
+
+		private const string IndeterminateSymbol = "X";
 
 		public Term(BigInteger coefficient, int exponent)
 		{
 			Exponent = exponent;
-			CoEfficient = coefficient;
+			CoEfficient = coefficient.Clone();
 		}
 
 		public static ITerm[] GetTerms(BigInteger[] terms)
@@ -26,7 +27,7 @@ namespace PolynomialLibrary
 			int degree = 0;
 			foreach (BigInteger term in terms)
 			{
-				results.Add(new Term(term, degree));
+				results.Add(new Term(term.Clone(), degree));
 
 				degree += 1;
 			}
@@ -41,7 +42,7 @@ namespace PolynomialLibrary
 
 		public ITerm Clone()
 		{
-			return new Term(this.CoEfficient, this.Exponent);
+			return new Term(this.CoEfficient.Clone(), this.Exponent);
 		}
 
 		public override string ToString()
