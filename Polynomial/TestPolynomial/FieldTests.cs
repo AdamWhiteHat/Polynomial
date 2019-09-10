@@ -30,5 +30,37 @@ namespace TestPolynomial
 
 			Assert.AreEqual(expecting, result.ToString());
 		}
+
+		[TestMethod]
+		public void TestPow()
+		{
+			DecimalArithmeticType exp = new DecimalArithmeticType(5);
+			DecimalArithmeticType mod = new DecimalArithmeticType(45113);
+			var f = Polynomial<DecimalArithmeticType, Decimal>.Parse("X^3 + 15*X^2 + 29*X + 8");
+
+			var fPrime = Polynomial<DecimalArithmeticType, Decimal>.GetDerivativePolynomial(f);
+
+			var f3 = Polynomial<DecimalArithmeticType, Decimal>.Pow(f, 3);
+
+			var field = Polynomial<DecimalArithmeticType, Decimal>.Field.Modulus(fPrime, mod);
+
+
+			var result = Polynomial<DecimalArithmeticType, Decimal>.Field.ModPow(f, exp, fPrime);
+
+			result = Polynomial<DecimalArithmeticType, Decimal>.Field.ModMod(result, fPrime, mod);
+
+			TestContext.WriteLine("");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"f = {f}");
+			TestContext.WriteLine($"g =  {mod}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"f^5 mod g = {result}");
+			TestContext.WriteLine("Expecting =  34448*X + 38064");
+			TestContext.WriteLine("");
+			TestContext.WriteLine("");
+
+
+		}
+
 	}
 }
