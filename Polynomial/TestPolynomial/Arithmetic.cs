@@ -65,12 +65,102 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestDivide()
+		public void TestDivide1()
 		{
 			string expecting = "24*X - 1";
 
 			IPolynomial first = Polynomial.Parse("288*X^2 + 36*X - 2");
 			IPolynomial second = Polynomial.Parse("12*X + 2");
+
+			IPolynomial result = Polynomial.Divide(first, second);
+
+			TestContext.WriteLine($"({first}) / ({second})");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = {result}");
+			TestContext.WriteLine($"Expecting: {expecting}");
+
+			Assert.AreEqual(expecting, result.ToString());
+		}
+
+		[TestMethod]
+		public void TestDivide2()
+		{
+			string expecting = "2*X - 2";
+
+			IPolynomial first = Polynomial.Parse("6*X^2 - 6");
+			IPolynomial second = Polynomial.Parse("3*X + 3");
+
+			IPolynomial result = Polynomial.Divide(first, second);
+
+			TestContext.WriteLine($"({first}) / ({second})");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = {result}");
+			TestContext.WriteLine($"Expecting: {expecting}");
+
+			Assert.AreEqual(expecting, result.ToString());
+		}
+
+		[TestMethod]
+		public void TestDivide3()
+		{
+			string expecting = "6";
+
+			IPolynomial first = Polynomial.Parse("6*X^2 - 6");
+			IPolynomial second = Polynomial.Parse("X^2 - 1");
+
+			IPolynomial result = Polynomial.Divide(first, second);
+
+			TestContext.WriteLine($"({first}) / ({second})");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = {result}");
+			TestContext.WriteLine($"Expecting: {expecting}");
+
+			Assert.AreEqual(expecting, result.ToString());
+		}
+
+		[TestMethod]
+		public void TestDivide4()
+		{
+			string expecting = "6*X - 1";
+
+			IPolynomial first = Polynomial.Parse("36*X^2 - 1");
+			IPolynomial second = Polynomial.Parse("6*X + 1");
+
+			IPolynomial result = Polynomial.Divide(first, second);
+
+			TestContext.WriteLine($"({first}) / ({second})");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = {result}");
+			TestContext.WriteLine($"Expecting: {expecting}");
+
+			Assert.AreEqual(expecting, result.ToString());
+		}
+
+		[TestMethod]
+		public void TestDivide5()
+		{
+			string expecting = "6*X + 1";
+
+			IPolynomial first = Polynomial.Parse("36*X^2 - 1");
+			IPolynomial second = Polynomial.Parse("6*X - 1");
+
+			IPolynomial result = Polynomial.Divide(first, second);
+
+			TestContext.WriteLine($"({first}) / ({second})");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = {result}");
+			TestContext.WriteLine($"Expecting: {expecting}");
+
+			Assert.AreEqual(expecting, result.ToString());
+		}
+
+		[TestMethod]
+		public void TestDivide6()
+		{
+			string expecting = "144*X^2 + 18*X - 1";
+
+			IPolynomial first = Polynomial.Parse("288*X^2 + 36*X - 2");
+			IPolynomial second = Polynomial.Parse("2");
 
 			IPolynomial result = Polynomial.Divide(first, second);
 
@@ -104,7 +194,7 @@ namespace TestPolynomial
 		{
 			string expecting = "X^2 + 3*X + 2";
 
-			IPolynomial first = Polynomial.Parse("X^4 + 8*X^3 + 21*X^2 + 22*X + 8"); 
+			IPolynomial first = Polynomial.Parse("X^4 + 8*X^3 + 21*X^2 + 22*X + 8");
 			IPolynomial second = Polynomial.Parse("X^3 + 6*X^2 + 11*X + 6");
 
 			//IPolynomial result = Polynomial.Multiply(mult, Polynomial.Parse("X + 1"));
