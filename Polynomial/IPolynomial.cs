@@ -3,19 +3,19 @@ using System.Numerics;
 
 namespace PolynomialLibrary
 {
-	public interface IPolynomial : ICloneable<IPolynomial>, IComparable, IComparable<IPolynomial>
+	public interface IPolynomial<T> : ICloneable<IPolynomial<T>>, IComparable, IComparable<IPolynomial<T>>
 	{
-		int Degree { get; }
-		ITerm[] Terms { get; }
+		T Degree { get; }
+		ITerm<T>[] Terms { get; }
 
-		BigInteger this[int degree]
+		T this[T degree]
 		{
 			get;
 			set;
 		}
 
 		//void RemoveZeros();
-		BigInteger Evaluate(BigInteger indeterminateValue);
+		T Evaluate(T indeterminateValue);
 	}
 
 }

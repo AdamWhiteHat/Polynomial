@@ -2,10 +2,10 @@
 
 namespace PolynomialLibrary
 {
-	public interface ITerm : ICloneable<ITerm>
+	public interface ITerm<T> : ICloneable<ITerm<T>>
 	{
-		int Exponent { get; }
-		BigInteger CoEfficient { get; set; }
+		T Exponent { get; }
+		T CoEfficient { get; set; }
 	}
 
 }

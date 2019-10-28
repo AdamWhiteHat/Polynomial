@@ -1,10 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PolynomialLibrary;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
+using PolynomialLibrary;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TestPolynomial
 {
@@ -19,10 +18,10 @@ namespace TestPolynomial
 		{
 			string expecting = "2*X - 2";
 
-			IPolynomial first = Polynomial.Parse("3*x^2 + 2*x + 1");
-			IPolynomial second = Polynomial.Parse("x^2 + 1");
+			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("3*x^2 + 2*x + 1");
+			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("x^2 + 1");
 
-			IPolynomial result = Polynomial.Field.Modulus(first, second);
+			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Field<BigInteger>.Modulus(first, second);
 
 			TestContext.WriteLine($"({first}) + ({second})");
 			TestContext.WriteLine("");

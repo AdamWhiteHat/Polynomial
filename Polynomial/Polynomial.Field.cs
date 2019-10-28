@@ -6,32 +6,32 @@ using System.Collections;
 
 namespace PolynomialLibrary
 {
-	public partial class Polynomial : IPolynomial
+	public partial class Polynomial<T> : IPolynomial<T>
 	{
-		public static class Field
+		public static class Field<T>
 		{
-			public static IPolynomial GCD(IPolynomial left, IPolynomial right, BigInteger modulus)
+			public static IPolynomial<T> GCD(IPolynomial<T> left, IPolynomial<T> right, T modulus)
 			{
-				IPolynomial a = left.Clone();
-				IPolynomial b = right.Clone();
+				IPolynomial<T> a = left.Clone();
+				IPolynomial<T> b = right.Clone();
 
-				if (b.Degree > a.Degree)
+				if (GenericArithmetic<T>.GreaterThan(b.Degree, a.Degree))
 				{
-					IPolynomial swap = b;
+					IPolynomial<T> swap = b;
 					b = a;
 					a = swap;
 				}
 
-				while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
+				while (!GenericArithmetic<T>.Equal(GenericArithmetic<T>.Convert(b.Terms.Length), GenericArithmetic<T>.Zero) || GenericArithmetic<T>.Equal(b.Terms[0].CoEfficient, GenericArithmetic<T>.Zero))
 				{
-					IPolynomial temp = a;
+					IPolynomial<T> temp = a;
 					a = b;
-					b = Field.ModMod(temp, b, modulus);
+					b = Field<T>.ModMod(temp, b, modulus);
 				}
 
-				if (a.Degree == 0)
+				if (GenericArithmetic<T>.Equal(a.Degree, GenericArithmetic<T>.Zero))
 				{
-					return Polynomial.One;
+					return Polynomial<T>.One;
 				}
 				else
 				{
@@ -39,12 +39,12 @@ namespace PolynomialLibrary
 				}
 			}
 
-			public static IPolynomial ModMod(IPolynomial toReduce, IPolynomial modPoly, BigInteger primeModulus)
+			public static IPolynomial<T> ModMod(IPolynomial<T> toReduce, IPolynomial<T> modPoly, T primeModulus)
 			{
-				return Field.Modulus(Field.Modulus(toReduce, modPoly), primeModulus);
+				return Field<T>.Modulus(Field<T>.Modulus(toReduce, modPoly), primeModulus);
 			}
 
-			public static IPolynomial Modulus(IPolynomial poly, IPolynomial mod)
+			public static IPolynomial<T> Modulus(IPolynomial<T> poly, IPolynomial<T> mod)
 			{
 				int sortOrder = mod.CompareTo(poly);
 				if (sortOrder > 0)
@@ -53,69 +53,69 @@ namespace PolynomialLibrary
 				}
 				else if (sortOrder == 0)
 				{
-					return Polynomial.Zero;
+					return Polynomial<T>.Zero;
 				}
 
-				IPolynomial remainder = Polynomial.Zero;
-				Polynomial.Divide(poly, mod, out remainder);
+				IPolynomial<T> remainder = Polynomial<T>.Zero;
+				IPolynomial<T>  quotient = Polynomial<T>.Divide(poly, mod, out remainder);
 
 				return remainder;
 			}
 
-			public static IPolynomial Modulus(IPolynomial poly, BigInteger mod)
+			public static IPolynomial<T> Modulus(IPolynomial<T> poly, T mod)
 			{
-				IPolynomial clone = poly.Clone();
-				List<ITerm> terms = new List<ITerm>();
+				IPolynomial<T> clone = poly.Clone();
+				List<ITerm<T>> terms = new List<ITerm<T>>();
 
-				foreach (ITerm term in clone.Terms)
+				foreach (ITerm<T> term in clone.Terms)
 				{
-					BigInteger remainder = 0;
-					BigInteger.DivRem(term.CoEfficient, mod, out remainder);
+					T remainder = GenericArithmetic<T>.Zero;
+					GenericArithmetic<T>.DivRem(term.CoEfficient, mod, out remainder);
 
-					if (remainder.Sign == -1)
+					if (GenericArithmetic<T>.Equal(GenericArithmetic<T>.Sign(remainder), GenericArithmetic<T>.MinusOne))
 					{
-						remainder = (remainder + mod);
+						remainder = GenericArithmetic<T>.Add(remainder, mod);
 					}
 
-					terms.Add(new Term(remainder, term.Exponent));
+					terms.Add(new Term<T>(remainder, term.Exponent));
 				}
 
 				// Recalculate the degree
-				ITerm[] termArray = terms.SkipWhile(t => t.CoEfficient.Sign == 0).ToArray();
+				ITerm<T>[] termArray = terms.SkipWhile(t => GenericArithmetic<T>.Equal(GenericArithmetic<T>.Sign(t.CoEfficient), GenericArithmetic<T>.Zero)).ToArray();
 				if (!termArray.Any())
 				{
-					termArray = Term.GetTerms(new BigInteger[] { 0 });
+					termArray = Term<T>.GetTerms(new T[] { GenericArithmetic<T>.Zero });
 				}
-				IPolynomial result = new Polynomial(termArray);
+				IPolynomial<T> result = new Polynomial<T>(termArray);
 				return result;
 			}
 
-			public static IPolynomial Divide(IPolynomial left, IPolynomial right, BigInteger mod, out IPolynomial remainder)
+			public static IPolynomial<T> Divide(IPolynomial<T> left, IPolynomial<T> right, T mod, out IPolynomial<T> remainder)
 			{
 				if (left == null) throw new ArgumentNullException(nameof(left));
 				if (right == null) throw new ArgumentNullException(nameof(right));
-				if (right.Degree > left.Degree || right.CompareTo(left) == 1)
+				if (GenericArithmetic<T>.GreaterThan(right.Degree, left.Degree) || (right.CompareTo(left) == 1))
 				{
-					remainder = Polynomial.Zero; return left;
+					remainder = Polynomial<T>.Zero; return left;
 				}
 
-				int rightDegree = right.Degree;
-				int quotientDegree = (left.Degree - rightDegree) + 1;
-				BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray()).Mod(mod);
+				T rightDegree = right.Degree;
+				T quotientDegree = GenericArithmetic<T>.Increment(GenericArithmetic<T>.Subtract(left.Degree, rightDegree));
+				T leadingCoefficent = GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Clone(right[rightDegree]), mod);
 
-				Polynomial rem = (Polynomial)left.Clone();
-				Polynomial quotient = (Polynomial)Polynomial.Zero;
+				Polynomial<T> rem = (Polynomial<T>)left.Clone();
+				Polynomial<T> quotient = (Polynomial<T>)Polynomial<T>.Zero;
 
 				// The leading coefficient is the only number we ever divide by
 				// (so if right is monic, polynomial division does not involve division at all!)
-				for (int i = quotientDegree - 1; i >= 0; i--)
+				for (T i = GenericArithmetic<T>.Decrement(quotientDegree); GenericArithmetic<T>.GreaterThanOrEqual(i, GenericArithmetic<T>.Zero); i = GenericArithmetic<T>.Decrement(i))
 				{
-					quotient[i] = BigInteger.Divide(rem[rightDegree + i], leadingCoefficent).Mod(mod);
-					rem[rightDegree + i] = BigInteger.Zero;
+					quotient[i] = GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Divide(rem[GenericArithmetic<T>.Add(rightDegree, i)], leadingCoefficent), mod);
+					rem[GenericArithmetic<T>.Add(rightDegree, i)] = GenericArithmetic<T>.Zero;
 
-					for (int j = rightDegree + i - 1; j >= i; j--)
+					for (T j = GenericArithmetic<T>.Decrement(GenericArithmetic<T>.Add(rightDegree, i)); GenericArithmetic<T>.GreaterThanOrEqual(j, i); j = GenericArithmetic<T>.Decrement(j))
 					{
-						rem[j] = BigInteger.Subtract(rem[j], BigInteger.Multiply(quotient[i], right[j - i]).Mod(mod)).Mod(mod);
+						rem[j] = GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Subtract(rem[j], GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Multiply(quotient[i], right[GenericArithmetic<T>.Subtract(j, i)]), mod)), mod);
 					}
 				}
 
@@ -127,36 +127,36 @@ namespace PolynomialLibrary
 				return quotient;
 			}
 
-			public static IPolynomial Multiply(IPolynomial poly, BigInteger multiplier, BigInteger mod)
+			public static IPolynomial<T> Multiply(IPolynomial<T> poly, T multiplier, T mod)
 			{
-				IPolynomial result = poly.Clone();
+				IPolynomial<T> result = poly.Clone();
 
-				foreach (ITerm term in result.Terms)
+				foreach (ITerm<T> term in result.Terms)
 				{
-					BigInteger newCoefficient = term.CoEfficient;
-					if (newCoefficient != 0)
+					T newCoefficient = term.CoEfficient;
+					if (GenericArithmetic<T>.NotEqual(newCoefficient, GenericArithmetic<T>.Zero))
 					{
-						newCoefficient = (newCoefficient * multiplier);
-						term.CoEfficient = (newCoefficient.Mod(mod));
+						newCoefficient = GenericArithmetic<T>.Multiply(newCoefficient, multiplier);
+						term.CoEfficient = GenericArithmetic<T>.Modulo(newCoefficient, mod);
 					}
 				}
 
 				return result;
 			}
 
-			public static IPolynomial PowMod(IPolynomial poly, BigInteger exponent, BigInteger mod)
+			public static IPolynomial<T> PowMod(IPolynomial<T> poly, T exponent, T mod)
 			{
-				IPolynomial result = poly.Clone();
+				IPolynomial<T> result = poly.Clone();
 
-				foreach (ITerm term in result.Terms)
+				foreach (ITerm<T> term in result.Terms)
 				{
-					BigInteger newCoefficient = term.CoEfficient;
-					if (newCoefficient != 0)
+					T newCoefficient = term.CoEfficient;
+					if (GenericArithmetic<T>.NotEqual(newCoefficient, GenericArithmetic<T>.Zero))
 					{
-						newCoefficient = BigInteger.ModPow(newCoefficient, exponent, mod);
-						if (newCoefficient.Sign == -1)
+						newCoefficient = GenericArithmetic<T>.ModPow(newCoefficient, exponent, mod);
+						if (GenericArithmetic<T>.Equal(GenericArithmetic<T>.Sign(newCoefficient), GenericArithmetic<T>.MinusOne))
 						{
-							throw new Exception("BigInteger.ModPow returned negative number");
+							throw new Exception("T.ModPow returned negative number");
 						}
 						term.CoEfficient = newCoefficient;
 					}
@@ -165,14 +165,14 @@ namespace PolynomialLibrary
 				return result;
 			}
 
-			public static IPolynomial ExponentiateMod(IPolynomial startPoly, BigInteger s2, IPolynomial f, BigInteger p)
+			public static IPolynomial<T> ExponentiateMod(IPolynomial<T> startPoly, T s2, IPolynomial<T> f, T p)
 			{
-				IPolynomial result = Polynomial.One;
-				if (s2 == 0) { return result; }
+				IPolynomial<T> result = Polynomial<T>.One;
+				if (GenericArithmetic<T>.Equal(s2, GenericArithmetic<T>.Zero)) { return result; }
 
-				IPolynomial A = startPoly.Clone();
+				IPolynomial<T> A = startPoly.Clone();
 
-				byte[] byteArray = s2.ToByteArray();
+				byte[] byteArray = GenericArithmetic<T>.ToBytes(s2);
 				bool[] bitArray = new BitArray(byteArray).Cast<bool>().ToArray();
 
 				// Remove trailing zeros ?
@@ -185,10 +185,10 @@ namespace PolynomialLibrary
 				int t = bitArray.Length;
 				while (i < t)
 				{
-					A = Field.ModMod(Polynomial.Square(A), f, p);
+					A = Field<T>.ModMod(Polynomial<T>.Square(A), f, p);
 					if (bitArray[i] == true)
 					{
-						result = Field.ModMod(Polynomial.Multiply(A, result), f, p);
+						result = Field<T>.ModMod(Polynomial<T>.Multiply(A, result), f, p);
 					}
 					i++;
 				}
@@ -196,79 +196,79 @@ namespace PolynomialLibrary
 				return result;
 			}
 
-			public static IPolynomial ModPow(IPolynomial poly, BigInteger exponent, IPolynomial mod)
+			public static IPolynomial<T> ModPow(IPolynomial<T> poly, T exponent, IPolynomial<T> mod)
 			{
-				if (exponent < 0)
+				if (GenericArithmetic<T>.LessThan(exponent, GenericArithmetic<T>.Zero))
 				{
 					throw new NotImplementedException("Raising a polynomial to a negative exponent not supported. Build this functionality if it is needed.");
 				}
-				else if (exponent == 0)
+				else if (GenericArithmetic<T>.Equal(exponent, GenericArithmetic<T>.Zero))
 				{
-					return Polynomial.One;
+					return Polynomial<T>.One;
 				}
-				else if (exponent == 1)
+				else if (GenericArithmetic<T>.Equal(exponent, GenericArithmetic<T>.One))
 				{
 					return poly.Clone();
 				}
-				else if (exponent == 2)
+				else if (GenericArithmetic<T>.Equal(exponent, GenericArithmetic<T>.Two))
 				{
-					return Polynomial.Square(poly);
+					return Polynomial<T>.Square(poly);
 				}
 
-				IPolynomial total = Polynomial.Square(poly);
+				IPolynomial<T> total = Polynomial<T>.Square(poly);
 
-				BigInteger counter = exponent - 2;
-				while (counter != 0)
+				T counter = GenericArithmetic<T>.Subtract(exponent, GenericArithmetic<T>.Two);
+				while (GenericArithmetic<T>.NotEqual(counter, GenericArithmetic<T>.Zero))
 				{
-					total = Polynomial.Multiply(poly, total);
+					total = Polynomial<T>.Multiply(poly, total);
 
 					if (total.CompareTo(mod) < 0)
 					{
-						total = Field.Modulus(total, mod);
+						total = Field<T>.Modulus(total, mod);
 					}
 
-					counter -= 1;
+					counter = GenericArithmetic<T>.Decrement(counter);
 				}
 
 				return total;
 			}
 
-			public static bool IsIrreducibleOverField(IPolynomial f, BigInteger p)
+			public static bool IsIrreducibleOverField(IPolynomial<T> f, T p)
 			{
-				IPolynomial splittingField = new Polynomial(
-					new Term[] {
-						new Term(  1, (int)p),
-						new Term( -1, 1)
+				IPolynomial<T> splittingField = new Polynomial<T>(
+					new Term<T>[] {
+						new Term<T>(  GenericArithmetic<T>.One, p),
+						new Term<T>( GenericArithmetic<T>.MinusOne, GenericArithmetic<T>.One)
 					});
 
-				IPolynomial reducedField = Field.ModMod(splittingField, f, p);
+				IPolynomial<T> reducedField = Field<T>.ModMod(splittingField, f, p);
 
-				IPolynomial gcd = Polynomial.GCD(reducedField, f);
-				return (gcd.CompareTo(Polynomial.One) == 0);
+				IPolynomial<T> gcd = Polynomial<T>.GCD(reducedField, f);
+				return (gcd.CompareTo(Polynomial<T>.One) == 0);
 			}
 
-			public static bool IsIrreducibleOverP(IPolynomial poly, BigInteger p)
+			public static bool IsIrreducibleOverP(IPolynomial<T> poly, T p)
 			{
-				List<BigInteger> coefficients = poly.Terms.Select(t => t.CoEfficient).ToList();
+				List<T> coefficients = poly.Terms.Select(t => t.CoEfficient).ToList();
 
-				BigInteger leadingCoefficient = coefficients.Last();
-				BigInteger constantCoefficient = coefficients.First();
+				T leadingCoefficient = coefficients.Last();
+				T constantCoefficient = coefficients.First();
 
 				coefficients.Remove(leadingCoefficient);
 				coefficients.Remove(constantCoefficient);
 
-				BigInteger leadingRemainder = -1;
-				BigInteger.DivRem(leadingCoefficient, p, out leadingRemainder);
+				T leadingRemainder = GenericArithmetic<T>.MinusOne;
+				GenericArithmetic<T>.DivRem(leadingCoefficient, p, out leadingRemainder);
 
-				BigInteger constantRemainder = -1;
-				BigInteger.DivRem(constantCoefficient, p.Square(), out constantRemainder);
+				T constantRemainder = GenericArithmetic<T>.MinusOne;
+				GenericArithmetic<T>.DivRem(constantCoefficient, GenericArithmetic<T>.Multiply(p, p), out constantRemainder);
 
-				bool result = (leadingRemainder != 0); // p does not divide leading coefficient
+				bool result = GenericArithmetic<T>.NotEqual(leadingRemainder, GenericArithmetic<T>.Zero); // p does not divide leading coefficient
 
-				result &= (constantRemainder != 0);    // p^2 does not divide constant coefficient
+				result &= GenericArithmetic<T>.NotEqual(constantRemainder, GenericArithmetic<T>.Zero);    // p^2 does not divide constant coefficient
 
 				coefficients.Add(p);
-				result &= (coefficients.GCD() == 1); // GCD == 1
+				result &= GenericArithmetic<T>.Equal(GenericArithmetic<T>.GCD(coefficients), GenericArithmetic<T>.One); // GCD == 1
 
 				return result;
 			}

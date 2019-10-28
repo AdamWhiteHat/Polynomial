@@ -6,7 +6,7 @@ using System.Collections;
 
 namespace PolynomialLibrary
 {
-	public partial class Polynomial : IPolynomial
+	public partial class Polynomial<T> : IPolynomial<T>
 	{
 		public static class Algorithms
 		{

@@ -7,42 +7,42 @@ using System.Threading.Tasks;
 
 namespace PolynomialLibrary
 {
-	public class Term : ITerm
+	public class Term<T> : ITerm<T>
 	{
-		public int Exponent { get; private set; }
-		public BigInteger CoEfficient { get; set; }
+		public T Exponent { get; private set; }
+		public T CoEfficient { get; set; }
 
 		private const string IndeterminateSymbol = "X";
 
-		public Term(BigInteger coefficient, int exponent)
+		public Term(T coefficient, T exponent)
 		{
 			Exponent = exponent;
-			CoEfficient = coefficient.Clone();
+			CoEfficient = GenericArithmetic<T>.Clone(coefficient);
 		}
 
-		public static ITerm[] GetTerms(BigInteger[] terms)
+		public static ITerm<T>[] GetTerms(T[] terms)
 		{
-			List<ITerm> results = new List<ITerm>();
+			List<ITerm<T>> results = new List<ITerm<T>>();
 
-			int degree = 0;
-			foreach (BigInteger term in terms)
+			T degree = GenericArithmetic<T>.Zero;
+			foreach (T term in terms)
 			{
-				results.Add(new Term(term.Clone(), degree));
+				results.Add(new Term<T>(GenericArithmetic<T>.Clone(term), degree));
 
-				degree += 1;
+				degree = GenericArithmetic<T>.Increment(degree);
 			}
 
 			return results.ToArray();
 		}
 
-		public BigInteger Evaluate(BigInteger indeterminate)
+		public T Evaluate(T indeterminate)
 		{
-			return BigInteger.Multiply(CoEfficient, BigInteger.Pow(indeterminate, Exponent));
+			return GenericArithmetic<T>.Multiply(CoEfficient, GenericArithmetic<T>.Power(indeterminate, Exponent));
 		}
 
-		public ITerm Clone()
+		public ITerm<T> Clone()
 		{
-			return new Term(this.CoEfficient.Clone(), this.Exponent);
+			return new Term<T>(GenericArithmetic<T>.Clone(this.CoEfficient), this.Exponent);
 		}
 
 		public override string ToString()

@@ -8,9 +8,9 @@ namespace PolynomialLibrary
 {
 	public static class ITermExtensionMethods
 	{
-		public static BigInteger[] GetCoefficients(this ITerm[] source)
+		public static T[] GetCoefficients<T>(this ITerm<T>[] source) where T : ICloneable<T>
 		{
-			return source?.Select(trm => trm?.CoEfficient.Clone() ?? new BigInteger(0)).ToArray() ?? new BigInteger[] { new BigInteger(0) };
+			return source?.Select(trm => trm.CoEfficient.Clone()).ToArray() ?? new T[] { GenericArithmetic<T>.Zero };
 		}
 	}
 
