@@ -176,6 +176,24 @@ namespace TestPolynomial
 
 
 		[TestMethod]
+		public void TestDivide7()
+		{
+			string expecting = "15*X + 39";
+
+			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("2*X^3 + X^2 + 13*X");
+			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("15*X + 39");
+
+			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Divide(first, second);
+
+			TestContext.WriteLine($"({first}) / ({second})");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = {result}");
+			TestContext.WriteLine($"Expecting: {expecting}");
+
+			Assert.AreEqual(expecting, result.ToString());
+		}
+
+		[TestMethod]
 		public void TestSquare()
 		{
 			string expecting = "144*X^2 + 24*X + 1";

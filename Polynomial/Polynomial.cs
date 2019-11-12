@@ -14,13 +14,13 @@ namespace PolynomialLibrary
 
 		public ITerm<T>[] Terms { get { return _terms.ToArray(); } }
 		private List<ITerm<T>> _terms;
-		public T Degree { get; private set; }
+		public int Degree { get; private set; }
 
-		public T this[T degree]
+		public T this[int degree]
 		{
 			get
 			{
-				ITerm<T> term = Terms.FirstOrDefault(t => GenericArithmetic<T>.Equal(t.Exponent, degree));
+				ITerm<T> term = Terms.FirstOrDefault(t => t.Exponent == degree);
 
 				if (term == default(ITerm<T>))
 				{
@@ -33,7 +33,7 @@ namespace PolynomialLibrary
 			}
 			set
 			{
-				ITerm<T> term = Terms.FirstOrDefault(t => GenericArithmetic<T>.Equal(t.Exponent, degree));
+				ITerm<T> term = Terms.FirstOrDefault(t => t.Exponent == degree);
 
 				if (term == default(ITerm<T>))
 				{
@@ -63,7 +63,7 @@ namespace PolynomialLibrary
 			Two = new Polynomial<T>(Term<T>.GetTerms(new T[] { GenericArithmetic<T>.Two }));
 		}
 
-		public Polynomial() { _terms = new List<ITerm<T>>() { new Term<T>(GenericArithmetic<T>.Zero, GenericArithmetic<T>.Zero) }; Degree = GenericArithmetic<T>.Zero; }
+		public Polynomial() { _terms = new List<ITerm<T>>() { new Term<T>(GenericArithmetic<T>.Zero, 0) }; Degree = 0; }
 
 		public Polynomial(ITerm<T>[] terms)
 		{
@@ -71,11 +71,25 @@ namespace PolynomialLibrary
 		}
 
 		public Polynomial(T n, T polynomialBase)
-			: this(n, polynomialBase, GenericArithmetic<T>.Truncate(GenericArithmetic<T>.Add(GenericArithmetic<T>.Convert(GenericArithmetic<T>.Log(n, GenericArithmetic<double>.Convert<T>(polynomialBase))), GenericArithmetic<T>.One)))
+			: this
+			(
+				n,
+				polynomialBase,
+				GenericArithmetic<int>.Convert<T>(
+					GenericArithmetic<T>.Truncate(
+						GenericArithmetic<T>.Add(
+							GenericArithmetic<T>.Convert(
+								GenericArithmetic<T>.Log(n, GenericArithmetic<double>.Convert<T>(polynomialBase))
+							),
+							GenericArithmetic<T>.One
+						)
+					)
+				)
+			)
 		{
 		}
 
-		public Polynomial(T n, T polynomialBase, T forceDegree)
+		public Polynomial(T n, T polynomialBase, int forceDegree)
 		{
 			Degree = forceDegree;
 			SetTerms(GetPolynomialTerms(n, polynomialBase, Degree));
@@ -105,27 +119,27 @@ namespace PolynomialLibrary
 			}
 			else
 			{
-				Degree = GenericArithmetic<T>.Zero;
+				Degree = 0;
 			}
 		}
 
-		private static List<ITerm<T>> GetPolynomialTerms(T value, T polynomialBase, T degree)
+		private static List<ITerm<T>> GetPolynomialTerms(T value, T polynomialBase, int degree)
 		{
-			T d = degree; // (T)Math.Truncate(T.Log(value, (double)polynomialBase)+ 1);
+			int deg = degree;
 			T toAdd = value;
 			List<ITerm<T>> result = new List<ITerm<T>>();
-			while (GenericArithmetic<T>.GreaterThanOrEqual(d, GenericArithmetic<T>.Zero) && GenericArithmetic<T>.GreaterThan(toAdd, GenericArithmetic<T>.Zero))
+			while (deg >= 0 && GenericArithmetic<T>.GreaterThan(toAdd, GenericArithmetic<T>.Zero))
 			{
-				T placeValue = GenericArithmetic<T>.Power(polynomialBase, d);
+				T placeValue = GenericArithmetic<T>.Power(polynomialBase, deg);
 
 				if (GenericArithmetic<T>.Equal(placeValue, GenericArithmetic<T>.One))
 				{
-					result.Add(new Term<T>(toAdd, d));
+					result.Add(new Term<T>(toAdd, deg));
 					toAdd = GenericArithmetic<T>.Zero;
 				}
 				else if (GenericArithmetic<T>.Equal(placeValue, toAdd))
 				{
-					result.Add(new Term<T>(GenericArithmetic<T>.One, d));
+					result.Add(new Term<T>(GenericArithmetic<T>.One, deg));
 					toAdd = GenericArithmetic<T>.Subtract(toAdd, placeValue);
 				}
 				else if (GenericArithmetic<T>.LessThan(placeValue, GenericArithmetic<T>.Abs(toAdd)))
@@ -137,13 +151,13 @@ namespace PolynomialLibrary
 						quotient = placeValue;
 					}
 
-					result.Add(new Term<T>(quotient, d));
+					result.Add(new Term<T>(quotient, deg));
 					T toSubtract = GenericArithmetic<T>.Multiply(quotient, placeValue);
 
 					toAdd = GenericArithmetic<T>.Subtract(toAdd, toSubtract);
 				}
 
-				d = GenericArithmetic<T>.Subtract(d, GenericArithmetic<T>.One);
+				deg -= 1;
 			}
 			return result.ToList();
 		}
@@ -155,8 +169,8 @@ namespace PolynomialLibrary
 					zero => new Polynomial<T>(
 						new Term<T>[]
 						{
-						new Term<T>( GenericArithmetic<T>.One,GenericArithmetic<T>.One),
-						new Term<T>( GenericArithmetic<T>.Negate(zero), GenericArithmetic<T>.Zero)
+						new Term<T>( GenericArithmetic<T>.One,1),
+						new Term<T>( GenericArithmetic<T>.Negate(zero), 0)
 						}
 					)
 				)
@@ -211,7 +225,7 @@ namespace PolynomialLibrary
 						variableParts = new string[] { tmp, "1" };
 					}
 				}
-				T exponent = GenericArithmetic<T>.Parse(variableParts[1]);
+				int exponent = int.Parse(variableParts[1]);
 				polyTerms.Add(new Term<T>(coefficient, exponent));
 			}
 
@@ -240,23 +254,22 @@ namespace PolynomialLibrary
 			return result;
 		}
 
-
 		#endregion
 
 		#region Change Forms
 
 		public static IPolynomial<T> GetDerivativePolynomial(IPolynomial<T> poly)
 		{
-			T d = GenericArithmetic<T>.Zero;
+			int deg = 0;
 			List<ITerm<T>> terms = new List<ITerm<T>>();
 			foreach (ITerm<T> term in poly.Terms)
 			{
-				d = GenericArithmetic<T>.Subtract(term.Exponent, GenericArithmetic<T>.One);
-				if (GenericArithmetic<T>.LessThan(d, GenericArithmetic<T>.Zero))
+				deg = term.Exponent - 1;
+				if (deg < 0)
 				{
 					continue;
 				}
-				terms.Add(new Term<T>(GenericArithmetic<T>.Multiply(term.CoEfficient, term.Exponent), d));
+				terms.Add(new Term<T>(GenericArithmetic<T>.Multiply(term.CoEfficient, GenericArithmetic<T>.Convert(term.Exponent)), deg));
 			}
 
 			IPolynomial<T> result = new Polynomial<T>(terms.ToArray());
@@ -265,13 +278,13 @@ namespace PolynomialLibrary
 
 		public static IPolynomial<T> MakeMonic(IPolynomial<T> polynomial, T polynomialBase)
 		{
-			T deg = polynomial.Degree;
+			int deg = polynomial.Degree;
 			IPolynomial<T> result = new Polynomial<T>(polynomial.Terms.ToArray());
 			if (GenericArithmetic<T>.GreaterThan(GenericArithmetic<T>.Abs(result[deg]), GenericArithmetic<T>.One))
 			{
 				T toAdd = GenericArithmetic<T>.Multiply(GenericArithmetic<T>.Decrement(result[deg]), polynomialBase);
 				result[deg] = GenericArithmetic<T>.One;
-				result[GenericArithmetic<T>.Decrement(deg)] = GenericArithmetic<T>.Add(result[GenericArithmetic<T>.Decrement(deg)], toAdd);
+				result[deg - 1] = GenericArithmetic<T>.Add(result[deg - 1], toAdd);
 			}
 			return result;
 		}
@@ -285,17 +298,17 @@ namespace PolynomialLibrary
 				maxSize = polynomialBase;
 			}
 
-			T pos = GenericArithmetic<T>.Zero;
-			T deg = polynomial.Degree;
+			int pos = 0;
+			int deg = polynomial.Degree;
 
-			while (GenericArithmetic<T>.LessThan(pos, deg))
+			while (pos < deg)
 			{
-				if (GenericArithmetic<T>.GreaterThan(GenericArithmetic<T>.Increment(pos), deg))
+				if ((pos + 1) > deg)
 				{
 					return;
 				}
 
-				T posInc = GenericArithmetic<T>.Increment(pos);
+				int posInc = pos + 1;
 
 				if (GenericArithmetic<T>.GreaterThan(polynomial[pos], maxSize) &&
 					GenericArithmetic<T>.GreaterThan(polynomial[pos], polynomial[posInc]))
@@ -309,7 +322,7 @@ namespace PolynomialLibrary
 					polynomial[posInc] = GenericArithmetic<T>.Add(polynomial[posInc], toAdd);
 				}
 
-				pos = GenericArithmetic<T>.Increment(pos);
+				pos += 1;
 			}
 		}
 
@@ -322,21 +335,21 @@ namespace PolynomialLibrary
 			IPolynomial<T> a = left.Clone();
 			IPolynomial<T> b = right.Clone();
 
-			if (GenericArithmetic<T>.GreaterThan(b.Degree, a.Degree))
+			if (b.Degree > a.Degree)
 			{
 				IPolynomial<T> swap = b;
 				b = a;
 				a = swap;
 			}
 
-			while (!(b.Terms.Length == 0 || GenericArithmetic<T>.Equal(b[GenericArithmetic<T>.Zero], GenericArithmetic<T>.Zero)))
+			while (!(b.Terms.Length == 0 || GenericArithmetic<T>.Equal(b[0], GenericArithmetic<T>.Zero)))
 			{
 				IPolynomial<T> temp = a;
 				a = b;
 				b = Field<T>.Modulus(temp, b);
 			}
 
-			if (GenericArithmetic<T>.Equal(a.Degree, GenericArithmetic<T>.Zero))
+			if (a.Degree == 0)
 			{
 				return Polynomial<T>.One;
 			}
@@ -356,7 +369,7 @@ namespace PolynomialLibrary
 		private static ITerm<T> Divide(ITerm<T> left, ITerm<T> right)
 		{
 			T coefficent = GenericArithmetic<T>.Divide(left.CoEfficient, right.CoEfficient);
-			T exponent = GenericArithmetic<T>.Subtract(left.Exponent, right.Exponent);
+			int exponent = left.Exponent - right.Exponent;
 			return new Term<T>(coefficent, exponent);
 		}
 
@@ -364,7 +377,7 @@ namespace PolynomialLibrary
 		{
 			if (left == null) throw new ArgumentNullException(nameof(left));
 			if (right == null) throw new ArgumentNullException(nameof(right));
-			if (GenericArithmetic<T>.GreaterThan(right.Degree, left.Degree) || right.CompareTo(left) == 1)
+			if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 			{
 				remainder = Polynomial<T>.Zero;
 				return left;
@@ -390,17 +403,17 @@ namespace PolynomialLibrary
 
 				lhs = difference.Clone();
 
-				if (GenericArithmetic<T>.LessThan(lhs.Degree, GenericArithmetic<T>.One))
+				if (lhs.Degree < 1)
 				{
-					T l = lhs[GenericArithmetic<T>.Zero];
+					T l = lhs[0];
 
 					if (GenericArithmetic<T>.Equal(l, GenericArithmetic<T>.Zero))
 					{
 						done = true;
 					}
-					else if (GenericArithmetic<T>.LessThan(rhs.Degree, GenericArithmetic<T>.One))
+					else if (rhs.Degree < 1)
 					{
-						T r = rhs[GenericArithmetic<T>.Zero];
+						T r = rhs[0];
 						if (GenericArithmetic<T>.NotEqual(GenericArithmetic<T>.GCD(l, r), GenericArithmetic<T>.One))
 						{
 							continue;
@@ -420,15 +433,15 @@ namespace PolynomialLibrary
 			if (left == null) { throw new ArgumentNullException(nameof(left)); }
 			if (right == null) { throw new ArgumentNullException(nameof(right)); }
 
-			int length = GenericArithmetic<int>.Convert(GenericArithmetic<T>.Increment(GenericArithmetic<T>.Add(left.Degree, right.Degree)));
+			int length = (left.Degree + right.Degree + 1);
 
 			T[] terms = new T[length];
 
-			for (T i = GenericArithmetic<T>.Zero; GenericArithmetic<T>.LessThanOrEqual(i, left.Degree); i = GenericArithmetic<T>.Increment(i))
+			for (int i = 0; i <= left.Degree; i++)
 			{
-				for (T j = GenericArithmetic<T>.Zero; GenericArithmetic<T>.LessThanOrEqual(j, right.Degree); j = GenericArithmetic<T>.Increment(j))
+				for (int j = 0; j <= right.Degree; j++)
 				{
-					int index = GenericArithmetic<int>.Convert(GenericArithmetic<T>.Add(i, j));
+					int index = (i + j);
 					terms[index] = GenericArithmetic<T>.Add(terms[index], GenericArithmetic<T>.Multiply(left[i], right[j]));
 				}
 			}
@@ -472,7 +485,7 @@ namespace PolynomialLibrary
 			}
 			else if (GenericArithmetic<T>.Equal(exponent, GenericArithmetic<T>.Zero))
 			{
-				return new Polynomial<T>(new Term<T>[] { new Term<T>(GenericArithmetic<T>.One, GenericArithmetic<T>.Zero) });
+				return new Polynomial<T>(new Term<T>[] { new Term<T>(GenericArithmetic<T>.One, 0) });
 			}
 			else if (GenericArithmetic<T>.Equal(exponent, GenericArithmetic<T>.One))
 			{
@@ -500,14 +513,14 @@ namespace PolynomialLibrary
 			if (left == null) throw new ArgumentNullException(nameof(left));
 			if (right == null) throw new ArgumentNullException(nameof(right));
 
-			int length = GenericArithmetic<int>.Convert(GenericArithmetic<T>.Increment(GenericArithmetic<T>.Max(left.Degree, right.Degree)));
+			int length = (Math.Max(left.Degree, right.Degree) + 1);
 			T[] terms = new T[length];
-			for (T i = GenericArithmetic<T>.Zero; GenericArithmetic<T>.LessThan(i, GenericArithmetic<T>.Convert(terms.Length)); i = GenericArithmetic<T>.Increment(i))
+			for (int i = 0; i < terms.Length; i++)
 			{
 				T l = left[i];
 				T r = right[i];
 
-				terms[GenericArithmetic<int>.Convert(i)] = GenericArithmetic<T>.Subtract(l, r);
+				terms[i] = GenericArithmetic<T>.Subtract(l, r);
 			}
 
 			IPolynomial<T> result = new Polynomial<T>(Term<T>.GetTerms(terms.ToArray()));
@@ -544,11 +557,11 @@ namespace PolynomialLibrary
 			if (left == null) throw new ArgumentNullException(nameof(left));
 			if (right == null) throw new ArgumentNullException(nameof(right));
 
-			int length = GenericArithmetic<int>.Convert(GenericArithmetic<T>.Increment(GenericArithmetic<T>.Max(left.Degree, right.Degree)));
+			int length = Math.Max(left.Degree, right.Degree) + 1;
 			T[] terms = new T[length];
-			for (T i = GenericArithmetic<T>.Zero; GenericArithmetic<T>.LessThan(i, GenericArithmetic<T>.Convert(terms.Length)); i = GenericArithmetic<T>.Increment(i))
+			for (int i = 0; i < terms.Length; i++)
 			{
-				terms[GenericArithmetic<int>.Convert(i)] = GenericArithmetic<T>.Add(left[i], right[i]);
+				terms[i] = GenericArithmetic<T>.Add(left[i], right[i]);
 			}
 
 			IPolynomial<T> result = new Polynomial<T>(Term<T>.GetTerms(terms.ToArray()));
@@ -583,36 +596,22 @@ namespace PolynomialLibrary
 				throw new ArgumentException();
 			}
 
-			if (GenericArithmetic<T>.NotEqual(other.Degree, this.Degree))
+			if (other.Degree != this.Degree)
 			{
-				if (GenericArithmetic<T>.GreaterThan(other.Degree, this.Degree))
-				{
-					return -1;
-				}
-				else
-				{
-					return 1;
-				}
+				return (other.Degree > this.Degree) ? -1 : 1;
 			}
 			else
 			{
-				T counter = this.Degree;
-
-				while (GenericArithmetic<T>.GreaterThanOrEqual(counter, GenericArithmetic<T>.Zero))
+				int counter = this.Degree;
+				while (counter >= 0)
 				{
 					T thisCoefficient = this[counter];
 					T otherCoefficient = other[counter];
 
-					if (GenericArithmetic<T>.LessThan(thisCoefficient, otherCoefficient))
-					{
-						return -1;
-					}
-					else if (GenericArithmetic<T>.GreaterThan(thisCoefficient, otherCoefficient))
-					{
-						return 1;
-					}
+					if (GenericArithmetic<T>.LessThan(thisCoefficient, otherCoefficient)) { return -1; }
+					else if (GenericArithmetic<T>.GreaterThan(thisCoefficient, otherCoefficient)) { return 1; }
 
-					counter = GenericArithmetic<T>.Decrement(counter);
+					counter--;
 				}
 
 				return 0;
@@ -628,15 +627,16 @@ namespace PolynomialLibrary
 		public override string ToString()
 		{
 			List<string> stringTerms = new List<string>();
-			T degree = GenericArithmetic<T>.Convert(Terms.Length);
-			while (GenericArithmetic<T>.GreaterThanOrEqual((degree = GenericArithmetic<T>.Decrement(degree)), GenericArithmetic<T>.Zero))
+			int degree = GenericArithmetic<int>.Convert(Terms.Length);
+			//while (GenericArithmetic<T>.GreaterThanOrEqual((degree = GenericArithmetic<T>.Decrement(degree)), GenericArithmetic<T>.Zero))
+			while (--degree >= 0)
 			{
 				string termString = "";
-				ITerm<T> term = Terms[GenericArithmetic<int>.Convert(degree)];
+				ITerm<T> term = Terms[degree];
 
 				if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.Zero))
 				{
-					if (GenericArithmetic<T>.Equal(term.Exponent, GenericArithmetic<T>.Zero))
+					if (term.Exponent == 0)
 					{
 						if (stringTerms.Count == 0) { stringTerms.Add("0"); }
 					}
@@ -648,11 +648,11 @@ namespace PolynomialLibrary
 					termString = $"{term.CoEfficient}";
 				}
 
-				if (GenericArithmetic<T>.Equal(term.Exponent, GenericArithmetic<T>.Zero))
+				if (term.Exponent == 0)
 				{
 					stringTerms.Add($"{term.CoEfficient}");
 				}
-				else if (GenericArithmetic<T>.Equal(term.Exponent, GenericArithmetic<T>.One))
+				else if (term.Exponent == 1)
 				{
 					if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.One)) { stringTerms.Add("X"); }
 					else if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.MinusOne)) { stringTerms.Add("-X"); }

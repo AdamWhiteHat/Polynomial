@@ -15,7 +15,7 @@ namespace PolynomialLibrary
 				IPolynomial<T> a = left.Clone();
 				IPolynomial<T> b = right.Clone();
 
-				if (GenericArithmetic<T>.GreaterThan(b.Degree, a.Degree))
+				if (b.Degree > a.Degree)
 				{
 					IPolynomial<T> swap = b;
 					b = a;
@@ -29,7 +29,7 @@ namespace PolynomialLibrary
 					b = Field<T>.ModMod(temp, b, modulus);
 				}
 
-				if (GenericArithmetic<T>.Equal(a.Degree, GenericArithmetic<T>.Zero))
+				if (a.Degree == 0)
 				{
 					return Polynomial<T>.One;
 				}
@@ -57,7 +57,7 @@ namespace PolynomialLibrary
 				}
 
 				IPolynomial<T> remainder = Polynomial<T>.Zero;
-				IPolynomial<T>  quotient = Polynomial<T>.Divide(poly, mod, out remainder);
+				IPolynomial<T> quotient = Polynomial<T>.Divide(poly, mod, out remainder);
 
 				return remainder;
 			}
@@ -94,13 +94,14 @@ namespace PolynomialLibrary
 			{
 				if (left == null) throw new ArgumentNullException(nameof(left));
 				if (right == null) throw new ArgumentNullException(nameof(right));
-				if (GenericArithmetic<T>.GreaterThan(right.Degree, left.Degree) || (right.CompareTo(left) == 1))
+				if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 				{
-					remainder = Polynomial<T>.Zero; return left;
+					remainder = Polynomial<T>.Zero;
+					return left;
 				}
 
-				T rightDegree = right.Degree;
-				T quotientDegree = GenericArithmetic<T>.Increment(GenericArithmetic<T>.Subtract(left.Degree, rightDegree));
+				int rightDegree = right.Degree;
+				int quotientDegree = left.Degree - rightDegree + 1;
 				T leadingCoefficent = GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Clone(right[rightDegree]), mod);
 
 				Polynomial<T> rem = (Polynomial<T>)left.Clone();
@@ -108,14 +109,14 @@ namespace PolynomialLibrary
 
 				// The leading coefficient is the only number we ever divide by
 				// (so if right is monic, polynomial division does not involve division at all!)
-				for (T i = GenericArithmetic<T>.Decrement(quotientDegree); GenericArithmetic<T>.GreaterThanOrEqual(i, GenericArithmetic<T>.Zero); i = GenericArithmetic<T>.Decrement(i))
+				for (int i = quotientDegree - 1; i >= 0; i--)
 				{
-					quotient[i] = GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Divide(rem[GenericArithmetic<T>.Add(rightDegree, i)], leadingCoefficent), mod);
-					rem[GenericArithmetic<T>.Add(rightDegree, i)] = GenericArithmetic<T>.Zero;
+					quotient[i] = GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Divide(rem[rightDegree + i], leadingCoefficent), mod);
+					rem[rightDegree + i] = GenericArithmetic<T>.Zero;
 
-					for (T j = GenericArithmetic<T>.Decrement(GenericArithmetic<T>.Add(rightDegree, i)); GenericArithmetic<T>.GreaterThanOrEqual(j, i); j = GenericArithmetic<T>.Decrement(j))
+					for (int j = (rightDegree + i) - 1; j >= i; j--)
 					{
-						rem[j] = GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Subtract(rem[j], GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Multiply(quotient[i], right[GenericArithmetic<T>.Subtract(j, i)]), mod)), mod);
+						rem[j] = GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Subtract(rem[j], GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Multiply(quotient[i], right[j - i]), mod)), mod);
 					}
 				}
 
@@ -144,7 +145,7 @@ namespace PolynomialLibrary
 				return result;
 			}
 
-			public static IPolynomial<T> PowMod(IPolynomial<T> poly, T exponent, T mod)
+			public static IPolynomial<T> PowMod(IPolynomial<T> poly, int exponent, T mod)
 			{
 				IPolynomial<T> result = poly.Clone();
 
@@ -237,8 +238,8 @@ namespace PolynomialLibrary
 			{
 				IPolynomial<T> splittingField = new Polynomial<T>(
 					new Term<T>[] {
-						new Term<T>(  GenericArithmetic<T>.One, p),
-						new Term<T>( GenericArithmetic<T>.MinusOne, GenericArithmetic<T>.One)
+						new Term<T>(GenericArithmetic<T>.One, GenericArithmetic<int>.Convert<T>(p)),
+						new Term<T>(GenericArithmetic<T>.MinusOne,1)
 					});
 
 				IPolynomial<T> reducedField = Field<T>.ModMod(splittingField, f, p);

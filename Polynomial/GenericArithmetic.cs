@@ -19,21 +19,13 @@ namespace PolynomialLibrary
 		private static Func<T, T, T> _multiplyFunction = null;
 		private static Func<T, T, T> _divideFunction = null;
 		private static Func<T, T, T> _moduloFunction = null;
-		private static Func<T, T, T> _powerFunction = null;
+		private static Func<T, int, T> _powerFunction = null;
 
-		private static Func<T, T> _negateFunction = null;
-		private static Func<T, T> _incrementFunction = null;
-		private static Func<T, T> _decrementFunction = null;
-
-		private static Func<T, T, bool> _lessthanFunction = null;
 		private static Func<T, T, bool> _greaterthanFunction = null;
-		private static Func<T, T, bool> _lessthanorequalFunction = null;
-		private static Func<T, T, bool> _greaterthanorequalFunction = null;
 		private static Func<T, T, bool> _equalFunction = null;
-		private static Func<T, T, bool> _notequalFunction = null;
 
 		private static Func<T, T> _sqrtFunction = null;
-		private static Func<T, T, T, T> _modpowFunction = null;
+		private static Func<T, int, T, T> _modpowFunction = null;
 		private static Func<T, T> _truncateFunction = null;
 		private static Func<string, T> _parseFunction = null;
 		private static Func<T, double, double> _logFunction = null;
@@ -41,6 +33,10 @@ namespace PolynomialLibrary
 
 		public static T Convert<U>(U value)
 		{
+			if (IsComplexValueType(typeof(T)))
+			{
+				return (T)((object)new Complex((double)System.Convert.ChangeType(value, typeof(double)), 0d));
+			}
 			return ConvertImplementation<U, T>.Convert(value);
 		}
 
@@ -89,53 +85,36 @@ namespace PolynomialLibrary
 			return _moduloFunction.Invoke(a, b);
 		}
 
-		public static T Power(T a, T b)
+		public static T Power(T a, int b)
 		{
 			if (_powerFunction == null)
 			{
-				_powerFunction = CreateGenericBinaryFunction(ExpressionType.Power);
+				_powerFunction = CreatePowerFunction();
 			}
 			return _powerFunction.Invoke(a, b);
 		}
 
 		public static T Negate(T a)
 		{
-			if (_negateFunction == null)
-			{
-				_negateFunction = CreateGenericUnaryFunction(ExpressionType.Negate);
-			}
-			return _negateFunction.Invoke(a);
+			return Multiply(a, MinusOne);
 		}
 
 		public static T Increment(T a)
 		{
-			if (_incrementFunction == null)
-			{
-				_incrementFunction = CreateGenericUnaryFunction(ExpressionType.Increment);
-			}
-			return _incrementFunction.Invoke(a);
+			return Add(a, One);
 		}
 
 		public static T Decrement(T a)
 		{
-			if (_decrementFunction == null)
-			{
-				_decrementFunction = CreateGenericUnaryFunction(ExpressionType.Decrement);
-			}
-			return _decrementFunction.Invoke(a);
-		}
-
-		public static bool LessThan(T a, T b)
-		{
-			if (_lessthanFunction == null)
-			{
-				_lessthanFunction = CreateGenericComparisonFunction(ExpressionType.LessThan);
-			}
-			return _lessthanFunction.Invoke(a, b);
+			return Subtract(a, One);
 		}
 
 		public static bool GreaterThan(T a, T b)
 		{
+			if (IsComplexValueType(typeof(T)))
+			{
+				return ComplexComparisonInternal(a, b, ExpressionType.GreaterThan);
+			}
 			if (_greaterthanFunction == null)
 			{
 				_greaterthanFunction = CreateGenericComparisonFunction(ExpressionType.GreaterThan);
@@ -143,22 +122,19 @@ namespace PolynomialLibrary
 			return _greaterthanFunction.Invoke(a, b);
 		}
 
-		public static bool LessThanOrEqual(T a, T b)
+		public static bool LessThan(T a, T b)
 		{
-			if (_lessthanorequalFunction == null)
-			{
-				_lessthanorequalFunction = CreateGenericComparisonFunction(ExpressionType.LessThanOrEqual);
-			}
-			return _lessthanorequalFunction.Invoke(a, b);
+			return !(GreaterThan(a, b) || Equal(a, b));
 		}
 
 		public static bool GreaterThanOrEqual(T a, T b)
 		{
-			if (_greaterthanorequalFunction == null)
-			{
-				_greaterthanorequalFunction = CreateGenericComparisonFunction(ExpressionType.GreaterThanOrEqual);
-			}
-			return _greaterthanorequalFunction.Invoke(a, b);
+			return (GreaterThan(a, b) || Equal(a, b));
+		}
+
+		public static bool LessThanOrEqual(T a, T b)
+		{
+			return (LessThan(a, b) || Equal(a, b));
 		}
 
 		public static bool Equal(T a, T b)
@@ -172,11 +148,7 @@ namespace PolynomialLibrary
 
 		public static bool NotEqual(T a, T b)
 		{
-			if (_notequalFunction == null)
-			{
-				_notequalFunction = CreateGenericComparisonFunction(ExpressionType.NotEqual);
-			}
-			return _notequalFunction.Invoke(a, b);
+			return !Equal(a, b);
 		}
 
 		public static T SquareRoot(T input)
@@ -189,16 +161,16 @@ namespace PolynomialLibrary
 
 			if (_sqrtFunction == null)
 			{
-				_sqrtFunction = CreateSqrtFunction(input);
+				_sqrtFunction = CreateSqrtFunction();
 			}
 			return _sqrtFunction.Invoke(input);
 		}
 
-		public static T ModPow(T value, T exponent, T modulus)
+		public static T ModPow(T value, int exponent, T modulus)
 		{
 			if (_modpowFunction == null)
 			{
-				_modpowFunction = CreateModPowFunction(value, exponent, modulus);
+				_modpowFunction = CreateModPowFunction();
 			}
 			return _modpowFunction.Invoke(value, exponent, modulus);
 		}
@@ -207,7 +179,7 @@ namespace PolynomialLibrary
 		{
 			if (_truncateFunction == null)
 			{
-				_truncateFunction = CreateTruncateFunction(input);
+				_truncateFunction = CreateTruncateFunction();
 			}
 			return _truncateFunction.Invoke(input);
 		}
@@ -216,7 +188,7 @@ namespace PolynomialLibrary
 		{
 			if (_parseFunction == null)
 			{
-				_parseFunction = CreateParseFunction(input);
+				_parseFunction = CreateParseFunction();
 			}
 			return _parseFunction.Invoke(input);
 		}
@@ -291,10 +263,9 @@ namespace PolynomialLibrary
 			{
 				return GenericArithmetic<double>.Log(System.Convert.ToDouble(value), baseValue);
 			}
-
 			if (_logFunction == null)
 			{
-				_logFunction = CreateLogFunction(value, baseValue);
+				_logFunction = CreateLogFunction();
 			}
 			return _logFunction.Invoke(value, baseValue);
 		}
@@ -303,7 +274,7 @@ namespace PolynomialLibrary
 		{
 			if (_tobytesFunction == null)
 			{
-				_tobytesFunction = CreateToBytesFunction(input);
+				_tobytesFunction = CreateToBytesFunction();
 			}
 			return _tobytesFunction.Invoke(input);
 		}
@@ -323,6 +294,11 @@ namespace PolynomialLibrary
 				}
 			}
 			return false;
+		}
+
+		private static bool IsComplexValueType(Type type)
+		{
+			return (type == typeof(Complex));
 		}
 
 		private static T SquareRootInternal(T input)
@@ -346,10 +322,47 @@ namespace PolynomialLibrary
 			return Equals(input, p) ? n : low;
 		}
 
-		private static T ModPowInternal(T value, T exponent, T modulus)
+		private static T ModPowInternal(T value, int exponent, T modulus)
 		{
 			T power = Power(value, exponent);
 			return Modulo(power, modulus);
+		}
+
+		private static bool ComplexComparisonInternal(T left, T right, ExpressionType operationType)
+		{
+			if (!IsComplexValueType(typeof(T)))
+			{
+				throw new Exception("T must be of type: Complex.");
+			}
+
+			Complex? l = left as Complex?;
+			Complex? r = right as Complex?;
+			if (!l.HasValue || !r.HasValue)
+			{
+				throw new Exception("Could not cast parameters to type: Complex.");
+			}
+
+			double lft = Complex.Abs(l.Value);
+			double rght = Complex.Abs(r.Value);
+
+			if (operationType == ExpressionType.GreaterThan)
+			{
+				return (lft > rght);
+			}
+			else if (operationType == ExpressionType.Equal)
+			{
+				return (lft == rght);
+			}
+			/*
+			else if (operationType == ExpressionType.LessThan)			{	return (lft < rght);	}
+			else if (operationType == ExpressionType.GreaterThanOrEqual){	return (lft >= rght);	}
+			else if (operationType == ExpressionType.LessThanOrEqual)	{	return (lft <= rght);	}			
+			else if (operationType == ExpressionType.NotEqual)			{	return (lft != rght);	}
+			*/
+			else
+			{
+				throw new NotSupportedException($"Not a comparison expression type: {Enum.GetName(typeof(ExpressionType), operationType)}.");
+			}
 		}
 
 		private static class ConvertImplementation<T1, T2>
@@ -422,14 +435,6 @@ namespace PolynomialLibrary
 			{
 				operation = Expression.Negate(value);
 			}
-			else if (operationType == ExpressionType.Increment)
-			{
-				operation = Expression.Increment(value);
-			}
-			else if (operationType == ExpressionType.Decrement)
-			{
-				operation = Expression.Decrement(value);
-			}
 			else
 			{
 				throw new NotSupportedException($"ExpressionType not supported: {Enum.GetName(typeof(ExpressionType), operationType)}.");
@@ -449,32 +454,21 @@ namespace PolynomialLibrary
 			{
 				comparison = Expression.GreaterThan(left, right);
 			}
-			else if (operationType == ExpressionType.LessThan)
-			{
-				comparison = Expression.LessThan(left, right);
-			}
-			else if (operationType == ExpressionType.GreaterThanOrEqual)
-			{
-				comparison = Expression.GreaterThanOrEqual(left, right);
-			}
-			else if (operationType == ExpressionType.LessThanOrEqual)
-			{
-				comparison = Expression.LessThanOrEqual(left, right);
-			}
 			else if (operationType == ExpressionType.Equal)
 			{
 				comparison = Expression.Equal(left, right);
 			}
-			else if (operationType == ExpressionType.NotEqual)
-			{
-				comparison = Expression.NotEqual(left, right);
-			}
-
+			/*
+			else if (operationType == ExpressionType.LessThan)			{	comparison = Expression.LessThan(left, right);			}
+			else if (operationType == ExpressionType.GreaterThanOrEqual){	comparison = Expression.GreaterThanOrEqual(left, right);}
+			else if (operationType == ExpressionType.LessThanOrEqual)	{	comparison = Expression.LessThanOrEqual(left, right);	}			
+			else if (operationType == ExpressionType.NotEqual)			{	comparison = Expression.NotEqual(left, right);			}
+			*/
 			Func<T, T, bool> result = Expression.Lambda<Func<T, T, bool>>(comparison, left, right).Compile();
 			return result;
 		}
 
-		private static Func<T, T> CreateSqrtFunction(T input)
+		private static Func<T, T> CreateSqrtFunction()
 		{
 			Type typeFromHandle = typeof(T);
 			if (IsArithmeticValueType(typeFromHandle))
@@ -494,7 +488,7 @@ namespace PolynomialLibrary
 			return result;
 		}
 
-		private static Func<T, T, T, T> CreateModPowFunction(T value, T exponent, T modulus)
+		private static Func<T, int, T, T> CreateModPowFunction()
 		{
 			Type typeFromHandle = typeof(T);
 
@@ -508,11 +502,28 @@ namespace PolynomialLibrary
 			ParameterExpression exp = Expression.Parameter(typeFromHandle, "exponent");
 			ParameterExpression mod = Expression.Parameter(typeFromHandle, "modulus");
 			MethodCallExpression methodCall = Expression.Call(method, val, exp, mod);
-			Func<T, T, T, T> result = Expression.Lambda<Func<T, T, T, T>>(methodCall, val, exp, mod).Compile();
+			Func<T, int, T, T> result = Expression.Lambda<Func<T, int, T, T>>(methodCall, val, exp, mod).Compile();
 			return result;
 		}
 
-		private static Func<T, T> CreateTruncateFunction(T input)
+		private static Func<T, int, T> CreatePowerFunction()
+		{
+			ParameterExpression baseVal = Expression.Parameter(typeof(T), "baseValue");
+			ParameterExpression exp = Expression.Parameter(typeof(int), "exponent");
+
+			Type typeFromHandle = typeof(T);
+			MethodInfo method = typeFromHandle.GetMethod("Pow", BindingFlags.Static | BindingFlags.Public);
+			if (method == null)
+			{
+				throw new NotSupportedException($"Cannot find public static method 'Pow' for type of {typeFromHandle.FullName}.");
+			}
+
+			MethodCallExpression methodCall = Expression.Call(method, baseVal, exp);
+			Func<T, int, T> result = Expression.Lambda<Func<T, int, T>>(methodCall, baseVal, exp).Compile();
+			return result;
+		}
+
+		private static Func<T, T> CreateTruncateFunction()
 		{
 			Type typeFromHandle = typeof(T);
 
@@ -537,7 +548,7 @@ namespace PolynomialLibrary
 			return result;
 		}
 
-		private static Func<string, T> CreateParseFunction(string input)
+		private static Func<string, T> CreateParseFunction()
 		{
 			Type typeFromHandle = typeof(T);
 
@@ -556,7 +567,7 @@ namespace PolynomialLibrary
 			return result;
 		}
 
-		private static Func<T, double, double> CreateLogFunction(T value, double baseValue)
+		private static Func<T, double, double> CreateLogFunction()
 		{
 			Type typeFromHandle = typeof(T);
 			if (IsArithmeticValueType(typeFromHandle))
@@ -579,7 +590,7 @@ namespace PolynomialLibrary
 			return result;
 		}
 
-		private static Func<T, byte[]> CreateToBytesFunction(T input)
+		private static Func<T, byte[]> CreateToBytesFunction()
 		{
 			Type typeFromHandle = typeof(T);
 			if (IsArithmeticValueType(typeFromHandle))

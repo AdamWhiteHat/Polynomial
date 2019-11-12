@@ -5,10 +5,10 @@ namespace PolynomialLibrary
 {
 	public interface IPolynomial<T> : ICloneable<IPolynomial<T>>, IComparable, IComparable<IPolynomial<T>>
 	{
-		T Degree { get; }
+		int Degree { get; }
 		ITerm<T>[] Terms { get; }
 
-		T this[T degree]
+		T this[int degree]
 		{
 			get;
 			set;

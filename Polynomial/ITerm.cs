@@ -4,7 +4,7 @@ namespace PolynomialLibrary
 {
 	public interface ITerm<T> : ICloneable<ITerm<T>>
 	{
-		T Exponent { get; }
+		int Exponent { get; }
 		T CoEfficient { get; set; }
 	}
 

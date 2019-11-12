@@ -9,12 +9,12 @@ namespace PolynomialLibrary
 {
 	public class Term<T> : ITerm<T>
 	{
-		public T Exponent { get; private set; }
+		public int Exponent { get; private set; }
 		public T CoEfficient { get; set; }
 
 		private const string IndeterminateSymbol = "X";
 
-		public Term(T coefficient, T exponent)
+		public Term(T coefficient, int exponent)
 		{
 			Exponent = exponent;
 			CoEfficient = GenericArithmetic<T>.Clone(coefficient);
@@ -24,12 +24,12 @@ namespace PolynomialLibrary
 		{
 			List<ITerm<T>> results = new List<ITerm<T>>();
 
-			T degree = GenericArithmetic<T>.Zero;
+			int degree = 0;
 			foreach (T term in terms)
 			{
 				results.Add(new Term<T>(GenericArithmetic<T>.Clone(term), degree));
 
-				degree = GenericArithmetic<T>.Increment(degree);
+				degree += 1;
 			}
 
 			return results.ToArray();
