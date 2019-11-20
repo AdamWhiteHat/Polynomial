@@ -1,7 +1,7 @@
 ﻿using System;
-using PolynomialLibrary;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Numerics;
+using ExtendedArithmetic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TestPolynomial
 {

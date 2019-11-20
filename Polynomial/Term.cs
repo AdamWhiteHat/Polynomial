@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PolynomialLibrary
+namespace ExtendedArithmetic
 {
 	public class Term : ITerm
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace PolynomialLibrary
+namespace ExtendedArithmetic
 {
 	public interface IPolynomial : ICloneable<IPolynomial>, IComparable, IComparable<IPolynomial>
 	{

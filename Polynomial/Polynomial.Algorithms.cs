@@ -4,7 +4,7 @@ using System.Numerics;
 using System.Collections.Generic;
 using System.Collections;
 
-namespace PolynomialLibrary
+namespace ExtendedArithmetic
 {
 	public partial class Polynomial : IPolynomial
 	{

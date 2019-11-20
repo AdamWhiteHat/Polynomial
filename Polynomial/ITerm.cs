@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace PolynomialLibrary
+namespace ExtendedArithmetic
 {
 	public interface ITerm : ICloneable<ITerm>
 	{

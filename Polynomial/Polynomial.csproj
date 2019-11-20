@@ -7,8 +7,8 @@
     <ProjectGuid>{1A033CB7-2166-4DA1-9870-6AE1F23DA512}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PolynomialLibrary</RootNamespace>
-    <AssemblyName>PolynomialLibrary</AssemblyName>
+    <RootNamespace>ExtendedArithmetic</RootNamespace>
+    <AssemblyName>Polynomial</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
