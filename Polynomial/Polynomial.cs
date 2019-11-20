@@ -128,7 +128,7 @@ namespace PolynomialLibrary
 				}
 				else if (placeValue < BigInteger.Abs(toAdd))
 				{
-					BigInteger remainder = 0;
+					BigInteger remainder = new BigInteger();
 					BigInteger quotient = BigInteger.DivRem(toAdd, placeValue, out remainder);
 
 					if (quotient > placeValue)
@@ -151,11 +151,11 @@ namespace PolynomialLibrary
 		{
 			return Polynomial.Product(
 				roots.Select(
-					zero => new Polynomial(
+					root => new Polynomial(
 						new Term[]
 						{
 						new Term( 1, 1),
-						new Term( BigInteger.Negate(zero), 0)
+						new Term( BigInteger.Negate(root), 0)
 						}
 					)
 				)
@@ -364,7 +364,7 @@ namespace PolynomialLibrary
 			{
 				return a;
 			}
-		} 
+		}
 
 		public static IPolynomial Divide(IPolynomial left, IPolynomial right)
 		{
@@ -379,7 +379,7 @@ namespace PolynomialLibrary
 			if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 			{
 				remainder = new Polynomial();
-				return left;
+				return left.Clone();
 			}
 
 			int rightDegree = right.Degree;
@@ -440,7 +440,7 @@ namespace PolynomialLibrary
 			{
 				if (result == null)
 				{
-					result = p;
+					result = p.Clone();
 				}
 				else
 				{
@@ -519,7 +519,7 @@ namespace PolynomialLibrary
 			{
 				if (result == null)
 				{
-					result = p;
+					result = p.Clone();
 				}
 				else
 				{

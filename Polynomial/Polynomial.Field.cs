@@ -56,7 +56,7 @@ namespace PolynomialLibrary
 					return Polynomial.Zero;
 				}
 
-				IPolynomial remainder = Polynomial.Zero;
+				IPolynomial remainder = new Polynomial();
 				Polynomial.Divide(poly, mod, out remainder);
 
 				return remainder;
@@ -69,7 +69,7 @@ namespace PolynomialLibrary
 
 				foreach (ITerm term in clone.Terms)
 				{
-					BigInteger remainder = 0;
+					BigInteger remainder = new BigInteger();
 					BigInteger.DivRem(term.CoEfficient, mod, out remainder);
 
 					if (remainder.Sign == -1)
@@ -96,7 +96,8 @@ namespace PolynomialLibrary
 				if (right == null) throw new ArgumentNullException(nameof(right));
 				if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 				{
-					remainder = Polynomial.Zero; return left;
+					remainder = Polynomial.Zero;
+					return left.Clone();
 				}
 
 				int rightDegree = right.Degree;
@@ -123,8 +124,8 @@ namespace PolynomialLibrary
 				rem.RemoveZeros();
 				quotient.RemoveZeros();
 
-				remainder = rem;
-				return quotient;
+				remainder = rem.Clone();
+				return quotient.Clone();
 			}
 
 			public static IPolynomial Multiply(IPolynomial poly, BigInteger multiplier, BigInteger mod)
@@ -178,7 +179,7 @@ namespace PolynomialLibrary
 				// Remove trailing zeros ?
 				if (bitArray[0] == true)
 				{
-					result = startPoly;
+					result = startPoly.Clone();
 				}
 
 				int i = 1;
@@ -257,10 +258,10 @@ namespace PolynomialLibrary
 				coefficients.Remove(leadingCoefficient);
 				coefficients.Remove(constantCoefficient);
 
-				BigInteger leadingRemainder = -1;
+				BigInteger leadingRemainder = new BigInteger();
 				BigInteger.DivRem(leadingCoefficient, p, out leadingRemainder);
 
-				BigInteger constantRemainder = -1;
+				BigInteger constantRemainder = new BigInteger();
 				BigInteger.DivRem(constantCoefficient, p.Square(), out constantRemainder);
 
 				bool result = (leadingRemainder != 0); // p does not divide leading coefficient

@@ -1,6 +1,7 @@
 ﻿using System;
 using PolynomialLibrary;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Numerics;
 
 namespace TestPolynomial
 {
@@ -173,6 +174,35 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
+		public void TestDivisionMutation()
+		{
+			BigInteger N = 1811 * 1777;
+			BigInteger m = 117;
+
+			IPolynomial two = new Polynomial(new ITerm[] { new Term(2, 0) });
+			IPolynomial three = new Polynomial(new ITerm[] { new Term(3, 0) });
+			IPolynomial seventeen = new Polynomial(new ITerm[] { new Term(17, 0) });
+
+			IPolynomial f = new Polynomial(N, m);
+
+			IPolynomial r2 = Polynomial.Divide(f, two);
+			IPolynomial r3 = Polynomial.Divide(f, three);
+			IPolynomial r17 = Polynomial.Divide(f, seventeen);
+
+			string e2 = "X^3 + 5*X + 31";
+			string e3 = "3*X + 20";
+			string e17 = "3";
+
+			TestContext.WriteLine($"Expecting: {e2} ; Result: {r2}");
+			TestContext.WriteLine($"Expecting: {e3} ; Result: {r3}");
+			TestContext.WriteLine($"Expecting: {e17} ; Result: {r17}");
+
+			Assert.AreEqual(e2, r2.ToString());
+			Assert.AreEqual(e3, r3.ToString());
+			Assert.AreEqual(e17, r17.ToString());
+		}
+
+		[TestMethod]
 		public void TestSquare()
 		{
 			string expecting = "144*X^2 + 24*X + 1";
@@ -192,10 +222,10 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestGCD()
 		{
-			string expecting = "X^2 + 3*X + 2";
+			string expecting = "7*X^3 + 3*X^2 + X + 2";
 
-			IPolynomial first = Polynomial.Parse("X^4 + 8*X^3 + 21*X^2 + 22*X + 8");
-			IPolynomial second = Polynomial.Parse("X^3 + 6*X^2 + 11*X + 6");
+			IPolynomial first = Polynomial.Parse("84*X^3 + 36*X^2 + 12*X + 24");
+			IPolynomial second = Polynomial.Parse(expecting);
 
 			//IPolynomial result = Polynomial.Multiply(mult, Polynomial.Parse("X + 1"));
 			IPolynomial result = Polynomial.GCD(first, second);
