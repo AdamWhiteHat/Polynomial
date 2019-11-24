@@ -3,9 +3,11 @@ using System.Linq;
 using System.Numerics;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace ExtendedArithmetic
 {
+	[DataContract]
 	public partial class Polynomial : IPolynomial
 	{
 		public static IPolynomial Zero = null;
@@ -13,8 +15,10 @@ namespace ExtendedArithmetic
 		public static IPolynomial Two = null;
 
 		public ITerm[] Terms { get { return _terms.ToArray(); } }
-		private List<ITerm> _terms;
-		public int Degree { get; private set; }
+
+		[DataMember(Name = "Terms")]
+		private List<ITerm> _terms = new List<ITerm>();
+		public int Degree { get; set; }
 
 		public BigInteger this[int degree]
 		{
@@ -61,7 +65,7 @@ namespace ExtendedArithmetic
 			Two = new Polynomial(Term.GetTerms(new BigInteger[] { new BigInteger(2) }));
 		}
 
-		public Polynomial() { _terms = new List<ITerm>() { new Term(new BigInteger(0), 0) }; Degree = 0; }
+		public Polynomial() { _terms = new List<ITerm>(); }
 
 		public Polynomial(ITerm[] terms)
 		{
@@ -95,7 +99,7 @@ namespace ExtendedArithmetic
 			SetDegree();
 		}
 
-		private void SetDegree()
+		public void SetDegree()
 		{
 			if (_terms.Any())
 			{
@@ -378,7 +382,7 @@ namespace ExtendedArithmetic
 			if (right == null) throw new ArgumentNullException(nameof(right));
 			if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 			{
-				remainder = new Polynomial();
+				remainder = new Polynomial(new ITerm[] { new Term(new BigInteger(0), 0) });
 				return left.Clone();
 			}
 
@@ -387,7 +391,7 @@ namespace ExtendedArithmetic
 			BigInteger leadingCoefficent = right[rightDegree].Clone();
 
 			Polynomial rem = (Polynomial)left.Clone();
-			Polynomial quotient = (Polynomial)new Polynomial();
+			Polynomial quotient = (Polynomial)new Polynomial(new ITerm[] { new Term(new BigInteger(0), 0) });
 
 			// The leading coefficient is the only number we ever divide by
 			// (so if right is monic, polynomial division does not involve division at all!)

@@ -1,18 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace ExtendedArithmetic
 {
 	public class Term : ITerm
 	{
-		public int Exponent { get; private set; }
+		[DataMember]
+		public int Exponent { get; set; }
+
+		[DataMember]
 		public BigInteger CoEfficient { get; set; }
 
+		[IgnoreDataMember]
 		private const string IndeterminateSymbol = "X";
+
+		public Term()
+		{
+		}
 
 		public Term(BigInteger coefficient, int exponent)
 		{
