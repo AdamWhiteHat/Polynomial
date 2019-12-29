@@ -302,35 +302,18 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
-		public static void MakeCoefficientsSmaller(IPolynomial polynomial, BigInteger polynomialBase, BigInteger maxCoefficientSize = default(BigInteger))
+		public static void MakeCoefficientsSmaller(IPolynomial polynomial, BigInteger polynomialBase)
 		{
-			BigInteger maxSize = maxCoefficientSize;
-
-			if (maxSize == default(BigInteger))
-			{
-				maxSize = polynomialBase;
-			}
+			BigInteger max = polynomialBase / 2;
 
 			int pos = 0;
 			int deg = polynomial.Degree;
-
-			while (pos < deg)
+			while (pos <= deg)
 			{
-				if (pos + 1 > deg)
+				if (polynomial[pos] > max)
 				{
-					return;
-				}
-
-				if (polynomial[pos] > maxSize &&
-					polynomial[pos] > polynomial[pos + 1])
-				{
-					BigInteger diff = polynomial[pos] - maxSize;
-
-					BigInteger toAdd = (diff / polynomialBase) + 1;
-					BigInteger toRemove = toAdd * polynomialBase;
-
-					polynomial[pos] -= toRemove;
-					polynomial[pos + 1] += toAdd;
+					polynomial[pos + 1] += 1;
+					polynomial[pos] = -(polynomialBase - polynomial[pos]);
 				}
 
 				pos++;
