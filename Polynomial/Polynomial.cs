@@ -170,7 +170,7 @@ namespace ExtendedArithmetic
 		{
 			if (string.IsNullOrWhiteSpace(input)) { throw new ArgumentException(); }
 
-			string inputString = input.Replace(" ", "").Replace("-", "+-");
+			string inputString = input.Replace(" ", "").Replace("−", "-").Replace("-", "+-");
 			string[] stringTerms = inputString.Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
 
 			if (!stringTerms.Any()) { throw new FormatException(); }
@@ -338,8 +338,8 @@ namespace ExtendedArithmetic
 
 			while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
 			{
-				IPolynomial temp = a;
-				a = b;
+				IPolynomial temp = a.Clone();
+				a = b.Clone();
 				b = Field.Modulus(temp, b);
 			}
 

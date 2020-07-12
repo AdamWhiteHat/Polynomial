@@ -49,7 +49,7 @@ namespace ExtendedArithmetic
 				int sortOrder = mod.CompareTo(poly);
 				if (sortOrder > 0)
 				{
-					return poly;
+					return poly.Clone();
 				}
 				else if (sortOrder == 0)
 				{

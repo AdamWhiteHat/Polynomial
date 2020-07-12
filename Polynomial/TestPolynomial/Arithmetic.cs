@@ -220,22 +220,47 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestGCD()
+		public void TestGCD1()
 		{
-			string expecting = "7*X^3 + 3*X^2 + X + 2";
+			string firstPolyString = "84*X^3 + 36*X^2 + 12*X + 24";
+			string secondPolyString = "7*X^3 + 3*X^2 + X + 2";
 
-			IPolynomial first = Polynomial.Parse("84*X^3 + 36*X^2 + 12*X + 24");
-			IPolynomial second = Polynomial.Parse(expecting);
+			string expecting = secondPolyString;
 
-			//IPolynomial result = Polynomial.Multiply(mult, Polynomial.Parse("X + 1"));
+			IPolynomial first = Polynomial.Parse(firstPolyString);
+			IPolynomial second = Polynomial.Parse(secondPolyString);
+
 			IPolynomial result = Polynomial.GCD(first, second);
+			string actual = result.ToString();
 
 			TestContext.WriteLine($"GCD({first} , {second})");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = {actual}");
+			TestContext.WriteLine($"Expecting: {expecting}");
+
+			Assert.AreEqual(expecting, actual);
+		}
+
+		[TestMethod]
+		public void TestGCD2()
+		{
+			// GCD(X^2 + 7*X + 6, X^2 - 5*X - 6) = X + 1
+			string polyString1 = "X^2 + 7*X + 6";
+			string polyString2 = "X^2 - 5*X - 6";
+			string expecting = "X + 1";
+
+			IPolynomial first = Polynomial.Parse(polyString1);
+			IPolynomial second = Polynomial.Parse(polyString2);
+
+			IPolynomial result = Polynomial.GCD(first, second);
+			string actual = result.ToString();
+
+			TestContext.WriteLine($"GCD({first}, {second})");
 			TestContext.WriteLine("");
 			TestContext.WriteLine($"Result   = {result}");
 			TestContext.WriteLine($"Expecting: {expecting}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expecting, actual);
 		}
 
 		[TestMethod]
@@ -247,7 +272,7 @@ namespace TestPolynomial
 
 			IPolynomial result = Polynomial.GetDerivativePolynomial(first);
 
-			TestContext.WriteLine($"f' where f(x) = ({first})");
+			TestContext.WriteLine($"f' where f(X) = ({first})");
 			TestContext.WriteLine("");
 			TestContext.WriteLine($"Result   = {result}");
 			TestContext.WriteLine($"Expecting: {expecting}");
