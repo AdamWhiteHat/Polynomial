@@ -18,8 +18,8 @@ namespace TestPolynomial
 		{
 			string expecting = "2*X - 2";
 
-			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("3*x^2 + 2*x + 1");
-			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("x^2 + 1");
+			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("3*X^2 + 2*X + 1");
+			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("X^2 + 1");
 
 			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Field<BigInteger>.Modulus(first, second);
 

@@ -9,10 +9,17 @@ namespace PolynomialLibrary
 {
 	public class Term<T> : ITerm<T>
 	{
+		public static ITerm<T> Zero = null;
+
 		public int Exponent { get; private set; }
 		public T CoEfficient { get; set; }
 
 		private const string IndeterminateSymbol = "X";
+
+		static Term()
+		{
+			Zero = new Term<T>(GenericArithmetic<T>.Zero, 0);
+		}
 
 		public Term(T coefficient, int exponent)
 		{
@@ -33,6 +40,17 @@ namespace PolynomialLibrary
 			}
 
 			return results.ToArray();
+		}
+
+		public static ITerm<T> Divide(ITerm<T> left, ITerm<T> right)
+		{
+			T coefficent = GenericArithmetic<T>.Divide(left.CoEfficient, right.CoEfficient);
+			int exponent = left.Exponent - right.Exponent;
+			if (exponent < 0 || GenericArithmetic<T>.Equals(coefficent, GenericArithmetic<T>.Zero))
+			{
+				return Term<T>.Zero;
+			}
+			return new Term<T>(coefficent, exponent);
 		}
 
 		public T Evaluate(T indeterminate)

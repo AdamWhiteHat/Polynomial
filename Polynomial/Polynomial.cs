@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PolynomialLibrary
 {
@@ -12,8 +13,12 @@ namespace PolynomialLibrary
 		public static IPolynomial<T> One = null;
 		public static IPolynomial<T> Two = null;
 
+		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
 		public ITerm<T>[] Terms { get { return _terms.ToArray(); } }
+
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private List<ITerm<T>> _terms;
+
 		public int Degree { get; private set; }
 
 		public T this[int degree]
@@ -366,13 +371,6 @@ namespace PolynomialLibrary
 			return quotient;
 		}
 
-		private static ITerm<T> Divide(ITerm<T> left, ITerm<T> right)
-		{
-			T coefficent = GenericArithmetic<T>.Divide(left.CoEfficient, right.CoEfficient);
-			int exponent = left.Exponent - right.Exponent;
-			return new Term<T>(coefficent, exponent);
-		}
-
 		public static IPolynomial<T> Divide(IPolynomial<T> left, IPolynomial<T> right, out IPolynomial<T> remainder)
 		{
 			if (left == null) throw new ArgumentNullException(nameof(left));
@@ -387,13 +385,16 @@ namespace PolynomialLibrary
 			IPolynomial<T> rhs = right.Clone();
 			IPolynomial<T> total = Zero;
 
+			int degree = Math.Max(left.Degree, right.Degree) - 1;
+
 			bool done = false;
 			while (!done)
 			{
 				ITerm<T> leftLC = lhs.Terms.Last();
 				ITerm<T> rightLC = rhs.Terms.Last();
 
-				ITerm<T> quotientTerm = Divide(leftLC, rightLC);
+				ITerm<T> quotientTerm = Term<T>.Divide(leftLC, rightLC);
+
 				IPolynomial<T> multiplicand = new Polynomial<T>(new ITerm<T>[] { quotientTerm });
 
 				total = Add(total, multiplicand);
@@ -402,6 +403,11 @@ namespace PolynomialLibrary
 				IPolynomial<T> difference = Subtract(lhs, subtrahend);
 
 				lhs = difference.Clone();
+
+				if (quotientTerm == Term<T>.Zero)
+				{
+					break;
+				}
 
 				if (lhs.Degree < 1)
 				{
@@ -422,6 +428,8 @@ namespace PolynomialLibrary
 
 					done = true;
 				}
+
+				degree--;
 			}
 
 			remainder = lhs.Clone();

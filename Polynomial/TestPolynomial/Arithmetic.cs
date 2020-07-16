@@ -173,26 +173,6 @@ namespace TestPolynomial
 			Assert.AreEqual(expecting, result.ToString());
 		}
 
-
-
-		[TestMethod]
-		public void TestDivide7()
-		{
-			string expecting = "15*X + 39";
-
-			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("2*X^3 + X^2 + 13*X");
-			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("15*X + 39");
-
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Divide(first, second);
-
-			TestContext.WriteLine($"({first}) / ({second})");
-			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
-
-			Assert.AreEqual(expecting, result.ToString());
-		}
-
 		[TestMethod]
 		public void TestSquare()
 		{
@@ -213,6 +193,8 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestGCD()
 		{
+			throw new NotImplementedException();
+
 			string expecting = "X^2 + 3*X + 2";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("X^4 + 8*X^3 + 21*X^2 + 22*X + 8");
@@ -238,7 +220,7 @@ namespace TestPolynomial
 
 			IPolynomial<BigInteger> result = Polynomial<BigInteger>.GetDerivativePolynomial(first);
 
-			TestContext.WriteLine($"f' where f(x) = ({first})");
+			TestContext.WriteLine($"f' where f(X) = ({first})");
 			TestContext.WriteLine("");
 			TestContext.WriteLine($"Result   = {result}");
 			TestContext.WriteLine($"Expecting: {expecting}");
