@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TestPolynomial
 {
 	[TestClass]
-	public class Arithmetic
+	public class Arithmetic_BigInteger
 	{
 		private TestContext m_testContext;
 		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }

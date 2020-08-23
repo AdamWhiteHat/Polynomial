@@ -19,7 +19,7 @@ namespace PolynomialLibrary
 		private static Func<T, T, T> _multiplyFunction = null;
 		private static Func<T, T, T> _divideFunction = null;
 		private static Func<T, T, T> _moduloFunction = null;
-		private static Func<T, int, T> _powerFunction = null;
+		private static Func<T, T, T> _powerFunction = null;
 
 		private static Func<T, T, bool> _greaterthanFunction = null;
 		private static Func<T, T, bool> _equalFunction = null;
@@ -86,6 +86,11 @@ namespace PolynomialLibrary
 		}
 
 		public static T Power(T a, int b)
+		{
+			return Power(a, ConvertImplementation<int, T>.Convert(b));
+		}
+
+		public static T Power(T a, T b)
 		{
 			if (_powerFunction == null)
 			{
@@ -506,20 +511,30 @@ namespace PolynomialLibrary
 			return result;
 		}
 
-		private static Func<T, int, T> CreatePowerFunction()
+		private static Func<T, T, T> CreatePowerFunction()
 		{
 			ParameterExpression baseVal = Expression.Parameter(typeof(T), "baseValue");
-			ParameterExpression exp = Expression.Parameter(typeof(int), "exponent");
+			ParameterExpression exp = Expression.Parameter(typeof(T), "exponent");
+
+			MethodInfo method;
 
 			Type typeFromHandle = typeof(T);
-			MethodInfo method = typeFromHandle.GetMethod("Pow", BindingFlags.Static | BindingFlags.Public);
+			if (IsArithmeticValueType(typeFromHandle))
+			{
+				method = typeof(Math).GetMethod("Pow", BindingFlags.Static | BindingFlags.Public);
+			}
+			else
+			{
+				method = typeFromHandle.GetMethod("Pow", BindingFlags.Static | BindingFlags.Public);
+			}
+
 			if (method == null)
 			{
 				throw new NotSupportedException($"Cannot find public static method 'Pow' for type of {typeFromHandle.FullName}.");
 			}
 
 			MethodCallExpression methodCall = Expression.Call(method, baseVal, exp);
-			Func<T, int, T> result = Expression.Lambda<Func<T, int, T>>(methodCall, baseVal, exp).Compile();
+			Func<T, T, T> result = Expression.Lambda<Func<T, T, T>>(methodCall, baseVal, exp).Compile();
 			return result;
 		}
 
