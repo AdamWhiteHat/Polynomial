@@ -51,8 +51,17 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Arithmetic_BigInteger.cs" />
-    <Compile Include="Arithmetic_Double.cs" />
+    <Compile Include="PolynomialArithmetic_BigInteger.cs" />
+    <Compile Include="PolynomialArithmetic_Complex.cs" />
+    <Compile Include="PolynomialArithmetic_Decimal.cs" />
+    <Compile Include="PolynomialArithmetic_Int16.cs" />
+    <Compile Include="PolynomialArithmetic_Int64.cs" />
+    <Compile Include="PolynomialArithmetic_Int32.cs" />
+    <Compile Include="TypeArithmetic_BigInteger.cs" />
+    <Compile Include="PolynomialArithmetic_Double.cs" />
+    <Compile Include="TypeArithmetic_Double.cs" />
+    <Compile Include="Comparison_BigInteger.cs" />
+    <Compile Include="Comparison_Double.cs" />
     <Compile Include="Field_BigInteger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
