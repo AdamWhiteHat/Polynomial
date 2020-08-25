@@ -572,11 +572,16 @@ namespace PolynomialLibrary
 			}
 			else
 			{
-				method = typeFromHandle.GetMethod("Pow", BindingFlags.Static | BindingFlags.Public);
+				var methods = typeFromHandle.GetMethods(BindingFlags.Static | BindingFlags.Public);
+				var powMethods = methods.Where(mi => mi.Name == "Pow").ToList();
+				method = powMethods.FirstOrDefault();
 
-				Expression convertExpression = Expression.Convert(exp, typeof(int));
+				if (method != null)
+				{
+					Expression convertExpression = Expression.Convert(exp, typeof(int));
 
-				methodCall = Expression.Call(method, baseVal, convertExpression);
+					methodCall = Expression.Call(method, baseVal, convertExpression);
+				}
 			}
 
 			if (method == null || methodCall == null)

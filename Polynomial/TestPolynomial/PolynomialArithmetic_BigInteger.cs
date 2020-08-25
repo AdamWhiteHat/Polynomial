@@ -12,182 +12,221 @@ namespace TestPolynomial
 		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
 
 		[TestMethod]
+		public void TestBaseMExpansionConstructor()
+		{
+			string expected = "2*X^3 + X^2 + 10*X + 62";
+
+			Complex n = 1811 * 1777;
+
+			IPolynomial<Complex> poly = new Polynomial<Complex>(n, 117, 3);
+			string actual = poly.ToString();
+
+			TestContext.WriteLine($"{poly}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
+
+			Assert.AreEqual(expected, actual.ToString());
+		}
+
+		[TestMethod]
 		public void TestAddition()
 		{
-			string expecting = "24*X - 1";
+			string expected = "24*X - 1";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("12*X + 2");
 			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("12*X - 3");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Add(first, second);
+			IPolynomial<BigInteger> sum = Polynomial<BigInteger>.Add(first, second);
+			string actual = sum.ToString();
 
 			TestContext.WriteLine($"({first}) + ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result.ToString()}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 
 		[TestMethod]
 		public void TestSubtraction()
 		{
-			string expecting = "7*X^2 + X";
+			string expected = "7*X^2 + X";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("7*X^2 + 3*X - 2");
 			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("2*X - 2");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Subtract(first, second);
+			IPolynomial<BigInteger> difference = Polynomial<BigInteger>.Subtract(first, second);
+			string actual = difference.ToString();
 
 			TestContext.WriteLine($"({first}) - ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual);
 		}
 
 		[TestMethod]
 		public void TestMultiply()
 		{
-			string expecting = "144*X^2 - 12*X - 6";
+			string expected = "144*X^2 - 12*X - 6";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("12*X + 2");
 			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("12*X - 3");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Multiply(first, second);
+			IPolynomial<BigInteger> product = Polynomial<BigInteger>.Multiply(first, second);
+			string actual = product.ToString();
 
 			TestContext.WriteLine($"({first}) * ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 
 		[TestMethod]
 		public void TestDivide1()
 		{
-			string expecting = "24*X - 1";
+			string expected = "24*X - 1";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("288*X^2 + 36*X - 2");
 			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("12*X + 2");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Divide(first, second);
+			IPolynomial<BigInteger> quotient = Polynomial<BigInteger>.Divide(first, second);
+			string actual = quotient.ToString();
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 
 		[TestMethod]
 		public void TestDivide2()
 		{
-			string expecting = "2*X - 2";
+			string expected = "2*X - 2";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("6*X^2 - 6");
 			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("3*X + 3");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Divide(first, second);
+			IPolynomial<BigInteger> quotient = Polynomial<BigInteger>.Divide(first, second);
+			string actual = quotient.ToString();
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 
 		[TestMethod]
 		public void TestDivide3()
 		{
-			string expecting = "6";
+			string expected = "6";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("6*X^2 - 6");
 			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("X^2 - 1");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Divide(first, second);
+			IPolynomial<BigInteger> quotient = Polynomial<BigInteger>.Divide(first, second);
+			string actual = quotient.ToString();
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 
 		[TestMethod]
 		public void TestDivide4()
 		{
-			string expecting = "6*X - 1";
+			string expected = "6*X - 1";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("36*X^2 - 1");
 			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("6*X + 1");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Divide(first, second);
+			IPolynomial<BigInteger> quotient = Polynomial<BigInteger>.Divide(first, second);
+			string actual = quotient.ToString();
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 
 		[TestMethod]
 		public void TestDivide5()
 		{
-			string expecting = "6*X + 1";
+			string expected = "6*X + 1";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("36*X^2 - 1");
 			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("6*X - 1");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Divide(first, second);
+			IPolynomial<BigInteger> quotient = Polynomial<BigInteger>.Divide(first, second);
+			string actual = quotient.ToString();
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 
 		[TestMethod]
 		public void TestDivide6()
 		{
-			string expecting = "144*X^2 + 18*X - 1";
+			string expected = "144*X^2 + 18*X - 1";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("288*X^2 + 36*X - 2");
 			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("2");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Divide(first, second);
+			IPolynomial<BigInteger> quotient = Polynomial<BigInteger>.Divide(first, second);
+			string actual = quotient.ToString();
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 
 		[TestMethod]
 		public void TestSquare()
 		{
-			string expecting = "144*X^2 + 24*X + 1";
+			string expected = "144*X^2 + 24*X + 1";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("12*X + 1");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.Square(first);
+			IPolynomial<BigInteger> square = Polynomial<BigInteger>.Square(first);
+			string actual = square.ToString();
 
 			TestContext.WriteLine($"({first})^2");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 
 		[TestMethod]
@@ -195,37 +234,40 @@ namespace TestPolynomial
 		{
 			throw new NotImplementedException();
 
-			string expecting = "X^2 + 3*X + 2";
+			string expected = "X^2 + 3*X + 2";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("X^4 + 8*X^3 + 21*X^2 + 22*X + 8");
 			IPolynomial<BigInteger> second = Polynomial<BigInteger>.Parse("X^3 + 6*X^2 + 11*X + 6");
 
-			//IPolynomial<BigInteger> result = Polynomial<BigInteger>.Multiply(mult, Polynomial<BigInteger>.Parse("X + 1"));
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.GCD(first, second);
+			IPolynomial<BigInteger> gcd = Polynomial<BigInteger>.GCD(first, second);
+			string actual = gcd.ToString();
 
 			TestContext.WriteLine($"GCD({first} , {second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 
 		[TestMethod]
 		public void TestDerivative()
 		{
-			string expecting = "576*X + 36";
+			string expected = "576*X + 36";
 
 			IPolynomial<BigInteger> first = Polynomial<BigInteger>.Parse("288*X^2 + 36*X - 2");
 
-			IPolynomial<BigInteger> result = Polynomial<BigInteger>.GetDerivativePolynomial(first);
+			IPolynomial<BigInteger> derivative = Polynomial<BigInteger>.GetDerivativePolynomial(first);
+			string actual = derivative.ToString();
 
 			TestContext.WriteLine($"f' where f(X) = ({first})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result}");
-			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
 
-			Assert.AreEqual(expecting, result.ToString());
+			Assert.AreEqual(expected, actual.ToString());
 		}
 	}
 }

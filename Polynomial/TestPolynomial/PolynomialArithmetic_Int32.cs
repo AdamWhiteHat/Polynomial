@@ -12,13 +12,33 @@ namespace TestPolynomial
 		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
 
 		[TestMethod]
-		public void TestAddition()
+		public void TestBaseMExpansionConstructor()
 		{
 			string expected = "2*X^3 + X^2 + 10*X + 62";
 
 			Int32 n = 1811 * 1777;
 
-			IPolynomial<Int32> sum = new Polynomial<Int32>(n, 117, 3);
+			IPolynomial<Int32> poly = new Polynomial<Int32>(n, 117, 3);
+			string actual = poly.ToString();
+
+			TestContext.WriteLine($"{poly}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
+
+			Assert.AreEqual(expected, actual.ToString());
+		}
+
+		[TestMethod]
+		public void TestAddition()
+		{
+			string expected = "24*X - 1";
+
+			IPolynomial<Int32> first = Polynomial<Int32>.Parse("12*X + 2");
+			IPolynomial<Int32> second = Polynomial<Int32>.Parse("12*X - 3");
+
+			IPolynomial<Int32> sum = Polynomial<Int32>.Add(first, second);
 			string actual = sum.ToString();
 
 			TestContext.WriteLine($"{sum}");

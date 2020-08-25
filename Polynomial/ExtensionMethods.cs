@@ -149,6 +149,27 @@ namespace PolynomialLibrary
 		private static BigInteger Fifteen = new BigInteger(15);
 	}
 
+	public static class ComplexExtensionMethods
+	{
+		public static Complex Parse(string s)
+		{
+			if (string.IsNullOrWhiteSpace(s)) { throw new ArgumentException($"Argument {nameof(s)} cannot be null, empty or whitespace"); }
+
+			string input = s.Trim();
+			string[] parts = input.Split(new char[] { ' ', '(', ')', ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+			if (parts.Length != 2)
+			{
+				throw new FormatException($"Argument {nameof(s)} not of the correct format. Expecting format: \"(1.75, 3.5)\"");
+			}
+
+			double real = double.Parse(parts[0]);
+			double imaginary = double.Parse(parts[1]);
+
+			return new Complex(real, imaginary);
+		}
+	}
+
 	public static class IEnumerableBigIntegerExtensionMethods
 	{
 		// Product
