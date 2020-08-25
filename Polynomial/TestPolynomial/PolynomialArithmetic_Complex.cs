@@ -14,7 +14,7 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestBaseMExpansionConstructor()
 		{
-			string expected = "2*X^3 + X^2 + 10*X + 62";
+			string expected = "(2.00931623307253, 0)*X^3";
 
 			Complex n = 1811 * 1777;
 
@@ -35,8 +35,8 @@ namespace TestPolynomial
 		{
 			string expected = "24*X - 1";
 
-			IPolynomial<Complex> first = Polynomial<Complex>.Parse("12*X + 2");
-			IPolynomial<Complex> second = Polynomial<Complex>.Parse("12*X - 3");
+			IPolynomial<Complex> first = Polynomial<Complex>.Parse("(12,0)*X + (2,0)");
+			IPolynomial<Complex> second = Polynomial<Complex>.Parse("(12,0)*X - (3,0)");
 
 			IPolynomial<Complex> sum = Polynomial<Complex>.Add(first, second);
 			string actual = sum.ToString();

@@ -16,9 +16,9 @@ namespace TestPolynomial
 		{
 			string expected = "2*X^3 + X^2 + 10*X + 62";
 
-			Complex n = 1811 * 1777;
+			BigInteger n = 1811 * 1777;
 
-			IPolynomial<Complex> poly = new Polynomial<Complex>(n, 117, 3);
+			IPolynomial<BigInteger> poly = new Polynomial<BigInteger>(n, 117, 3);
 			string actual = poly.ToString();
 
 			TestContext.WriteLine($"{poly}");

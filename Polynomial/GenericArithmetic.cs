@@ -334,6 +334,11 @@ namespace PolynomialLibrary
 			return Modulo(power, modulus);
 		}
 
+		private static int ConvertBigIntegerToInt(BigInteger value)
+		{
+			return (int)value;
+		}
+
 		private static bool ComplexComparisonInternal(T left, T right, ExpressionType operationType)
 		{
 			if (!IsComplexValueType(typeof(T)))
@@ -547,8 +552,10 @@ namespace PolynomialLibrary
 
 		private static Func<T, T, T> CreatePowerFunction()
 		{
-			ParameterExpression baseVal = Expression.Parameter(typeof(T), "baseValue");
-			ParameterExpression exp = Expression.Parameter(typeof(T), "exponent");
+			Type typeOfT = typeof(T);
+
+			ParameterExpression baseVal = Expression.Parameter(typeOfT, "baseValue");
+			ParameterExpression exp = Expression.Parameter(typeOfT, "exponent");
 
 			MethodInfo method = null;
 			Expression methodCall = null;
@@ -568,7 +575,7 @@ namespace PolynomialLibrary
 
 				Expression methodCallExpression = Expression.Call(method, baseParameterExpression, exponentParameterExpression);
 
-				methodCall = ConvertIfNeeded(methodCallExpression, typeof(T));
+				methodCall = ConvertIfNeeded(methodCallExpression, typeOfT);
 			}
 			else
 			{
@@ -578,7 +585,15 @@ namespace PolynomialLibrary
 
 				if (method != null)
 				{
-					Expression convertExpression = Expression.Convert(exp, typeof(int));
+					Expression convertExpression = null;
+					if (typeOfT == typeof(BigInteger))
+					{
+						convertExpression = Expression.Convert(exp, typeof(int), typeof(GenericArithmetic<T>).GetMethod("ConvertBigIntegerToInt", BindingFlags.Static | BindingFlags.NonPublic));
+					}
+					else
+					{
+						convertExpression = exp;
+					}
 
 					methodCall = Expression.Call(method, baseVal, convertExpression);
 				}
@@ -625,9 +640,19 @@ namespace PolynomialLibrary
 			MethodInfo[] methods = typeFromHandle.GetMethods(BindingFlags.Static | BindingFlags.Public);
 			var filteredMethods = methods.Where(mi => mi.Name == "Parse" && mi.GetParameters().Count() == 1);
 
-			MethodInfo method = filteredMethods.FirstOrDefault();//GetMethod("Parse", BindingFlags.Static | BindingFlags.Public);
+			MethodInfo method = null;
+			if (typeFromHandle == typeof(Complex))
+			{
+				method = typeof(ComplexExtensionMethods).GetMethod("Parse", BindingFlags.Static | BindingFlags.Public);
+			}
+			else
+			{
+				method = filteredMethods.FirstOrDefault();//GetMethod("Parse", BindingFlags.Static | BindingFlags.Public);
+			}
+
 			if (method == null)
 			{
+
 				throw new NotSupportedException($"Cannot find public static method 'Parse' for type of {typeFromHandle.FullName}.");
 			}
 
