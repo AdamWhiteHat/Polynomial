@@ -8,7 +8,7 @@ A univariate, sparse, integer polynomial class. That is, a polynomial in only on
 
 
 ### Generic Arithmetic Types
-   * I created an implementation that uses generic arithmetic types. All polynomial arithmetic is performed on this generic type, allowing BigInteger to be swapped out for Complex, Decimal, BigComplex, BigDecimal, BigRational and System.Drawing.Color. Okay, it doesnt really perform arithmetic on System.Drawing.Color. Check it out on my [GenericArithmeticTypes branch](https://github.com/AdamWhiteHat/Polynomial/tree/GenericArithmetic-Types).
+   * I created an implementation that can perform symbolic polynomial arithmetic on generic numeric types. All polynomial arithmetic is performed on this generic type, allowing BigInteger to be swapped out for Complex, Decimal, Double, BigComplex, BigDecimal, BigRational, Int32, Int64 and more! Check it out on my [GenericArithmetic-Expression branch](https://github.com/AdamWhiteHat/Polynomial/tree/GenericArithmetic-Expression).
 
 
 #
