@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Numerics;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace PolynomialLibrary
 {
@@ -186,10 +186,45 @@ namespace PolynomialLibrary
 		{
 			if (string.IsNullOrWhiteSpace(input)) { throw new ArgumentException(); }
 
-			string inputString = input.Replace(" ", "").Replace("-", "+-");
-			string[] stringTerms = inputString.Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
+			string inputString = input.Replace(" ", "");
 
-			if (!stringTerms.Any()) { throw new FormatException(); }
+			// The below replaces the following logic: inputString = inputString.Replace("-", "+-");
+			// in a way that doesn't flip negative coefficients. 
+			// Begin logic
+			int[] indices = inputString.FindAllIndexOf('-');
+
+			int[] indicesToInsertAPlusCharacter =
+					indices
+						.Where(i => i <= 0 ? false : !_charactersPreceedingTermOperation.Contains(inputString[i - 1]))
+						.OrderByDescending(i => i)
+						.ToArray();
+
+			string modifiedString = inputString;
+
+			foreach (int index in indicesToInsertAPlusCharacter)
+			{
+				modifiedString = modifiedString.Insert(index, "+");
+			}
+			// End logic
+
+
+			string[] stringTerms = modifiedString.Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
+			if (!stringTerms.Any())
+			{
+				throw new FormatException();
+			}
+
+			if (typeof(T) == typeof(Complex))
+			{
+				_coefficientPredicates.Add((c) => c == '(');
+				_coefficientPredicates.Add((c) => c == ')');
+				_coefficientPredicates.Add((c) => c == ',');
+				_coefficientPredicates.Add((c) => c == '.');
+			}
+			if (typeof(T) == typeof(double) || typeof(T) == typeof(decimal))
+			{
+				_coefficientPredicates.Add((c) => c == '.');
+			}
 
 			List<Term<T>> polyTerms = new List<Term<T>>();
 			foreach (string stringTerm in stringTerms)
@@ -198,14 +233,17 @@ namespace PolynomialLibrary
 
 				if (termParts.Count() != 2)
 				{
-					if (termParts.Count() != 1) { throw new FormatException(); }
+					if (termParts.Count() != 1)
+					{
+						throw new FormatException();
+					}
 
 					string temp = termParts[0];
-					if (temp.All(c => char.IsDigit(c) || c == '-'))
+					if (temp.All(c => _coefficientPredicates.Any(p => p(c))))
 					{
 						termParts = new string[] { temp, "X^0" };
 					}
-					else if (temp.All(c => char.IsLetter(c) || c == '^' || c == '-' || char.IsDigit(c)))
+					else if (temp.All(c => _variablePredicates.Any(p => p(c))))
 					{
 						if (temp.Contains("-"))
 						{
@@ -214,18 +252,36 @@ namespace PolynomialLibrary
 						}
 						else { termParts = new string[] { "1", temp }; }
 					}
-					else { throw new FormatException(); }
+					else
+					{
+						throw new FormatException();
+					}
+				}
+
+				bool negateCoefficient = false;
+				if (termParts[0].First() == '-')
+				{
+					termParts[0] = termParts[0].Substring(1, termParts[0].Length - 1);
+					negateCoefficient = true;
 				}
 
 				T coefficient = GenericArithmetic<T>.Parse(termParts[0]);
 
+				if (negateCoefficient)
+				{
+					coefficient = GenericArithmetic<T>.Negate(coefficient);
+				}
+
 				string[] variableParts = termParts[1].Split(new char[] { '^' });
 				if (variableParts.Count() != 2)
 				{
-					if (variableParts.Count() != 1) { throw new FormatException(); }
+					if (variableParts.Count() != 1)
+					{
+						throw new FormatException();
+					}
 
 					string tmp = variableParts[0];
-					if (tmp.All(c => char.IsLetter(c)))
+					if (tmp.All(c => _indeterminatePredicates.Any(p => p(c))))
 					{
 						variableParts = new string[] { tmp, "1" };
 					}
@@ -234,9 +290,18 @@ namespace PolynomialLibrary
 				polyTerms.Add(new Term<T>(coefficient, exponent));
 			}
 
-			if (!polyTerms.Any()) { throw new FormatException(); }
+			if (!polyTerms.Any())
+			{
+				throw new FormatException();
+			}
+
 			return new Polynomial<T>(polyTerms.ToArray());
 		}
+
+		private static char[] _charactersPreceedingTermOperation = new char[] { '(', ',', '*', '^', '+' };
+		private static List<Predicate<char>> _coefficientPredicates = new List<Predicate<char>> { char.IsDigit, (c) => c == '-' };
+		private static List<Predicate<char>> _variablePredicates = new List<Predicate<char>> { char.IsLetter, char.IsDigit, (c) => c == '^', (c) => c == '-' };
+		private static List<Predicate<char>> _indeterminatePredicates = new List<Predicate<char>> { char.IsLetter };
 
 		#endregion
 

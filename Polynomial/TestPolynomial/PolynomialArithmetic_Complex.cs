@@ -30,13 +30,31 @@ namespace TestPolynomial
 			Assert.AreEqual(expected, actual.ToString());
 		}
 
+
+		[TestMethod]
+		public void TestParse()
+		{
+			string expected = "(144, 0)*X^2 + (-12.5, -0.5)*X + (-3, -6.1)";
+
+			IPolynomial<Complex> poly = Polynomial<Complex>.Parse(expected);
+			string actual = poly.ToString();
+
+			TestContext.WriteLine($"{poly}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
+
+			Assert.AreEqual(expected, actual.ToString());
+		}
+
 		[TestMethod]
 		public void TestAddition()
 		{
-			string expected = "24*X - 1";
+			string expected = "(-11.25, 1)*X^2 + (-1, -0.5)";
 
-			IPolynomial<Complex> first = Polynomial<Complex>.Parse("(12,0)*X + (2,0)");
-			IPolynomial<Complex> second = Polynomial<Complex>.Parse("(12,0)*X - (3,0)");
+			IPolynomial<Complex> first = Polynomial<Complex>.Parse("(-12.0, 0)*X^2 - (2, 0)");
+			IPolynomial<Complex> second = Polynomial<Complex>.Parse("(0.75, 1)*X^2 + (1.0, -0.5)");
 
 			IPolynomial<Complex> sum = Polynomial<Complex>.Add(first, second);
 			string actual = sum.ToString();
@@ -53,7 +71,7 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestSubtraction()
 		{
-			string expected = "7*X^2 + X";
+			string expected = "(7, 0)*X^2 + X";
 
 			IPolynomial<Complex> first = Polynomial<Complex>.Parse("7*X^2 + 3*X - 2");
 			IPolynomial<Complex> second = Polynomial<Complex>.Parse("2*X - 2");
@@ -73,10 +91,10 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestMultiply()
 		{
-			string expected = "144*X^2 - 12*X - 6";
+			string expected = "(9, 12)*X^4 + (10.5, -8)*X^2 + (-2, 1)";
 
-			IPolynomial<Complex> first = Polynomial<Complex>.Parse("12*X + 2");
-			IPolynomial<Complex> second = Polynomial<Complex>.Parse("12*X - 3");
+			IPolynomial<Complex> first = Polynomial<Complex>.Parse("(12.0, 0)*X^2 - (2, 0)");
+			IPolynomial<Complex> second = Polynomial<Complex>.Parse("(0.75, 1)*X^2 + (1.0, -0.5)");
 
 			IPolynomial<Complex> product = Polynomial<Complex>.Multiply(first, second);
 			string actual = product.ToString();
@@ -94,7 +112,7 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestDivide()
 		{
-			string expected = "24*X - 1";
+			string expected = "(24, 0)*X + (-1, 0)";
 
 			IPolynomial<Complex> first = Polynomial<Complex>.Parse("288*X^2 + 36*X - 2");
 			IPolynomial<Complex> second = Polynomial<Complex>.Parse("12*X + 2");
@@ -114,7 +132,7 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestMod()
 		{
-			string expected = "2*X - 2";
+			string expected = "(2, 0)*X + (-2, 0)";
 
 			IPolynomial<Complex> first = Polynomial<Complex>.Parse("3*X^2 + 2*X + 1");
 			IPolynomial<Complex> second = Polynomial<Complex>.Parse("X^2 + 1");

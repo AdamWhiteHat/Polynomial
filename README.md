@@ -1,15 +1,7 @@
 # Polynomial
-A univariate, sparse, integer polynomial class. That is, a polynomial in only one indeterminate, X, that only tracks terms with non-zero coefficients, and all coefficients are BigInteger integers. 
+A univariate, sparse, generic polynomial arithmetic library. That is, a polynomial in only one indeterminate, X, that only tracks terms with non-zero coefficients. This generic implementation has been tested and supports performing arithmetic on numeric types such as BigInteger, Complex, Decimal, Double, BigComplex, BigDecimal, BigRational, Int32, Int64 and more.
 
-**NOTE: All arithmetic is done symbolically. That means the result a arithmetic operation on two polynomials, returns another polynomial, not some integer that is the result of evaluating said polynomials.**
-
-
-#
-
-
-### Generic Arithmetic Types
-   * I created an implementation that uses generic arithmetic types. All polynomial arithmetic is performed on this generic type, allowing BigInteger to be swapped out for Complex, Decimal, BigComplex, BigDecimal, BigRational and System.Drawing.Color. Okay, it doesnt really perform arithmetic on System.Drawing.Color. Check it out on my [GenericArithmeticTypes branch](https://github.com/AdamWhiteHat/Polynomial/tree/GenericArithmeticTypes).
-
+All arithmetic is done symbolically. That means the result a arithmetic operation on two polynomials, returns another polynomial, not some integer that is the result of evaluating said polynomials.
 
 #
 

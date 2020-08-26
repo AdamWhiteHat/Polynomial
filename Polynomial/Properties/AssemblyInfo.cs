@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("PolynomialLibrary")]
-[assembly: AssemblyDescription("Sparse Polynomial Library")]
+[assembly: AssemblyDescription("Library to perform symbolic polynomial arithmetic on generic numeric types")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Adam White")]
 [assembly: AssemblyProduct("PolynomialLibrary")]

@@ -643,7 +643,7 @@ namespace PolynomialLibrary
 			MethodInfo method = null;
 			if (typeFromHandle == typeof(Complex))
 			{
-				method = typeof(ComplexExtensionMethods).GetMethod("Parse", BindingFlags.Static | BindingFlags.Public);
+				method = typeof(HelperMethods).GetMethod("Parse", BindingFlags.Static | BindingFlags.Public);
 			}
 			else
 			{

@@ -31,6 +31,23 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
+		public void TestParse()
+		{
+			string expected = "144*X^2 - 12*X + 6.51";
+
+			IPolynomial<double> poly = Polynomial<double>.Parse(expected);
+			string actual = poly.ToString();
+
+			TestContext.WriteLine($"{poly}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Expected: {expected}");
+			TestContext.WriteLine($"Actual:   {actual}");
+			TestContext.WriteLine($"Passed  = {expected == actual}");
+
+			Assert.AreEqual(expected, actual.ToString());
+		}
+
+		[TestMethod]
 		public void TestAddition()
 		{
 			string expected = "24*X - 1";
