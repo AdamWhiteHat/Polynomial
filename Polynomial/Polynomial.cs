@@ -279,7 +279,7 @@ namespace ExtendedArithmetic
 			int d = terms.Count() - 1;
 			while (d >= 0)
 			{
-				decimal placeValue = Pow(indeterminateValue, terms[d].Exponent);
+				decimal placeValue = Power(indeterminateValue, terms[d].Exponent);
 				decimal addValue = decimal.Multiply((decimal)terms[d].CoEfficient, placeValue);
 
 				result += addValue;
@@ -289,29 +289,27 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
-		private static decimal Pow(decimal b, int exp)
+		private static decimal Power(decimal value, int exponent)
 		{
-			if (exp < 0) throw new ArgumentOutOfRangeException(nameof(exp), "Negative exponents not supported!");
+			if (exponent < 0) throw new ArgumentOutOfRangeException(nameof(exponent), "Negative exponents not supported!");
+			if (exponent == 0m) { return 1; }
+			if (exponent == 1m) { return value; }
 
+			int exp = exponent;
 			decimal result = 1m;
-			decimal multiplier = b;
-
+			decimal multiplier = value;
 			while (exp > 0)
 			{
-				if ((exp % 2) == 1)
+				if (exp % 2 == 1) // If exp is odd
 				{
 					result *= multiplier;
 					exp -= 1;
-					if (exp == 0)
-					{
-						break;
-					}
+					if (exp == 0) { break; }
 				}
 
 				multiplier *= multiplier;
 				exp /= 2;
 			}
-
 			return result;
 		}
 
