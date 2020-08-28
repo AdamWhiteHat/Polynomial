@@ -248,6 +248,11 @@ namespace ExtendedArithmetic
 			return Evaluate(Terms, indeterminateValue);
 		}
 
+		public decimal Evaluate(decimal indeterminateValue)
+		{
+			return Evaluate(Terms, indeterminateValue);
+		}
+
 		public static double Evaluate(ITerm[] terms, double indeterminateValue)
 		{
 			double result = 0;
@@ -262,6 +267,49 @@ namespace ExtendedArithmetic
 				result += addValue;
 
 				d--;
+			}
+
+			return result;
+		}
+
+		public static decimal Evaluate(ITerm[] terms, decimal indeterminateValue)
+		{
+			decimal result = 0;
+
+			int d = terms.Count() - 1;
+			while (d >= 0)
+			{
+				decimal placeValue = Pow(indeterminateValue, terms[d].Exponent);
+				decimal addValue = decimal.Multiply((decimal)terms[d].CoEfficient, placeValue);
+
+				result += addValue;
+				d--;
+			}
+
+			return result;
+		}
+
+		private static decimal Pow(decimal b, int exp)
+		{
+			if (exp < 0) throw new ArgumentOutOfRangeException(nameof(exp), "Negative exponents not supported!");
+
+			decimal result = 1m;
+			decimal multiplier = b;
+
+			while (exp > 0)
+			{
+				if ((exp % 2) == 1)
+				{
+					result *= multiplier;
+					exp -= 1;
+					if (exp == 0)
+					{
+						break;
+					}
+				}
+
+				multiplier *= multiplier;
+				exp /= 2;
 			}
 
 			return result;
