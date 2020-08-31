@@ -53,6 +53,11 @@ namespace ExtendedArithmetic
 			return new Term(this.CoEfficient.Clone(), this.Exponent);
 		}
 
+		public override int GetHashCode()
+		{
+			return new Tuple<BigInteger, int>(CoEfficient, Exponent).GetHashCode();
+		}
+
 		public override string ToString()
 		{
 			return $"{CoEfficient}*{IndeterminateSymbol}^{Exponent}";

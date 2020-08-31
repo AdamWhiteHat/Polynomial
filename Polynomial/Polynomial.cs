@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace ExtendedArithmetic
 {
 	[DataContract]
-	public partial class Polynomial : IPolynomial
+	public partial class Polynomial : IPolynomial, IEquatable<Polynomial>
 	{
 		public static IPolynomial Zero = null;
 		public static IPolynomial One = null;
@@ -648,9 +648,36 @@ namespace ExtendedArithmetic
 			return new Polynomial(terms);
 		}
 
-		public override string ToString()
+		public bool Equals(IPolynomial other)
 		{
-			return Polynomial.FormatString(this);
+			return (this.CompareTo(other) == 0);
+		}
+		public bool Equals(Polynomial other)
+		{
+			return (this.CompareTo(other) == 0);
+		}
+
+		private static int CombineHashCodes(int h1, int h2)
+		{
+			return (((h1 << 5) + h1) ^ h2);
+		}
+
+		public override int GetHashCode()
+		{
+			int hash = this.Degree.GetHashCode();
+			foreach (Term term in this.Terms)
+			{
+				hash = CombineHashCodes(hash, term.GetHashCode());
+			}
+			return hash;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj == null) { return false; }
+			IPolynomial otherPoly = obj as IPolynomial;
+			if (otherPoly == null) { return false; }
+			else { return Equals(otherPoly); }
 		}
 
 		public static string FormatString(IPolynomial polynomial)
@@ -695,6 +722,11 @@ namespace ExtendedArithmetic
 				}
 			}
 			return string.Join(" + ", stringTerms).Replace("+ -", "- ");
+		}
+
+		public override string ToString()
+		{
+			return Polynomial.FormatString(this);
 		}
 
 		#endregion

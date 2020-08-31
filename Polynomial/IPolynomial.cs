@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace ExtendedArithmetic
 {
-	public interface IPolynomial : ICloneable<IPolynomial>, IComparable, IComparable<IPolynomial>
+	public interface IPolynomial : ICloneable<IPolynomial>, IComparable, IComparable<IPolynomial>, IEquatable<IPolynomial>
 	{
 		int Degree { get; }
 		ITerm[] Terms { get; }
