@@ -365,7 +365,8 @@ namespace PolynomialLibrary
 
 			if (GenericArithmetic<T>.Equal(maxSize, default(T)))
 			{
-				maxSize = polynomialBase;
+
+				maxSize = GenericArithmetic<T>.Divide(polynomialBase, GenericArithmetic<T>.Two);
 			}
 
 			int pos = 0;
@@ -373,11 +374,6 @@ namespace PolynomialLibrary
 
 			while (pos < deg)
 			{
-				if ((pos + 1) > deg)
-				{
-					return;
-				}
-
 				int posInc = pos + 1;
 
 				if (GenericArithmetic<T>.GreaterThan(polynomial[pos], maxSize) &&
