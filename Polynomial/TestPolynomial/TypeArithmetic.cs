@@ -12,7 +12,7 @@ namespace TestPolynomial
 		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
 
 		[TestMethod]
-		public void TestAddition()
+		public virtual void TestAddition()
 		{
 			T first = GenericArithmetic<T>.Parse("5");
 			T second = GenericArithmetic<T>.Parse("3");
@@ -28,7 +28,7 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestSubtraction()
+		public virtual void TestSubtraction()
 		{
 			T first = GenericArithmetic<T>.Parse("5");
 			T second = GenericArithmetic<T>.Parse("3");
@@ -44,7 +44,7 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestMultiplication()
+		public virtual void TestMultiplication()
 		{
 			T first = GenericArithmetic<T>.Parse("5");
 			T second = GenericArithmetic<T>.Parse("3");
@@ -60,7 +60,7 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestDivision()
+		public virtual void TestDivision()
 		{
 			T first = GenericArithmetic<T>.Parse("207");
 			T second = GenericArithmetic<T>.Parse("69");
@@ -76,7 +76,7 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestSqrt()
+		public virtual void TestSqrt()
 		{
 			T input = GenericArithmetic<T>.Parse("25");
 
@@ -91,13 +91,13 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestLog()
+		public virtual void TestLog()
 		{
 			T input = GenericArithmetic<T>.Parse("16");
 			double logBase = 2;
 
-			double expected = 4d;
-			double actual = GenericArithmetic<T>.Log(input, logBase);
+			T expected = GenericArithmetic<T>.Parse("4");
+			T actual = GenericArithmetic<T>.Log(input, logBase);
 
 			TestContext.WriteLine($"Expected: {expected}");
 			TestContext.WriteLine($"Actual:   {actual}");
@@ -107,12 +107,12 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestLn()
+		public virtual void TestLn()
 		{
 			T input = GenericArithmetic<T>.Parse("2981");
 
-			double expected = Math.Log(2981d);
-			double actual = GenericArithmetic<T>.Log(input, Math.E);
+			T expected = GenericArithmetic<T>.Convert<double>(Math.Log(2981d));
+			T actual = GenericArithmetic<T>.Log(input, Math.E);
 
 			TestContext.WriteLine($"Expected: {expected}");
 			TestContext.WriteLine($"Actual:   {actual}");
@@ -122,7 +122,7 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestPower()
+		public virtual void TestPower()
 		{
 			T input = GenericArithmetic<T>.Parse("5");
 			int exp = 2;
@@ -138,7 +138,7 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestNegate()
+		public virtual void TestNegate()
 		{
 			T input = GenericArithmetic<T>.Parse("4");
 
@@ -153,7 +153,7 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestSign()
+		public virtual void TestSign()
 		{
 			T input = GenericArithmetic<T>.Parse("-4");
 
@@ -168,7 +168,7 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestAbs()
+		public virtual void TestAbs()
 		{
 			T input = GenericArithmetic<T>.Parse("-4");
 

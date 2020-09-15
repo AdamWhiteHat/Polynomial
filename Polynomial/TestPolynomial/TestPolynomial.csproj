@@ -58,6 +58,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Comparison.cs" />
+    <Compile Include="Comparison_Int32.cs" />
+    <Compile Include="Comparison_Complex.cs" />
+    <Compile Include="Comparison_Decimal.cs" />
+    <Compile Include="Field_Double.cs" />
+    <Compile Include="Field_Int32.cs" />
+    <Compile Include="Field_BigInteger.cs" />
     <Compile Include="PolynomialArithmetic.cs" />
     <Compile Include="PolynomialArithmetic_BigInteger.cs" />
     <Compile Include="PolynomialArithmetic_Complex.cs" />
@@ -66,12 +72,15 @@
     <Compile Include="PolynomialArithmetic_Int64.cs" />
     <Compile Include="PolynomialArithmetic_Int32.cs" />
     <Compile Include="TypeArithmetic.cs" />
+    <Compile Include="TypeArithmetic_Decimal.cs" />
+    <Compile Include="TypeArithmetic_Int32.cs" />
+    <Compile Include="TypeArithmetic_Complex.cs" />
     <Compile Include="TypeArithmetic_BigInteger.cs" />
     <Compile Include="PolynomialArithmetic_Double.cs" />
     <Compile Include="TypeArithmetic_Double.cs" />
     <Compile Include="Comparison_BigInteger.cs" />
     <Compile Include="Comparison_Double.cs" />
-    <Compile Include="Field_BigInteger.cs" />
+    <Compile Include="Field.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

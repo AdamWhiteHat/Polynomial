@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TestPolynomial
 {
 	[TestClass]
-	public class TypeArithmetic_Double : TypeArithmetic<Double>
+	public class TypeArithmetic_Int32 : TypeArithmetic<Int32>
 	{
 	}
 }

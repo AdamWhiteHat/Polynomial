@@ -31,7 +31,7 @@ namespace PolynomialLibrary
 
 				if (a.Degree == 0)
 				{
-					return Polynomial<T>.One;
+					return Polynomial<T>.One.Clone();
 				}
 				else
 				{
@@ -49,17 +49,17 @@ namespace PolynomialLibrary
 				int sortOrder = mod.CompareTo(poly);
 				if (sortOrder > 0)
 				{
-					return poly;
+					return poly.Clone();
 				}
 				else if (sortOrder == 0)
 				{
-					return Polynomial<T>.Zero;
+					return Polynomial<T>.Zero.Clone();
 				}
 
-				IPolynomial<T> remainder = Polynomial<T>.Zero;
-				IPolynomial<T> quotient = Polynomial<T>.Divide(poly, mod, out remainder);
+				IPolynomial<T> remainder;
+				Polynomial<T>.Divide(poly, mod, out remainder);
 
-				return remainder;
+				return remainder.Clone();
 			}
 
 			public static IPolynomial<T> Modulus(IPolynomial<T> poly, T mod)
@@ -96,8 +96,8 @@ namespace PolynomialLibrary
 				if (right == null) throw new ArgumentNullException(nameof(right));
 				if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 				{
-					remainder = Polynomial<T>.Zero;
-					return left;
+					remainder = Polynomial<T>.Zero.Clone();
+					return left.Clone();
 				}
 
 				int rightDegree = right.Degree;
@@ -105,7 +105,7 @@ namespace PolynomialLibrary
 				T leadingCoefficent = GenericArithmetic<T>.Modulo(GenericArithmetic<T>.Clone(right[rightDegree]), mod);
 
 				Polynomial<T> rem = (Polynomial<T>)left.Clone();
-				Polynomial<T> quotient = (Polynomial<T>)Polynomial<T>.Zero;
+				Polynomial<T> quotient = (Polynomial<T>)Polynomial<T>.Zero.Clone();
 
 				// The leading coefficient is the only number we ever divide by
 				// (so if right is monic, polynomial division does not involve division at all!)
@@ -168,7 +168,7 @@ namespace PolynomialLibrary
 
 			public static IPolynomial<T> ExponentiateMod(IPolynomial<T> startPoly, T s2, IPolynomial<T> f, T p)
 			{
-				IPolynomial<T> result = Polynomial<T>.One;
+				IPolynomial<T> result = Polynomial<T>.One.Clone();
 				if (GenericArithmetic<T>.Equal(s2, GenericArithmetic<T>.Zero)) { return result; }
 
 				IPolynomial<T> A = startPoly.Clone();
@@ -205,7 +205,7 @@ namespace PolynomialLibrary
 				}
 				else if (GenericArithmetic<T>.Equal(exponent, GenericArithmetic<T>.Zero))
 				{
-					return Polynomial<T>.One;
+					return Polynomial<T>.One.Clone();
 				}
 				else if (GenericArithmetic<T>.Equal(exponent, GenericArithmetic<T>.One))
 				{

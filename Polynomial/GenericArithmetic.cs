@@ -19,26 +19,27 @@ namespace PolynomialLibrary
 		private static Func<T, T, T> _multiplyFunction = null;
 		private static Func<T, T, T> _divideFunction = null;
 		private static Func<T, T, T> _moduloFunction = null;
-		//private static Func<T, int, T> _powerFunction = null;
 		private static Func<T, T, T> _powerFunction = null;
 
+		private static Func<T, T, bool> _lessthanFunction = null;
 		private static Func<T, T, bool> _greaterthanFunction = null;
 		private static Func<T, T, bool> _equalFunction = null;
 
 		private static Func<T, T> _sqrtFunction = null;
-		private static Func<T, int, T, T> _modpowFunction = null;
+		private static Func<T, T> _absFunction = null;
 		private static Func<T, T> _truncateFunction = null;
+		private static Func<T, int, T, T> _modpowFunction = null;
 		private static Func<string, T> _parseFunction = null;
-		private static Func<T, double, double> _logFunction = null;
+		private static Func<T, double, T> _logFunction = null;
 		private static Func<T, byte[]> _tobytesFunction = null;
 
-		public static T Convert<U>(U value)
+		public static T Convert<TFrom>(TFrom value)
 		{
 			if (IsComplexValueType(typeof(T)))
 			{
 				return (T)((object)new Complex((double)System.Convert.ChangeType(value, typeof(double)), 0d));
 			}
-			return ConvertImplementation<U, T>.Convert(value);
+			return ConvertImplementation<TFrom, T>.Convert(value);
 		}
 
 		public static T Add(T a, T b)
@@ -130,7 +131,15 @@ namespace PolynomialLibrary
 
 		public static bool LessThan(T a, T b)
 		{
-			return !(GreaterThan(a, b) || Equal(a, b));
+			if (IsComplexValueType(typeof(T)))
+			{
+				return ComplexComparisonInternal(a, b, ExpressionType.LessThan);
+			}
+			if (_lessthanFunction == null)
+			{
+				_lessthanFunction = CreateGenericComparisonFunction(ExpressionType.LessThan);
+			}
+			return _lessthanFunction.Invoke(a, b);
 		}
 
 		public static bool GreaterThanOrEqual(T a, T b)
@@ -210,7 +219,11 @@ namespace PolynomialLibrary
 
 		public static T Abs(T input)
 		{
-			return (!GreaterThanOrEqual(input, Zero)) ? Negate(input) : input;
+			if (_absFunction == null)
+			{
+				_absFunction = CreateAbsFunction();
+			}
+			return _absFunction.Invoke(input);
 		}
 
 		public static T Sign(T input)
@@ -262,13 +275,9 @@ namespace PolynomialLibrary
 			return Max(absLeft, absRight);
 		}
 
-		public static double Log(T value, double baseValue)
+		public static T Log(T value, double baseValue)
 		{
 			Type typeFromHandle = typeof(T);
-			if (IsArithmeticValueType(typeFromHandle) && typeFromHandle != typeof(double))
-			{
-				return GenericArithmetic<double>.Log(System.Convert.ToDouble(value), baseValue);
-			}
 			if (_logFunction == null)
 			{
 				_logFunction = CreateLogFunction();
@@ -278,11 +287,19 @@ namespace PolynomialLibrary
 
 		public static byte[] ToBytes(T input)
 		{
-			if (_tobytesFunction == null)
+			Type typeFromHandle = typeof(T);
+			if (IsArithmeticValueType(typeFromHandle))
 			{
-				_tobytesFunction = CreateToBytesFunction();
+				if (_tobytesFunction == null)
+				{
+					_tobytesFunction = CreateValueTypeToBytesFunction();
+				}
+				return _tobytesFunction.Invoke(input);
 			}
-			return _tobytesFunction.Invoke(input);
+			else
+			{
+				return CreateToBytesFunction(input).Invoke();
+			}
 		}
 
 		private static bool IsArithmeticValueType(Type type)
@@ -334,11 +351,6 @@ namespace PolynomialLibrary
 			return Modulo(power, modulus);
 		}
 
-		private static int ConvertBigIntegerToInt(BigInteger value)
-		{
-			return (int)value;
-		}
-
 		private static bool ComplexComparisonInternal(T left, T right, ExpressionType operationType)
 		{
 			if (!IsComplexValueType(typeof(T)))
@@ -356,20 +368,21 @@ namespace PolynomialLibrary
 			double lft = Complex.Abs(l.Value);
 			double rght = Complex.Abs(r.Value);
 
-			if (operationType == ExpressionType.GreaterThan)
+			if (Math.Sign(l.Value.Real) == -1)
 			{
-				return (lft > rght);
+				lft = -lft;
 			}
-			else if (operationType == ExpressionType.Equal)
+			if (Math.Sign(r.Value.Real) == -1)
 			{
-				return (lft == rght);
+				rght = -rght;
 			}
-			/*
-			else if (operationType == ExpressionType.LessThan)			{	return (lft < rght);	}
-			else if (operationType == ExpressionType.GreaterThanOrEqual){	return (lft >= rght);	}
-			else if (operationType == ExpressionType.LessThanOrEqual)	{	return (lft <= rght);	}			
-			else if (operationType == ExpressionType.NotEqual)			{	return (lft != rght);	}
-			*/
+
+			if (operationType == ExpressionType.GreaterThan) { return (lft > rght); }
+			else if (operationType == ExpressionType.LessThan) { return (lft < rght); }
+			//else if (operationType == ExpressionType.Equal) { return (lft == rght); }
+			//else if (operationType == ExpressionType.GreaterThanOrEqual) { return (lft >= rght); }
+			//else if (operationType == ExpressionType.LessThanOrEqual) { return (lft <= rght); }
+			//else if (operationType == ExpressionType.NotEqual) { return (lft != rght); }
 			else
 			{
 				throw new NotSupportedException($"Not a comparison expression type: {Enum.GetName(typeof(ExpressionType), operationType)}.");
@@ -465,16 +478,14 @@ namespace PolynomialLibrary
 			{
 				comparison = Expression.GreaterThan(left, right);
 			}
+			else if (operationType == ExpressionType.LessThan)
+			{
+				comparison = Expression.LessThan(left, right);
+			}
 			else if (operationType == ExpressionType.Equal)
 			{
 				comparison = Expression.Equal(left, right);
 			}
-			/*
-			else if (operationType == ExpressionType.LessThan)			{	comparison = Expression.LessThan(left, right);			}
-			else if (operationType == ExpressionType.GreaterThanOrEqual){	comparison = Expression.GreaterThanOrEqual(left, right);}
-			else if (operationType == ExpressionType.LessThanOrEqual)	{	comparison = Expression.LessThanOrEqual(left, right);	}			
-			else if (operationType == ExpressionType.NotEqual)			{	comparison = Expression.NotEqual(left, right);			}
-			*/
 			Func<T, T, bool> result = Expression.Lambda<Func<T, T, bool>>(comparison, left, right).Compile();
 			return result;
 		}
@@ -521,44 +532,15 @@ namespace PolynomialLibrary
 			return result;
 		}
 
-		/*
-		private static Func<T, int, T> CreatePowerFunction()
-		{
-			ParameterExpression baseVal = Expression.Parameter(typeof(T), "baseValue");
-			ParameterExpression exp = Expression.Parameter(typeof(int), "exponent");
-
-			MethodInfo method = null;
-
-			Type typeFromHandle = typeof(T);
-			if (IsArithmeticValueType(typeFromHandle))
-			{
-				method = typeof(Math).GetMethod("Pow", BindingFlags.Static | BindingFlags.Public);
-			}
-			else
-			{
-				method = typeFromHandle.GetMethod("Pow", BindingFlags.Static | BindingFlags.Public);
-			}
-
-			if (method == null)
-			{
-				throw new NotSupportedException($"Cannot find public static method 'Pow' for type of {typeFromHandle.FullName}.");
-			}
-
-			MethodCallExpression methodCall = Expression.Call(method, baseVal, exp);
-			Func<T, int, T> result = Expression.Lambda<Func<T, int, T>>(methodCall, baseVal, exp).Compile();
-			return result;
-		}
-		*/
-
 		private static Func<T, T, T> CreatePowerFunction()
 		{
 			Type typeOfT = typeof(T);
 
 			ParameterExpression baseVal = Expression.Parameter(typeOfT, "baseValue");
-			ParameterExpression exp = Expression.Parameter(typeOfT, "exponent");
+			ParameterExpression exponent = Expression.Parameter(typeOfT, "exponent");
 
 			MethodInfo method = null;
-			Expression methodCall = null;
+			Expression methodCall_AutoConversion = null;
 
 			Type typeFromHandle = typeof(T);
 			if (IsArithmeticValueType(typeFromHandle))
@@ -570,12 +552,12 @@ namespace PolynomialLibrary
 				ParameterInfo baseParameterInfo = method.GetParameters()[0];
 				ParameterInfo expParameterInfo = method.GetParameters()[1];
 
-				Expression baseParameterExpression = ConvertIfNeeded(baseVal, baseParameterInfo.ParameterType);
-				Expression exponentParameterExpression = ConvertIfNeeded(exp, expParameterInfo.ParameterType);
+				Expression baseVal_AutoConversion = ConvertIfNeeded(baseVal, baseParameterInfo.ParameterType);
+				Expression exponent_AutoConversion = ConvertIfNeeded(exponent, expParameterInfo.ParameterType);
 
-				Expression methodCallExpression = Expression.Call(method, baseParameterExpression, exponentParameterExpression);
+				Expression methodCallExpression = Expression.Call(method, baseVal_AutoConversion, exponent_AutoConversion);
 
-				methodCall = ConvertIfNeeded(methodCallExpression, typeOfT);
+				methodCall_AutoConversion = ConvertIfNeeded(methodCallExpression, typeOfT);
 			}
 			else
 			{
@@ -585,26 +567,59 @@ namespace PolynomialLibrary
 
 				if (method != null)
 				{
-					Expression convertExpression = null;
+					Expression exponent_AutoConversion = null;
 					if (typeOfT == typeof(BigInteger))
 					{
-						convertExpression = Expression.Convert(exp, typeof(int), typeof(GenericArithmetic<T>).GetMethod("ConvertBigIntegerToInt", BindingFlags.Static | BindingFlags.NonPublic));
+						exponent_AutoConversion = Expression.Convert(exponent, typeof(int), typeof(GenericArithmetic<T>).GetMethod("ConvertBigIntegerToInt", BindingFlags.Static | BindingFlags.NonPublic));
 					}
 					else
 					{
-						convertExpression = exp;
+						exponent_AutoConversion = exponent;
 					}
 
-					methodCall = Expression.Call(method, baseVal, convertExpression);
+					methodCall_AutoConversion = Expression.Call(method, baseVal, exponent_AutoConversion);
 				}
 			}
 
-			if (method == null || methodCall == null)
+			if (method == null || methodCall_AutoConversion == null)
 			{
 				throw new NotSupportedException($"Cannot find public static method 'Pow' for type of {typeFromHandle.FullName}.");
 			}
 
-			Func<T, T, T> result = Expression.Lambda<Func<T, T, T>>(methodCall, baseVal, exp).Compile();
+			Func<T, T, T> result = Expression.Lambda<Func<T, T, T>>(methodCall_AutoConversion, baseVal, exponent).Compile();
+			return result;
+		}
+
+		private static Func<T, T> CreateAbsFunction()
+		{
+			Type typeOfT = typeof(T);
+
+			ParameterExpression value = Expression.Parameter(typeOfT, "value");
+			MethodInfo method = null;
+			Expression methodCall_AutoConversion = null;
+
+			if (IsArithmeticValueType(typeOfT))
+			{
+				var methods = typeof(Math).GetMethods(BindingFlags.Static | BindingFlags.Public);
+				var absMethods = methods.Where(mi => mi.Name == "Abs");
+				absMethods = absMethods.Where(mi => mi.GetParameters()[0].ParameterType == typeOfT);
+				method = absMethods.FirstOrDefault();
+				methodCall_AutoConversion = Expression.Call(method, value);
+			}
+			else
+			{
+				var methods = typeOfT.GetMethods(BindingFlags.Static | BindingFlags.Public);
+				var absMethods = methods.Where(mi => mi.Name == "Abs").ToList();
+				method = absMethods.FirstOrDefault();
+
+				if (method != null)
+				{
+					Expression methodCallExpression = Expression.Call(method, value);
+					methodCall_AutoConversion = ConvertIfNeeded(methodCallExpression, typeOfT);
+				}
+			}
+
+			Func<T, T> result = Expression.Lambda<Func<T, T>>(methodCall_AutoConversion, value).Compile();
 			return result;
 		}
 
@@ -662,7 +677,7 @@ namespace PolynomialLibrary
 			return result;
 		}
 
-		private static Func<T, double, double> CreateLogFunction()
+		private static Func<T, double, T> CreateLogFunction()
 		{
 			MethodInfo[] methods = null;
 
@@ -677,7 +692,6 @@ namespace PolynomialLibrary
 			}
 
 			var filteredMethods = methods.Where(mi => mi.Name == "Log" && mi.GetParameters().Count() == 2);
-
 			MethodInfo method = filteredMethods.FirstOrDefault();
 			if (method == null)
 			{
@@ -685,32 +699,45 @@ namespace PolynomialLibrary
 			}
 
 			ParameterExpression val = Expression.Parameter(typeFromHandle, "value");
+
+			ParameterInfo valueParameterInfo = method.GetParameters()[0];
+			Expression value_AutoConversion = ConvertIfNeeded(val, valueParameterInfo.ParameterType);
+
 			ParameterExpression baseVal = Expression.Parameter(typeof(double), "baseValue");
-			MethodCallExpression methodCall = Expression.Call(method, val, baseVal);
-			Func<T, double, double> result = Expression.Lambda<Func<T, double, double>>(methodCall, val, baseVal).Compile();
+			MethodCallExpression methodCallExpression = Expression.Call(method, value_AutoConversion, baseVal);
+
+			Expression methodCall_AutoConversion = ConvertIfNeeded(methodCallExpression, typeFromHandle);
+
+			Func<T, double, T> result = Expression.Lambda<Func<T, double, T>>(methodCall_AutoConversion, val, baseVal).Compile();
 			return result;
 		}
 
-		private static Func<T, byte[]> CreateToBytesFunction()
+		private static Func<T, byte[]> CreateValueTypeToBytesFunction()
 		{
 			Type typeFromHandle = typeof(T);
-			if (IsArithmeticValueType(typeFromHandle))
+			var allMethods = typeof(BitConverter).GetMethods(BindingFlags.Static | BindingFlags.Public);
+			var matchingNameMethods = allMethods.Where(mi => mi.Name == "GetBytes");
+			var matchingTypeMethods = matchingNameMethods.Where(mi => mi.GetParameters()[0].ParameterType == typeFromHandle);
+			MethodInfo method = matchingTypeMethods.FirstOrDefault();
+			ParameterExpression parameter = Expression.Parameter(typeFromHandle, "input");
+			MethodCallExpression methodCall = Expression.Call(method, parameter);
+			return Expression.Lambda<Func<T, byte[]>>(methodCall, parameter).Compile();
+		}
+
+		private static Func<byte[]> CreateToBytesFunction(T instanceObject)
+		{
+			Type typeFromHandle = typeof(T);
+			var allMethods = typeFromHandle.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+			var matchingMethods = allMethods.Where(mi => mi.Name == "ToByteArray");
+
+			MethodInfo method = matchingMethods.FirstOrDefault();
+			if (method == null)
 			{
-				MethodInfo method = typeof(BitConverter).GetMethod("GetBytes", BindingFlags.Static | BindingFlags.Public);
-				ParameterExpression parameter = Expression.Parameter(typeFromHandle, "input");
-				MethodCallExpression methodCall = Expression.Call(method, parameter);
-				return Expression.Lambda<Func<T, byte[]>>(methodCall, parameter).Compile();
+				throw new NotSupportedException($"Cannot find suitable method to convert instance of type {typeFromHandle.FullName} to an array of bytes.");
 			}
-			else
-			{
-				MethodInfo method = typeFromHandle.GetMethod("ToByteArray", BindingFlags.Public);
-				if (method == null)
-				{
-					throw new NotSupportedException($"Cannot find suitable method to convert instance of type {typeFromHandle.FullName} to an array of bytes.");
-				}
-				MethodCallExpression methodCall = Expression.Call(method);
-				return Expression.Lambda<Func<T, byte[]>>(methodCall).Compile();
-			}
+
+			MethodCallExpression methodCall = Expression<T>.Call(Expression.Constant(instanceObject), method);
+			return Expression.Lambda<Func<byte[]>>(methodCall).Compile();
 		}
 
 		private static Expression ConvertIfNeeded(Expression valueExpression, Type targetType)

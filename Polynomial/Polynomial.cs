@@ -427,7 +427,7 @@ namespace PolynomialLibrary
 
 		public static IPolynomial<T> Divide(IPolynomial<T> left, IPolynomial<T> right)
 		{
-			IPolynomial<T> remainder = new Polynomial<T>();
+			IPolynomial<T> remainder;
 			IPolynomial<T> quotient = Polynomial<T>.Divide(left, right, out remainder);
 			return quotient;
 		}
@@ -438,13 +438,13 @@ namespace PolynomialLibrary
 			if (right == null) throw new ArgumentNullException(nameof(right));
 			if (right.Degree > left.Degree || right.CompareTo(left) == 1)
 			{
-				remainder = Polynomial<T>.Zero;
+				remainder = Polynomial<T>.Zero.Clone();
 				return left;
 			}
 
 			IPolynomial<T> lhs = left.Clone();
 			IPolynomial<T> rhs = right.Clone();
-			IPolynomial<T> total = Zero;
+			IPolynomial<T> total = Zero.Clone();
 
 			int degree = Math.Max(left.Degree, right.Degree) - 1;
 
@@ -530,7 +530,7 @@ namespace PolynomialLibrary
 			{
 				if (result == null)
 				{
-					result = p;
+					result = p.Clone();
 				}
 				else
 				{
@@ -610,7 +610,7 @@ namespace PolynomialLibrary
 			{
 				if (result == null)
 				{
-					result = p;
+					result = p.Clone();
 				}
 				else
 				{
@@ -696,25 +696,20 @@ namespace PolynomialLibrary
 		public override string ToString()
 		{
 			List<string> stringTerms = new List<string>();
-			int degree = GenericArithmetic<int>.Convert(Terms.Length);
-			//while (GenericArithmetic<T>.GreaterThanOrEqual((degree = GenericArithmetic<T>.Decrement(degree)), GenericArithmetic<T>.Zero))
+
+			int degree = Terms.Length;
 			while (--degree >= 0)
 			{
-				string termString = "";
 				ITerm<T> term = Terms[degree];
 
 				if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.Zero))
 				{
 					if (term.Exponent == 0)
 					{
-						if (stringTerms.Count == 0) { stringTerms.Add("0"); }
+						if (stringTerms.Count == 0)
+						{ stringTerms.Add("0"); }
 					}
 					continue;
-				}
-				else if (GenericArithmetic<T>.GreaterThan(term.CoEfficient, GenericArithmetic<T>.One)
-					|| GenericArithmetic<T>.LessThan(term.CoEfficient, GenericArithmetic<T>.MinusOne))
-				{
-					termString = $"{term.CoEfficient}";
 				}
 
 				if (term.Exponent == 0)
@@ -723,15 +718,21 @@ namespace PolynomialLibrary
 				}
 				else if (term.Exponent == 1)
 				{
-					if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.One)) { stringTerms.Add("X"); }
-					else if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.MinusOne)) { stringTerms.Add("-X"); }
-					else { stringTerms.Add($"{term.CoEfficient}*X"); }
+					if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.One))
+					{ stringTerms.Add("X"); }
+					else if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.MinusOne))
+					{ stringTerms.Add("-X"); }
+					else
+					{ stringTerms.Add($"{term.CoEfficient}*X"); }
 				}
 				else
 				{
-					if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.One)) { stringTerms.Add($"X^{term.Exponent}"); }
-					else if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.MinusOne)) { stringTerms.Add($"-X^{term.Exponent}"); }
-					else { stringTerms.Add($"{term.CoEfficient}*X^{term.Exponent}"); }
+					if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.One))
+					{ stringTerms.Add($"X^{term.Exponent}"); }
+					else if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.MinusOne))
+					{ stringTerms.Add($"-X^{term.Exponent}"); }
+					else
+					{ stringTerms.Add($"{term.CoEfficient}*X^{term.Exponent}"); }
 				}
 			}
 			return string.Join(" + ", stringTerms).Replace("+ -", "- ");
