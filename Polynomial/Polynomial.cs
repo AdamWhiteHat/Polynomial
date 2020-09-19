@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Diagnostics;
 
 namespace ExtendedArithmetic
 {
@@ -14,9 +15,11 @@ namespace ExtendedArithmetic
 		public static IPolynomial One = null;
 		public static IPolynomial Two = null;
 
+		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
 		public ITerm[] Terms { get { return _terms.ToArray(); } }
 
 		[DataMember(Name = "Terms")]
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private List<ITerm> _terms = new List<ITerm>();
 		public int Degree { get; set; }
 

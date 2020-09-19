@@ -31,7 +31,7 @@ namespace ExtendedArithmetic
 
 				if (a.Degree == 0)
 				{
-					return Polynomial.One;
+					return Polynomial.One.Clone();
 				}
 				else
 				{
@@ -53,10 +53,10 @@ namespace ExtendedArithmetic
 				}
 				else if (sortOrder == 0)
 				{
-					return Polynomial.Zero;
+					return Polynomial.Zero.Clone();
 				}
 
-				IPolynomial remainder = new Polynomial();
+				IPolynomial remainder;
 				Polynomial.Divide(poly, mod, out remainder);
 
 				return remainder;
@@ -102,17 +102,17 @@ namespace ExtendedArithmetic
 
 				int rightDegree = right.Degree;
 				int quotientDegree = (left.Degree - rightDegree) + 1;
-				BigInteger leadingCoefficent = new BigInteger(right[rightDegree].ToByteArray()).Mod(mod);
+				BigInteger leadingCoefficent = right[rightDegree].Clone().Mod(mod);
 
 				Polynomial rem = (Polynomial)left.Clone();
-				Polynomial quotient = (Polynomial)Polynomial.Zero;
+				Polynomial quotient = (Polynomial)Polynomial.Zero.Clone();
 
 				// The leading coefficient is the only number we ever divide by
 				// (so if right is monic, polynomial division does not involve division at all!)
 				for (int i = quotientDegree - 1; i >= 0; i--)
 				{
 					quotient[i] = BigInteger.Divide(rem[rightDegree + i], leadingCoefficent).Mod(mod);
-					rem[rightDegree + i] = BigInteger.Zero;
+					rem[rightDegree + i] = new BigInteger(0);
 
 					for (int j = rightDegree + i - 1; j >= i; j--)
 					{
@@ -168,7 +168,7 @@ namespace ExtendedArithmetic
 
 			public static IPolynomial ExponentiateMod(IPolynomial startPoly, BigInteger s2, IPolynomial f, BigInteger p)
 			{
-				IPolynomial result = Polynomial.One;
+				IPolynomial result = Polynomial.One.Clone();
 				if (s2 == 0) { return result; }
 
 				IPolynomial A = startPoly.Clone();

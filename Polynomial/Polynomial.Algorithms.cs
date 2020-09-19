@@ -201,6 +201,68 @@ namespace ExtendedArithmetic
 
 				return totient;
 			}
+
+			/// <summary>
+			/// A root-finding algorithm. Returns only one root at a time. To obtain all the roots, call repeatedly, dividing out each root from the polynomial as its found until you are left with a constant polynomial.
+			/// </summary>
+			public static double LaguerresMethod(IPolynomial poly, double guess = 1, double maxIterations = 100, double precision = 0.000001d)
+			{
+				if (poly.Degree < 1)
+				{
+					throw new Exception("No root exists for a constant (degree 0) polynomial!");
+				}
+
+				int k = 0;
+				double xk = guess;
+				double n = poly.Degree;
+
+				double a, G, G2, H, denom1, denom2, denom, t1;
+
+				IPolynomial derivative1Poly = Polynomial.GetDerivativePolynomial(poly);
+				IPolynomial derivative2Poly = Polynomial.GetDerivativePolynomial(derivative1Poly);
+
+				for (k = 0; (k < maxIterations) && (Math.Abs(Polynomial.Evaluate(poly.Terms, xk)) >= precision); k++)
+				{
+					G = Polynomial.Evaluate(derivative1Poly.Terms, xk) / Polynomial.Evaluate(poly.Terms, xk);
+					G2 = Math.Pow(G, 2d);
+					H = G2 - Polynomial.Evaluate(derivative2Poly.Terms, xk) / Polynomial.Evaluate(poly.Terms, xk);
+					t1 = (n - 1d) * (n * H - G2);
+					if (t1 >= 0d)
+					{
+						denom = Math.Sqrt(t1);
+						denom1 = G + denom;
+						denom2 = G - denom;
+						if (Math.Abs(denom1) >= Math.Abs(denom2))
+						{
+							denom = denom1;
+						}
+						else
+						{
+							denom = denom2;
+						}
+						a = n / denom;
+
+						xk -= a;
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				if (k == maxIterations)
+				{
+					return double.NaN;
+				}
+
+				if (Math.Abs(Polynomial.Evaluate(poly.Terms, xk)) >= precision)
+				{
+					return double.NaN;
+				}
+
+				int digitsOfPrecision = (int)Math.Abs(Math.Log10(precision));
+				return Math.Round(xk, digitsOfPrecision);
+			}
 		}
 	}
 }
