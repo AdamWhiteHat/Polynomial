@@ -256,6 +256,11 @@ namespace ExtendedArithmetic
 			return Evaluate(Terms, indeterminateValue);
 		}
 
+		public Complex Evaluate(Complex indeterminateValue)
+		{
+			return Evaluate(Terms, indeterminateValue);
+		}
+
 		public static double Evaluate(ITerm[] terms, double indeterminateValue)
 		{
 			double result = 0;
@@ -286,6 +291,24 @@ namespace ExtendedArithmetic
 				decimal addValue = decimal.Multiply((decimal)terms[d].CoEfficient, placeValue);
 
 				result += addValue;
+				d--;
+			}
+
+			return result;
+		}
+
+		public static Complex Evaluate(ITerm[] terms, Complex indeterminateValue)
+		{
+			Complex result = Complex.Zero;
+
+			int d = terms.Count() - 1;
+			while (d >= 0)
+			{
+				Complex placeValue = Complex.Pow(indeterminateValue, terms[d].Exponent);
+				Complex addValue = Complex.Multiply((int)terms[d].CoEfficient, placeValue);
+
+				result = Complex.Add(result, addValue);
+
 				d--;
 			}
 

@@ -263,6 +263,73 @@ namespace ExtendedArithmetic
 				int digitsOfPrecision = (int)Math.Abs(Math.Log10(precision));
 				return Math.Round(xk, digitsOfPrecision);
 			}
+
+			/// <summary>
+			/// Finds a complex root of a polynomial.
+			/// </summary>
+			public static Complex LaguerresMethod_Complex(IPolynomial poly, double guess, double maxIterations, double precision)
+			{
+				if (poly.Degree < 1)
+				{
+					throw new Exception("No root exists for a constant (degree 0) polynomial!");
+				}
+
+				int k = 0;
+				Complex xk = guess;
+				double n = poly.Degree;
+
+				Complex a, G, G2, H, denom1, denom2, denom, t1;
+
+				IPolynomial derivative1Poly = Polynomial.GetDerivativePolynomial(poly);
+				IPolynomial derivative2Poly = Polynomial.GetDerivativePolynomial(derivative1Poly);
+
+				for (k = 0; (k < maxIterations); k++)
+				{
+					Complex evalResult = Evaluate(poly.Terms, xk);
+					double absEvalueResult = Complex.Abs(evalResult);
+					if (absEvalueResult < precision)
+					{
+						break;
+					}
+
+					G = Evaluate(derivative1Poly.Terms, xk) / Evaluate(poly.Terms, xk);
+					G2 = Complex.Pow(G, 2d);
+					H = G2 - Evaluate(derivative2Poly.Terms, xk) / Evaluate(poly.Terms, xk);
+					t1 = (n - 1d) * (n * H - G2);
+					if (Complex.Abs(t1) >= 0d)
+					{
+						denom = Complex.Sqrt(t1);
+						denom1 = G + denom;
+						denom2 = G - denom;
+						if (Complex.Abs(denom1) >= Complex.Abs(denom2))
+						{
+							denom = denom1;
+						}
+						else
+						{
+							denom = denom2;
+						}
+						a = n / denom;
+
+						xk = xk - a;
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				if (k == maxIterations)
+				{
+					return Complex.Zero;
+				}
+
+				int digitsOfPrecision = (int)Math.Abs(Math.Log10(precision));
+				double real = Math.Round(xk.Real, digitsOfPrecision);
+				double imaginary = Math.Round(xk.Imaginary, digitsOfPrecision);
+
+				return new Complex(real, imaginary);
+			}
 		}
 	}
 }
