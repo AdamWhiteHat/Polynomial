@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ExtendedArithmetic
 {
-	public static class ITermExtensionMethods
+	public static class TermExtensionMethods
 	{
-		public static BigInteger[] GetCoefficients(this ITerm[] source)
+		public static BigInteger[] GetCoefficients(this Term[] source)
 		{
 			return source?.Select(trm => trm?.CoEfficient.Clone() ?? new BigInteger(0)).ToArray() ?? new BigInteger[] { new BigInteger(0) };
 		}
@@ -73,7 +73,7 @@ namespace ExtendedArithmetic
 		// The root must be greater than or equal to 1 or value must be a positive integer.
 		public static BigInteger NthRoot(this BigInteger source, int root)
 		{
-			BigInteger remainder = new BigInteger();
+			BigInteger remainder;
 			return source.NthRoot(root, out remainder);
 		}
 
@@ -137,8 +137,8 @@ namespace ExtendedArithmetic
 			// Squares in base 16 end in 0, 1, 4, or 9
 			if (base16 != 2 && base16 != 3 && base16 != 5 && base16 != 6 && base16 != 7 && base16 != 8)
 			{
-				BigInteger remainder = new BigInteger();
-				BigInteger sqrt = input.NthRoot(2, out remainder);
+				BigInteger remainder;
+				input.NthRoot(2, out remainder);
 
 				return (remainder == 0);
 				// - OR -
@@ -146,7 +146,7 @@ namespace ExtendedArithmetic
 			}
 			return false;
 		}
-		private static BigInteger Fifteen = new BigInteger(15);
+		private static readonly BigInteger Fifteen = new BigInteger(15);
 	}
 
 	public static class IEnumerableBigIntegerExtensionMethods

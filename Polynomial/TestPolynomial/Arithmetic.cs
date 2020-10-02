@@ -12,19 +12,48 @@ namespace TestPolynomial
 		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
 
 		[TestMethod]
+		public void TestConstructorAndEvaluation()
+		{
+			string expecting = "3218147";
+			BigInteger value = BigInteger.Parse(expecting);
+
+			BigInteger base1 = 117;
+			BigInteger base2 = 2;
+			Polynomial poly1 = new Polynomial(value, base1);
+			Polynomial poly2 = new Polynomial(value, base2);
+			BigInteger eval1 = poly1.Evaluate(base1);
+			BigInteger eval2 = poly2.Evaluate(base2);
+
+			string result1 = eval1.ToString();
+			string result2 = eval2.ToString();
+
+			TestContext.WriteLine($"Evaluate({poly1}) where x = {base1}");
+			TestContext.WriteLine($"Evaluate({poly2}) where x = {base2}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"First result   = {result1}");
+			TestContext.WriteLine($"Expecting: {expecting}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Second result  = {result2}");
+			TestContext.WriteLine($"Expecting: {expecting}");
+
+			Assert.AreEqual(expecting, result1);
+			Assert.AreEqual(expecting, result2);
+		}
+
+		[TestMethod]
 		public void TestAddition()
 		{
 			string expecting = "24*X - 1";
 
-			IPolynomial first = Polynomial.Parse("12*X + 2");
-			IPolynomial second = Polynomial.Parse("12*X - 3");
+			Polynomial first = Polynomial.Parse("12*X + 2");
+			Polynomial second = Polynomial.Parse("12*X - 3");
 
-			IPolynomial result = Polynomial.Add(first, second);
+			Polynomial result = Polynomial.Add(first, second);
 
 			TestContext.WriteLine($"({first}) + ({second})");
 			TestContext.WriteLine("");
-			TestContext.WriteLine($"Result   = {result.ToString()}");
-			TestContext.WriteLine($"Expecting: {expecting.ToString()}");
+			TestContext.WriteLine($"Result   = {result}");
+			TestContext.WriteLine($"Expecting: {expecting}");
 
 			Assert.AreEqual(expecting, result.ToString());
 		}
@@ -34,10 +63,10 @@ namespace TestPolynomial
 		{
 			string expecting = "7*X^2 + X";
 
-			IPolynomial first = Polynomial.Parse("7*X^2 + 3*X - 2");
-			IPolynomial second = Polynomial.Parse("2*X - 2");
+			Polynomial first = Polynomial.Parse("7*X^2 + 3*X - 2");
+			Polynomial second = Polynomial.Parse("2*X - 2");
 
-			IPolynomial result = Polynomial.Subtract(first, second);
+			Polynomial result = Polynomial.Subtract(first, second);
 
 			TestContext.WriteLine($"({first}) - ({second})");
 			TestContext.WriteLine("");
@@ -52,10 +81,10 @@ namespace TestPolynomial
 		{
 			string expecting = "144*X^2 - 12*X - 6";
 
-			IPolynomial first = Polynomial.Parse("12*X + 2");
-			IPolynomial second = Polynomial.Parse("12*X - 3");
+			Polynomial first = Polynomial.Parse("12*X + 2");
+			Polynomial second = Polynomial.Parse("12*X - 3");
 
-			IPolynomial result = Polynomial.Multiply(first, second);
+			Polynomial result = Polynomial.Multiply(first, second);
 
 			TestContext.WriteLine($"({first}) * ({second})");
 			TestContext.WriteLine("");
@@ -70,10 +99,10 @@ namespace TestPolynomial
 		{
 			string expecting = "24*X - 1";
 
-			IPolynomial first = Polynomial.Parse("288*X^2 + 36*X - 2");
-			IPolynomial second = Polynomial.Parse("12*X + 2");
+			Polynomial first = Polynomial.Parse("288*X^2 + 36*X - 2");
+			Polynomial second = Polynomial.Parse("12*X + 2");
 
-			IPolynomial result = Polynomial.Divide(first, second);
+			Polynomial result = Polynomial.Divide(first, second);
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
@@ -88,10 +117,10 @@ namespace TestPolynomial
 		{
 			string expecting = "2*X - 2";
 
-			IPolynomial first = Polynomial.Parse("6*X^2 - 6");
-			IPolynomial second = Polynomial.Parse("3*X + 3");
+			Polynomial first = Polynomial.Parse("6*X^2 - 6");
+			Polynomial second = Polynomial.Parse("3*X + 3");
 
-			IPolynomial result = Polynomial.Divide(first, second);
+			Polynomial result = Polynomial.Divide(first, second);
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
@@ -106,10 +135,10 @@ namespace TestPolynomial
 		{
 			string expecting = "6";
 
-			IPolynomial first = Polynomial.Parse("6*X^2 - 6");
-			IPolynomial second = Polynomial.Parse("X^2 - 1");
+			Polynomial first = Polynomial.Parse("6*X^2 - 6");
+			Polynomial second = Polynomial.Parse("X^2 - 1");
 
-			IPolynomial result = Polynomial.Divide(first, second);
+			Polynomial result = Polynomial.Divide(first, second);
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
@@ -124,10 +153,10 @@ namespace TestPolynomial
 		{
 			string expecting = "6*X - 1";
 
-			IPolynomial first = Polynomial.Parse("36*X^2 - 1");
-			IPolynomial second = Polynomial.Parse("6*X + 1");
+			Polynomial first = Polynomial.Parse("36*X^2 - 1");
+			Polynomial second = Polynomial.Parse("6*X + 1");
 
-			IPolynomial result = Polynomial.Divide(first, second);
+			Polynomial result = Polynomial.Divide(first, second);
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
@@ -142,10 +171,10 @@ namespace TestPolynomial
 		{
 			string expecting = "6*X + 1";
 
-			IPolynomial first = Polynomial.Parse("36*X^2 - 1");
-			IPolynomial second = Polynomial.Parse("6*X - 1");
+			Polynomial first = Polynomial.Parse("36*X^2 - 1");
+			Polynomial second = Polynomial.Parse("6*X - 1");
 
-			IPolynomial result = Polynomial.Divide(first, second);
+			Polynomial result = Polynomial.Divide(first, second);
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
@@ -160,10 +189,10 @@ namespace TestPolynomial
 		{
 			string expecting = "144*X^2 + 18*X - 1";
 
-			IPolynomial first = Polynomial.Parse("288*X^2 + 36*X - 2");
-			IPolynomial second = Polynomial.Parse("2");
+			Polynomial first = Polynomial.Parse("288*X^2 + 36*X - 2");
+			Polynomial second = Polynomial.Parse("2");
 
-			IPolynomial result = Polynomial.Divide(first, second);
+			Polynomial result = Polynomial.Divide(first, second);
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
@@ -179,15 +208,15 @@ namespace TestPolynomial
 			BigInteger N = 1811 * 1777;
 			BigInteger m = 117;
 
-			IPolynomial two = new Polynomial(new ITerm[] { new Term(2, 0) });
-			IPolynomial three = new Polynomial(new ITerm[] { new Term(3, 0) });
-			IPolynomial seventeen = new Polynomial(new ITerm[] { new Term(17, 0) });
+			Polynomial two = new Polynomial(new Term[] { new Term(2, 0) });
+			Polynomial three = new Polynomial(new Term[] { new Term(3, 0) });
+			Polynomial seventeen = new Polynomial(new Term[] { new Term(17, 0) });
 
-			IPolynomial f = new Polynomial(N, m);
+			Polynomial f = new Polynomial(N, m);
 
-			IPolynomial r2 = Polynomial.Divide(f, two);
-			IPolynomial r3 = Polynomial.Divide(f, three);
-			IPolynomial r17 = Polynomial.Divide(f, seventeen);
+			Polynomial r2 = Polynomial.Divide(f, two);
+			Polynomial r3 = Polynomial.Divide(f, three);
+			Polynomial r17 = Polynomial.Divide(f, seventeen);
 
 			string e2 = "X^3 + 5*X + 31";
 			string e3 = "3*X + 20";
@@ -207,9 +236,9 @@ namespace TestPolynomial
 		{
 			string expecting = "144*X^2 + 24*X + 1";
 
-			IPolynomial first = Polynomial.Parse("12*X + 1");
+			Polynomial first = Polynomial.Parse("12*X + 1");
 
-			IPolynomial result = Polynomial.Square(first);
+			Polynomial result = Polynomial.Square(first);
 
 			TestContext.WriteLine($"({first})^2");
 			TestContext.WriteLine("");
@@ -227,10 +256,10 @@ namespace TestPolynomial
 
 			string expecting = secondPolyString;
 
-			IPolynomial first = Polynomial.Parse(firstPolyString);
-			IPolynomial second = Polynomial.Parse(secondPolyString);
+			Polynomial first = Polynomial.Parse(firstPolyString);
+			Polynomial second = Polynomial.Parse(secondPolyString);
 
-			IPolynomial result = Polynomial.GCD(first, second);
+			Polynomial result = Polynomial.GCD(first, second);
 			string actual = result.ToString();
 
 			TestContext.WriteLine($"GCD({first} , {second})");
@@ -249,10 +278,10 @@ namespace TestPolynomial
 			string polyString2 = "X^2 - 5*X - 6";
 			string expecting = "X + 1";
 
-			IPolynomial first = Polynomial.Parse(polyString1);
-			IPolynomial second = Polynomial.Parse(polyString2);
+			Polynomial first = Polynomial.Parse(polyString1);
+			Polynomial second = Polynomial.Parse(polyString2);
 
-			IPolynomial result = Polynomial.GCD(first, second);
+			Polynomial result = Polynomial.GCD(first, second);
 			string actual = result.ToString();
 
 			TestContext.WriteLine($"GCD({first}, {second})");
@@ -268,9 +297,9 @@ namespace TestPolynomial
 		{
 			string expecting = "576*X + 36";
 
-			IPolynomial first = Polynomial.Parse("288*X^2 + 36*X - 2");
+			Polynomial first = Polynomial.Parse("288*X^2 + 36*X - 2");
 
-			IPolynomial result = Polynomial.GetDerivativePolynomial(first);
+			Polynomial result = Polynomial.GetDerivativePolynomial(first);
 
 			TestContext.WriteLine($"f' where f(X) = ({first})");
 			TestContext.WriteLine("");

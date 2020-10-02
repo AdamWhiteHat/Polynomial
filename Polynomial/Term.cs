@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 
 namespace ExtendedArithmetic
 {
-	public class Term : ITerm
+	public class Term : ICloneable<Term>
 	{
 		[DataMember]
 		public int Exponent { get; set; }
@@ -28,9 +28,9 @@ namespace ExtendedArithmetic
 			CoEfficient = coefficient.Clone();
 		}
 
-		public static ITerm[] GetTerms(BigInteger[] terms)
+		public static Term[] GetTerms(BigInteger[] terms)
 		{
-			List<ITerm> results = new List<ITerm>();
+			List<Term> results = new List<Term>();
 
 			int degree = 0;
 			foreach (BigInteger term in terms)
@@ -48,7 +48,7 @@ namespace ExtendedArithmetic
 			return BigInteger.Multiply(CoEfficient, BigInteger.Pow(indeterminate, Exponent));
 		}
 
-		public ITerm Clone()
+		public Term Clone()
 		{
 			return new Term(this.CoEfficient.Clone(), this.Exponent);
 		}

@@ -6,25 +6,25 @@ using System.Collections.Generic;
 
 namespace ExtendedArithmetic
 {
-	public partial class Polynomial : IPolynomial
+	public partial class Polynomial
 	{
 		public static class Field
 		{
-			public static IPolynomial GCD(IPolynomial left, IPolynomial right, BigInteger modulus)
+			public static Polynomial GCD(Polynomial left, Polynomial right, BigInteger modulus)
 			{
-				IPolynomial a = left.Clone();
-				IPolynomial b = right.Clone();
+				Polynomial a = left.Clone();
+				Polynomial b = right.Clone();
 
 				if (b.Degree > a.Degree)
 				{
-					IPolynomial swap = b;
+					Polynomial swap = b;
 					b = a;
 					a = swap;
 				}
 
 				while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
 				{
-					IPolynomial temp = a;
+					Polynomial temp = a;
 					a = b;
 					b = Field.ModMod(temp, b, modulus);
 				}
@@ -39,12 +39,12 @@ namespace ExtendedArithmetic
 				}
 			}
 
-			public static IPolynomial ModMod(IPolynomial toReduce, IPolynomial modPoly, BigInteger primeModulus)
+			public static Polynomial ModMod(Polynomial toReduce, Polynomial modPoly, BigInteger primeModulus)
 			{
 				return Field.Modulus(Field.Modulus(toReduce, modPoly), primeModulus);
 			}
 
-			public static IPolynomial Modulus(IPolynomial poly, IPolynomial mod)
+			public static Polynomial Modulus(Polynomial poly, Polynomial mod)
 			{
 				int sortOrder = mod.CompareTo(poly);
 				if (sortOrder > 0)
@@ -56,20 +56,20 @@ namespace ExtendedArithmetic
 					return Polynomial.Zero.Clone();
 				}
 
-				IPolynomial remainder;
+				Polynomial remainder;
 				Polynomial.Divide(poly, mod, out remainder);
 
 				return remainder;
 			}
 
-			public static IPolynomial Modulus(IPolynomial poly, BigInteger mod)
+			public static Polynomial Modulus(Polynomial poly, BigInteger mod)
 			{
-				IPolynomial clone = poly.Clone();
-				List<ITerm> terms = new List<ITerm>();
+				Polynomial clone = poly.Clone();
+				List<Term> terms = new List<Term>();
 
-				foreach (ITerm term in clone.Terms)
+				foreach (Term term in clone.Terms)
 				{
-					BigInteger remainder = new BigInteger();
+					BigInteger remainder;
 					BigInteger.DivRem(term.CoEfficient, mod, out remainder);
 
 					if (remainder.Sign == -1)
@@ -81,16 +81,16 @@ namespace ExtendedArithmetic
 				}
 
 				// Recalculate the degree
-				ITerm[] termArray = terms.SkipWhile(t => t.CoEfficient.Sign == 0).ToArray();
+				Term[] termArray = terms.SkipWhile(t => t.CoEfficient.Sign == 0).ToArray();
 				if (!termArray.Any())
 				{
 					termArray = Term.GetTerms(new BigInteger[] { 0 });
 				}
-				IPolynomial result = new Polynomial(termArray);
+				Polynomial result = new Polynomial(termArray);
 				return result;
 			}
 
-			public static IPolynomial Divide(IPolynomial left, IPolynomial right, BigInteger mod, out IPolynomial remainder)
+			public static Polynomial Divide(Polynomial left, Polynomial right, BigInteger mod, out Polynomial remainder)
 			{
 				if (left == null) throw new ArgumentNullException(nameof(left));
 				if (right == null) throw new ArgumentNullException(nameof(right));
@@ -128,11 +128,11 @@ namespace ExtendedArithmetic
 				return quotient.Clone();
 			}
 
-			public static IPolynomial Multiply(IPolynomial poly, BigInteger multiplier, BigInteger mod)
+			public static Polynomial Multiply(Polynomial poly, BigInteger multiplier, BigInteger mod)
 			{
-				IPolynomial result = poly.Clone();
+				Polynomial result = poly.Clone();
 
-				foreach (ITerm term in result.Terms)
+				foreach (Term term in result.Terms)
 				{
 					BigInteger newCoefficient = term.CoEfficient;
 					if (newCoefficient != 0)
@@ -145,11 +145,11 @@ namespace ExtendedArithmetic
 				return result;
 			}
 
-			public static IPolynomial PowMod(IPolynomial poly, BigInteger exponent, BigInteger mod)
+			public static Polynomial PowMod(Polynomial poly, BigInteger exponent, BigInteger mod)
 			{
-				IPolynomial result = poly.Clone();
+				Polynomial result = poly.Clone();
 
-				foreach (ITerm term in result.Terms)
+				foreach (Term term in result.Terms)
 				{
 					BigInteger newCoefficient = term.CoEfficient;
 					if (newCoefficient != 0)
@@ -166,12 +166,12 @@ namespace ExtendedArithmetic
 				return result;
 			}
 
-			public static IPolynomial ExponentiateMod(IPolynomial startPoly, BigInteger s2, IPolynomial f, BigInteger p)
+			public static Polynomial ExponentiateMod(Polynomial startPoly, BigInteger s2, Polynomial f, BigInteger p)
 			{
-				IPolynomial result = Polynomial.One.Clone();
+				Polynomial result = Polynomial.One.Clone();
 				if (s2 == 0) { return result; }
 
-				IPolynomial A = startPoly.Clone();
+				Polynomial A = startPoly.Clone();
 
 				byte[] byteArray = s2.ToByteArray();
 				bool[] bitArray = new BitArray(byteArray).Cast<bool>().ToArray();
@@ -197,7 +197,7 @@ namespace ExtendedArithmetic
 				return result;
 			}
 
-			public static IPolynomial ModPow(IPolynomial poly, BigInteger exponent, IPolynomial mod)
+			public static Polynomial ModPow(Polynomial poly, BigInteger exponent, Polynomial mod)
 			{
 				if (exponent < 0)
 				{
@@ -216,7 +216,7 @@ namespace ExtendedArithmetic
 					return Polynomial.Square(poly);
 				}
 
-				IPolynomial total = Polynomial.Square(poly);
+				Polynomial total = Polynomial.Square(poly);
 
 				BigInteger counter = exponent - 2;
 				while (counter != 0)
@@ -234,21 +234,21 @@ namespace ExtendedArithmetic
 				return total;
 			}
 
-			public static bool IsIrreducibleOverField(IPolynomial f, BigInteger p)
+			public static bool IsIrreducibleOverField(Polynomial f, BigInteger p)
 			{
-				IPolynomial splittingField = new Polynomial(
+				Polynomial splittingField = new Polynomial(
 					new Term[] {
 						new Term(  1, (int)p),
 						new Term( -1, 1)
 					});
 
-				IPolynomial reducedField = Field.ModMod(splittingField, f, p);
+				Polynomial reducedField = Field.ModMod(splittingField, f, p);
 
-				IPolynomial gcd = Polynomial.GCD(reducedField, f);
+				Polynomial gcd = Polynomial.GCD(reducedField, f);
 				return (gcd.CompareTo(Polynomial.One) == 0);
 			}
 
-			public static bool IsIrreducibleOverP(IPolynomial poly, BigInteger p)
+			public static bool IsIrreducibleOverP(Polynomial poly, BigInteger p)
 			{
 				List<BigInteger> coefficients = poly.Terms.Select(t => t.CoEfficient).ToList();
 
@@ -258,10 +258,10 @@ namespace ExtendedArithmetic
 				coefficients.Remove(leadingCoefficient);
 				coefficients.Remove(constantCoefficient);
 
-				BigInteger leadingRemainder = new BigInteger();
+				BigInteger leadingRemainder;
 				BigInteger.DivRem(leadingCoefficient, p, out leadingRemainder);
 
-				BigInteger constantRemainder = new BigInteger();
+				BigInteger constantRemainder;
 				BigInteger.DivRem(constantCoefficient, p.Square(), out constantRemainder);
 
 				bool result = (leadingRemainder != 0); // p does not divide leading coefficient

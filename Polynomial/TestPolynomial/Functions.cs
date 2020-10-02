@@ -20,7 +20,7 @@ namespace TestPolynomial
 			BigInteger N = BigInteger.Parse("1522605027922533360535618378132637429718068114961380688657908494580122963258952897654000350692006139");
 			BigInteger m = BigInteger.Parse("6246644847868435165459221");
 
-			IPolynomial f = new Polynomial(N, m);
+			Polynomial f = new Polynomial(N, m);
 
 			string result1 = f.ToString();
 

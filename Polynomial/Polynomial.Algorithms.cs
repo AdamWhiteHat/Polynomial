@@ -6,7 +6,7 @@ using System.Collections;
 
 namespace ExtendedArithmetic
 {
-	public partial class Polynomial : IPolynomial
+	public partial class Polynomial
 	{
 		public static class Algorithms
 		{
@@ -16,7 +16,6 @@ namespace ExtendedArithmetic
 			public static BigInteger EulersCriterion(BigInteger a, BigInteger p)
 			{
 				BigInteger exponent = (p - 1) / 2;
-				BigInteger pow = BigInteger.Pow(a, (int)exponent);
 				BigInteger result = BigInteger.ModPow(a, exponent, p);
 				return result;
 			}
@@ -118,7 +117,7 @@ namespace ExtendedArithmetic
 				//    IF t ≡ 1 OUTUPUT r, p-r .
 				//    ELSE find, by repeated squaring, the lowest i in (0<i<m) , such as t^(2^i) ≡ 1
 				//    LET b ≡ c^(2^(m-i-1)), r ≡ r*b, t ≡ t*b^2 , c ≡ b^2  }        
-				BigInteger a = 0, b = 0;
+				BigInteger a, b;
 				BigInteger counter = 1, max = exponent;
 
 				while (t != 1 && counter < max) // Maths.LegendreSymbol(t,p) != 1
@@ -205,27 +204,27 @@ namespace ExtendedArithmetic
 			/// <summary>
 			/// A root-finding algorithm. Returns only one root at a time. To obtain all the roots, call repeatedly, dividing out each root from the polynomial as its found until you are left with a constant polynomial.
 			/// </summary>
-			public static double LaguerresMethod(IPolynomial poly, double guess = 1, double maxIterations = 100, double precision = 0.000001d)
+			public static double LaguerresMethod(Polynomial poly, double guess = 1, double maxIterations = 100, double precision = 0.000001d)
 			{
 				if (poly.Degree < 1)
 				{
 					throw new Exception("No root exists for a constant (degree 0) polynomial!");
 				}
 
-				int k = 0;
+				int k;
 				double xk = guess;
 				double n = poly.Degree;
 
 				double a, G, G2, H, denom1, denom2, denom, t1;
 
-				IPolynomial derivative1Poly = Polynomial.GetDerivativePolynomial(poly);
-				IPolynomial derivative2Poly = Polynomial.GetDerivativePolynomial(derivative1Poly);
+				Polynomial derivative1Poly = (Polynomial)Polynomial.GetDerivativePolynomial(poly);
+				Polynomial derivative2Poly = (Polynomial)Polynomial.GetDerivativePolynomial(derivative1Poly);
 
-				for (k = 0; (k < maxIterations) && (Math.Abs(Polynomial.Evaluate(poly.Terms, xk)) >= precision); k++)
+				for (k = 0; (k < maxIterations) && (Math.Abs(poly.Evaluate(xk)) >= precision); k++)
 				{
-					G = Polynomial.Evaluate(derivative1Poly.Terms, xk) / Polynomial.Evaluate(poly.Terms, xk);
+					G = derivative1Poly.Evaluate(xk) / poly.Evaluate(xk);
 					G2 = Math.Pow(G, 2d);
-					H = G2 - Polynomial.Evaluate(derivative2Poly.Terms, xk) / Polynomial.Evaluate(poly.Terms, xk);
+					H = G2 - derivative2Poly.Evaluate(xk) / poly.Evaluate(xk);
 					t1 = (n - 1d) * (n * H - G2);
 					if (t1 >= 0d)
 					{
@@ -255,7 +254,7 @@ namespace ExtendedArithmetic
 					return double.NaN;
 				}
 
-				if (Math.Abs(Polynomial.Evaluate(poly.Terms, xk)) >= precision)
+				if (Math.Abs(poly.Evaluate(xk)) >= precision)
 				{
 					return double.NaN;
 				}
@@ -267,34 +266,34 @@ namespace ExtendedArithmetic
 			/// <summary>
 			/// Finds a complex root of a polynomial.
 			/// </summary>
-			public static Complex LaguerresMethod_Complex(IPolynomial poly, double guess, double maxIterations, double precision)
+			public static Complex LaguerresMethod_Complex(Polynomial poly, double guess, double maxIterations, double precision)
 			{
 				if (poly.Degree < 1)
 				{
 					throw new Exception("No root exists for a constant (degree 0) polynomial!");
 				}
 
-				int k = 0;
+				int k;
 				Complex xk = guess;
 				double n = poly.Degree;
 
 				Complex a, G, G2, H, denom1, denom2, denom, t1;
 
-				IPolynomial derivative1Poly = Polynomial.GetDerivativePolynomial(poly);
-				IPolynomial derivative2Poly = Polynomial.GetDerivativePolynomial(derivative1Poly);
+				Polynomial derivative1Poly = Polynomial.GetDerivativePolynomial(poly);
+				Polynomial derivative2Poly = Polynomial.GetDerivativePolynomial(derivative1Poly);
 
 				for (k = 0; (k < maxIterations); k++)
 				{
-					Complex evalResult = Evaluate(poly.Terms, xk);
+					Complex evalResult = poly.Evaluate(xk);
 					double absEvalueResult = Complex.Abs(evalResult);
 					if (absEvalueResult < precision)
 					{
 						break;
 					}
 
-					G = Evaluate(derivative1Poly.Terms, xk) / Evaluate(poly.Terms, xk);
+					G = derivative1Poly.Evaluate(xk) / poly.Evaluate(xk);
 					G2 = Complex.Pow(G, 2d);
-					H = G2 - Evaluate(derivative2Poly.Terms, xk) / Evaluate(poly.Terms, xk);
+					H = G2 - derivative2Poly.Evaluate(xk) / poly.Evaluate(xk);
 					t1 = (n - 1d) * (n * H - G2);
 					if (Complex.Abs(t1) >= 0d)
 					{

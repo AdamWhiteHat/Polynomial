@@ -16,10 +16,10 @@ namespace TestPolynomial
 		{
 			string expecting = "2*X - 2";
 
-			IPolynomial first = Polynomial.Parse("3*X^2 + 2*X + 1");
-			IPolynomial second = Polynomial.Parse("X^2 + 1");
+			Polynomial first = Polynomial.Parse("3*X^2 + 2*X + 1");
+			Polynomial second = Polynomial.Parse("X^2 + 1");
 
-			IPolynomial result = Polynomial.Field.Modulus(first, second);
+			Polynomial result = Polynomial.Field.Modulus(first, second);
 
 			TestContext.WriteLine($"({first}) + ({second})");
 			TestContext.WriteLine("");
