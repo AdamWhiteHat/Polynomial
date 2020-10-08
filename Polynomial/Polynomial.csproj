@@ -44,8 +44,6 @@
     <Compile Include="GenericArithmetic.cs" />
     <Compile Include="HelperMethods.cs" />
     <Compile Include="ICloneable.cs" />
-    <Compile Include="IPolynomial.cs" />
-    <Compile Include="ITerm.cs" />
     <Compile Include="Polynomial.Algorithms.cs" />
     <Compile Include="Polynomial.Field.cs" />
     <Compile Include="Term.cs" />
