@@ -16,7 +16,7 @@ namespace TestPolynomial
 			double x = 17d;
 			double mod = 2;
 
-			IPolynomial<double> poly = new Polynomial<double>(n, x, 3); // 5*X^3
+			Polynomial<double> poly = new Polynomial<double>(n, x, 3); // 5*X^3
 
 			var result = Polynomial<double>.Field<double>.Modulus(poly, mod);
 
@@ -38,8 +38,8 @@ namespace TestPolynomial
 			double exponent = 2;
 			double mod = 3;
 
-			IPolynomial<double> poly = new Polynomial<double>(n, x); // X^5
-			IPolynomial<double> modPoly = Polynomial<double>.Add(new Polynomial<double>(4, 2), new Polynomial<double>(2, 2));
+			Polynomial<double> poly = new Polynomial<double>(n, x); // X^5
+			Polynomial<double> modPoly = Polynomial<double>.Add(new Polynomial<double>(4, 2), new Polynomial<double>(2, 2));
 
 			var result = Polynomial<double>.Field<double>.ExponentiateMod(poly, exponent, modPoly, mod);
 

@@ -41,10 +41,10 @@ namespace TestPolynomial
 		{
 			string expected = "(-11.25, 1)*X^2 + (-1, -0.5)";
 
-			IPolynomial<Complex> first = Polynomial<Complex>.Parse("(-12.0, 0)*X^2 - (2, 0)");
-			IPolynomial<Complex> second = Polynomial<Complex>.Parse("(0.75, 1)*X^2 + (1.0, -0.5)");
+			Polynomial<Complex> first = Polynomial<Complex>.Parse("(-12.0, 0)*X^2 - (2, 0)");
+			Polynomial<Complex> second = Polynomial<Complex>.Parse("(0.75, 1)*X^2 + (1.0, -0.5)");
 
-			IPolynomial<Complex> sum = Polynomial<Complex>.Add(first, second);
+			Polynomial<Complex> sum = Polynomial<Complex>.Add(first, second);
 			string actual = sum.ToString();
 
 			TestContext.WriteLine($"{sum}");
@@ -75,10 +75,10 @@ namespace TestPolynomial
 		{
 			string expected = "(9, 12)*X^4 + (10.5, -8)*X^2 + (-2, 1)";
 
-			IPolynomial<Complex> first = Polynomial<Complex>.Parse("(12.0, 0)*X^2 - (2, 0)");
-			IPolynomial<Complex> second = Polynomial<Complex>.Parse("(0.75, 1)*X^2 + (1.0, -0.5)");
+			Polynomial<Complex> first = Polynomial<Complex>.Parse("(12.0, 0)*X^2 - (2, 0)");
+			Polynomial<Complex> second = Polynomial<Complex>.Parse("(0.75, 1)*X^2 + (1.0, -0.5)");
 
-			IPolynomial<Complex> product = Polynomial<Complex>.Multiply(first, second);
+			Polynomial<Complex> product = Polynomial<Complex>.Multiply(first, second);
 			string actual = product.ToString();
 
 			TestContext.WriteLine($"({first}) * ({second})");

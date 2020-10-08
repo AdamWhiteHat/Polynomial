@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace PolynomialLibrary
 {
-	public class Term<T> : ITerm<T>
+	public class Term<T> : ICloneable<Term<T>>
 	{
-		public static ITerm<T> Zero = null;
+		public static Term<T> Zero = null;
 
 		public int Exponent { get; private set; }
 		public T CoEfficient { get; set; }
@@ -25,9 +25,9 @@ namespace PolynomialLibrary
 			CoEfficient = GenericArithmetic<T>.Clone(coefficient);
 		}
 
-		public static ITerm<T>[] GetTerms(T[] terms)
+		public static Term<T>[] GetTerms(T[] terms)
 		{
-			List<ITerm<T>> results = new List<ITerm<T>>();
+			List<Term<T>> results = new List<Term<T>>();
 
 			int degree = 0;
 			foreach (T term in terms)
@@ -40,7 +40,7 @@ namespace PolynomialLibrary
 			return results.ToArray();
 		}
 
-		public static ITerm<T> Divide(ITerm<T> left, ITerm<T> right)
+		public static Term<T> Divide(Term<T> left, Term<T> right)
 		{
 			T coefficent = GenericArithmetic<T>.Divide(left.CoEfficient, right.CoEfficient);
 			int exponent = left.Exponent - right.Exponent;
@@ -56,7 +56,7 @@ namespace PolynomialLibrary
 			return GenericArithmetic<T>.Multiply(CoEfficient, GenericArithmetic<T>.Power(indeterminate, Exponent));
 		}
 
-		public ITerm<T> Clone()
+		public Term<T> Clone()
 		{
 			return new Term<T>(GenericArithmetic<T>.Clone(this.CoEfficient), this.Exponent);
 		}

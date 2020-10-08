@@ -3,6 +3,7 @@ using System.Numerics;
 
 namespace PolynomialLibrary
 {
+	/*
 	public interface IPolynomial<T> : ICloneable<IPolynomial<T>>, IComparable, IComparable<IPolynomial<T>>
 	{
 		int Degree { get; }
@@ -17,5 +18,5 @@ namespace PolynomialLibrary
 		//void RemoveZeros();
 		T Evaluate(T indeterminateValue);
 	}
-
+	*/
 }

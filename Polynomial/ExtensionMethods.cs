@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace PolynomialLibrary
 {
-	public static class ITermExtensionMethods
+	public static class TermExtensionMethods
 	{
-		public static T[] GetCoefficients<T>(this ITerm<T>[] source) where T : ICloneable<T>
+		public static T[] GetCoefficients<T>(this Term<T>[] source) where T : ICloneable<T>
 		{
 			return source?.Select(trm => trm.CoEfficient.Clone()).ToArray() ?? new T[] { GenericArithmetic<T>.Zero };
 		}

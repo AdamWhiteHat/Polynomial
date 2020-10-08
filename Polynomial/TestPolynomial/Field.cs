@@ -15,10 +15,10 @@ namespace TestPolynomial
 			string expecting = "-24*X^2 - 5*X + 17";
 
 			T from = GenericArithmetic<T>.Parse("3218147");
-			IPolynomial<T> poly = new Polynomial<T>(from, GenericArithmetic<T>.Parse("30"));
-			IPolynomial<T> modPoly = new Polynomial<T>(GenericArithmetic<T>.Parse("14"), GenericArithmetic<T>.Parse("2"));
+			Polynomial<T> poly = new Polynomial<T>(from, GenericArithmetic<T>.Parse("30"));
+			Polynomial<T> modPoly = new Polynomial<T>(GenericArithmetic<T>.Parse("14"), GenericArithmetic<T>.Parse("2"));
 
-			IPolynomial<T> actual = Polynomial<T>.Field<T>.Modulus(poly, modPoly);
+			Polynomial<T> actual = Polynomial<T>.Field<T>.Modulus(poly, modPoly);
 
 			TestContext.WriteLine($"{poly} Mod({modPoly})");
 			TestContext.WriteLine("");
@@ -34,10 +34,10 @@ namespace TestPolynomial
 			string expecting = "X^4 + X^3 + X^2 + X + 1";
 
 			T from = GenericArithmetic<T>.Parse("3218147");
-			IPolynomial<T> poly = new Polynomial<T>(from, GenericArithmetic<T>.Parse("30"));
+			Polynomial<T> poly = new Polynomial<T>(from, GenericArithmetic<T>.Parse("30"));
 			T mod = GenericArithmetic<T>.Parse("2");
 
-			IPolynomial<T> actual = Polynomial<T>.Field<T>.Modulus(poly, mod);
+			Polynomial<T> actual = Polynomial<T>.Field<T>.Modulus(poly, mod);
 
 			TestContext.WriteLine($"{poly} Mod({mod})");
 			TestContext.WriteLine("");
@@ -54,11 +54,11 @@ namespace TestPolynomial
 			string expecting = "X + 1";
 
 			T from = GenericArithmetic<T>.Parse("3218147");
-			IPolynomial<T> poly = new Polynomial<T>(from, GenericArithmetic<T>.Parse("30"));
-			IPolynomial<T> modPoly = new Polynomial<T>(GenericArithmetic<T>.Parse("14"), GenericArithmetic<T>.Parse("2"));
+			Polynomial<T> poly = new Polynomial<T>(from, GenericArithmetic<T>.Parse("30"));
+			Polynomial<T> modPoly = new Polynomial<T>(GenericArithmetic<T>.Parse("14"), GenericArithmetic<T>.Parse("2"));
 			T mod = GenericArithmetic<T>.Parse("2");
 
-			IPolynomial<T> actual = Polynomial<T>.Field<T>.ModMod(poly, modPoly, mod);
+			Polynomial<T> actual = Polynomial<T>.Field<T>.ModMod(poly, modPoly, mod);
 
 			TestContext.WriteLine($"{poly} Mod({modPoly},{mod})");
 			TestContext.WriteLine("");
@@ -73,11 +73,11 @@ namespace TestPolynomial
 		{
 			string expecting = "X + 2";
 
-			IPolynomial<T> first = Polynomial<T>.Parse("3*X^2 + 2*X + 1");
+			Polynomial<T> first = Polynomial<T>.Parse("3*X^2 + 2*X + 1");
 			T multiplier = GenericArithmetic<T>.Parse("20");
 			T mod = GenericArithmetic<T>.Parse("3");
 
-			IPolynomial<T> actual = Polynomial<T>.Field<T>.Multiply(first, multiplier, mod);
+			Polynomial<T> actual = Polynomial<T>.Field<T>.Multiply(first, multiplier, mod);
 
 			TestContext.WriteLine($"({first}) * ({multiplier})");
 			TestContext.WriteLine("");
@@ -92,12 +92,12 @@ namespace TestPolynomial
 		{
 			string expecting = "X^2 + 1";
 
-			IPolynomial<T> first = Polynomial<T>.Parse("3*X^4 + 2*X^3 + 4*X^2 + 2*X + 1");
-			IPolynomial<T> second = Polynomial<T>.Parse("X^2 + 1");
-			IPolynomial<T> remainder;
+			Polynomial<T> first = Polynomial<T>.Parse("3*X^4 + 2*X^3 + 4*X^2 + 2*X + 1");
+			Polynomial<T> second = Polynomial<T>.Parse("X^2 + 1");
+			Polynomial<T> remainder;
 			T mod = GenericArithmetic<T>.Parse("2");
 
-			IPolynomial<T> quotient = Polynomial<T>.Field<T>.Divide(first, second, mod, out remainder);
+			Polynomial<T> quotient = Polynomial<T>.Field<T>.Divide(first, second, mod, out remainder);
 
 			TestContext.WriteLine($"({first}) / ({second})");
 			TestContext.WriteLine("");
@@ -112,12 +112,12 @@ namespace TestPolynomial
 		{
 			string expecting = "X + 1";
 
-			IPolynomial<T> first = Polynomial<T>.Parse("3*X^2 + 2*X + 1");
+			Polynomial<T> first = Polynomial<T>.Parse("3*X^2 + 2*X + 1");
 			T two = GenericArithmetic<T>.Parse("2");
-			IPolynomial<T> modPoly = new Polynomial<T>(GenericArithmetic<T>.Parse("14"), two);
+			Polynomial<T> modPoly = new Polynomial<T>(GenericArithmetic<T>.Parse("14"), two);
 			T mod = two;
 
-			IPolynomial<T> actual = Polynomial<T>.Field<T>.ExponentiateMod(first, two, modPoly, mod);
+			Polynomial<T> actual = Polynomial<T>.Field<T>.ExponentiateMod(first, two, modPoly, mod);
 
 			TestContext.WriteLine($"({first})^{two}) Mod({modPoly}, {mod})");
 			TestContext.WriteLine("");

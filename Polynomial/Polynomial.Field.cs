@@ -6,25 +6,25 @@ using System.Collections;
 
 namespace PolynomialLibrary
 {
-	public partial class Polynomial<T> : IPolynomial<T>
+	public partial class Polynomial<T>
 	{
 		public static class Field<T>
 		{
-			public static IPolynomial<T> GCD(IPolynomial<T> left, IPolynomial<T> right, T modulus)
+			public static Polynomial<T> GCD(Polynomial<T> left, Polynomial<T> right, T modulus)
 			{
-				IPolynomial<T> a = left.Clone();
-				IPolynomial<T> b = right.Clone();
+				Polynomial<T> a = left.Clone();
+				Polynomial<T> b = right.Clone();
 
 				if (b.Degree > a.Degree)
 				{
-					IPolynomial<T> swap = b;
+					Polynomial<T> swap = b;
 					b = a;
 					a = swap;
 				}
 
 				while (!GenericArithmetic<T>.Equal(GenericArithmetic<T>.Convert(b.Terms.Length), GenericArithmetic<T>.Zero) || GenericArithmetic<T>.Equal(b.Terms[0].CoEfficient, GenericArithmetic<T>.Zero))
 				{
-					IPolynomial<T> temp = a;
+					Polynomial<T> temp = a;
 					a = b;
 					b = Field<T>.ModMod(temp, b, modulus);
 				}
@@ -39,12 +39,12 @@ namespace PolynomialLibrary
 				}
 			}
 
-			public static IPolynomial<T> ModMod(IPolynomial<T> toReduce, IPolynomial<T> modPoly, T primeModulus)
+			public static Polynomial<T> ModMod(Polynomial<T> toReduce, Polynomial<T> modPoly, T primeModulus)
 			{
 				return Field<T>.Modulus(Field<T>.Modulus(toReduce, modPoly), primeModulus);
 			}
 
-			public static IPolynomial<T> Modulus(IPolynomial<T> poly, IPolynomial<T> mod)
+			public static Polynomial<T> Modulus(Polynomial<T> poly, Polynomial<T> mod)
 			{
 				int sortOrder = mod.CompareTo(poly);
 				if (sortOrder > 0)
@@ -56,18 +56,18 @@ namespace PolynomialLibrary
 					return Polynomial<T>.Zero.Clone();
 				}
 
-				IPolynomial<T> remainder;
+				Polynomial<T> remainder;
 				Polynomial<T>.Divide(poly, mod, out remainder);
 
 				return remainder.Clone();
 			}
 
-			public static IPolynomial<T> Modulus(IPolynomial<T> poly, T mod)
+			public static Polynomial<T> Modulus(Polynomial<T> poly, T mod)
 			{
-				IPolynomial<T> clone = poly.Clone();
-				List<ITerm<T>> terms = new List<ITerm<T>>();
+				Polynomial<T> clone = poly.Clone();
+				List<Term<T>> terms = new List<Term<T>>();
 
-				foreach (ITerm<T> term in clone.Terms)
+				foreach (Term<T> term in clone.Terms)
 				{
 					T remainder = GenericArithmetic<T>.Zero;
 					GenericArithmetic<T>.DivRem(term.CoEfficient, mod, out remainder);
@@ -81,16 +81,16 @@ namespace PolynomialLibrary
 				}
 
 				// Recalculate the degree
-				ITerm<T>[] termArray = terms.SkipWhile(t => GenericArithmetic<T>.Equal(GenericArithmetic<T>.Sign(t.CoEfficient), GenericArithmetic<T>.Zero)).ToArray();
+				Term<T>[] termArray = terms.SkipWhile(t => GenericArithmetic<T>.Equal(GenericArithmetic<T>.Sign(t.CoEfficient), GenericArithmetic<T>.Zero)).ToArray();
 				if (!termArray.Any())
 				{
 					termArray = Term<T>.GetTerms(new T[] { GenericArithmetic<T>.Zero });
 				}
-				IPolynomial<T> result = new Polynomial<T>(termArray);
+				Polynomial<T> result = new Polynomial<T>(termArray);
 				return result;
 			}
 
-			public static IPolynomial<T> Divide(IPolynomial<T> left, IPolynomial<T> right, T mod, out IPolynomial<T> remainder)
+			public static Polynomial<T> Divide(Polynomial<T> left, Polynomial<T> right, T mod, out Polynomial<T> remainder)
 			{
 				if (left == null) throw new ArgumentNullException(nameof(left));
 				if (right == null) throw new ArgumentNullException(nameof(right));
@@ -128,11 +128,11 @@ namespace PolynomialLibrary
 				return quotient;
 			}
 
-			public static IPolynomial<T> Multiply(IPolynomial<T> poly, T multiplier, T mod)
+			public static Polynomial<T> Multiply(Polynomial<T> poly, T multiplier, T mod)
 			{
-				IPolynomial<T> result = poly.Clone();
+				Polynomial<T> result = poly.Clone();
 
-				foreach (ITerm<T> term in result.Terms)
+				foreach (Term<T> term in result.Terms)
 				{
 					T newCoefficient = term.CoEfficient;
 					if (GenericArithmetic<T>.NotEqual(newCoefficient, GenericArithmetic<T>.Zero))
@@ -145,11 +145,11 @@ namespace PolynomialLibrary
 				return result;
 			}
 
-			public static IPolynomial<T> PowMod(IPolynomial<T> poly, int exponent, T mod)
+			public static Polynomial<T> PowMod(Polynomial<T> poly, int exponent, T mod)
 			{
-				IPolynomial<T> result = poly.Clone();
+				Polynomial<T> result = poly.Clone();
 
-				foreach (ITerm<T> term in result.Terms)
+				foreach (Term<T> term in result.Terms)
 				{
 					T newCoefficient = term.CoEfficient;
 					if (GenericArithmetic<T>.NotEqual(newCoefficient, GenericArithmetic<T>.Zero))
@@ -166,12 +166,12 @@ namespace PolynomialLibrary
 				return result;
 			}
 
-			public static IPolynomial<T> ExponentiateMod(IPolynomial<T> startPoly, T s2, IPolynomial<T> f, T p)
+			public static Polynomial<T> ExponentiateMod(Polynomial<T> startPoly, T s2, Polynomial<T> f, T p)
 			{
-				IPolynomial<T> result = Polynomial<T>.One.Clone();
+				Polynomial<T> result = Polynomial<T>.One.Clone();
 				if (GenericArithmetic<T>.Equal(s2, GenericArithmetic<T>.Zero)) { return result; }
 
-				IPolynomial<T> A = startPoly.Clone();
+				Polynomial<T> A = startPoly.Clone();
 
 				byte[] byteArray = GenericArithmetic<T>.ToBytes(s2);
 				bool[] bitArray = new BitArray(byteArray).Cast<bool>().ToArray();
@@ -197,7 +197,7 @@ namespace PolynomialLibrary
 				return result;
 			}
 
-			public static IPolynomial<T> ModPow(IPolynomial<T> poly, T exponent, IPolynomial<T> mod)
+			public static Polynomial<T> ModPow(Polynomial<T> poly, T exponent, Polynomial<T> mod)
 			{
 				if (GenericArithmetic<T>.LessThan(exponent, GenericArithmetic<T>.Zero))
 				{
@@ -216,7 +216,7 @@ namespace PolynomialLibrary
 					return Polynomial<T>.Square(poly);
 				}
 
-				IPolynomial<T> total = Polynomial<T>.Square(poly);
+				Polynomial<T> total = Polynomial<T>.Square(poly);
 
 				T counter = GenericArithmetic<T>.Subtract(exponent, GenericArithmetic<T>.Two);
 				while (GenericArithmetic<T>.NotEqual(counter, GenericArithmetic<T>.Zero))
@@ -234,21 +234,21 @@ namespace PolynomialLibrary
 				return total;
 			}
 
-			public static bool IsIrreducibleOverField(IPolynomial<T> f, T p)
+			public static bool IsIrreducibleOverField(Polynomial<T> f, T p)
 			{
-				IPolynomial<T> splittingField = new Polynomial<T>(
+				Polynomial<T> splittingField = new Polynomial<T>(
 					new Term<T>[] {
 						new Term<T>(GenericArithmetic<T>.One, GenericArithmetic<int>.Convert<T>(p)),
 						new Term<T>(GenericArithmetic<T>.MinusOne,1)
 					});
 
-				IPolynomial<T> reducedField = Field<T>.ModMod(splittingField, f, p);
+				Polynomial<T> reducedField = Field<T>.ModMod(splittingField, f, p);
 
-				IPolynomial<T> gcd = Polynomial<T>.GCD(reducedField, f);
+				Polynomial<T> gcd = Polynomial<T>.GCD(reducedField, f);
 				return (gcd.CompareTo(Polynomial<T>.One) == 0);
 			}
 
-			public static bool IsIrreducibleOverP(IPolynomial<T> poly, T p)
+			public static bool IsIrreducibleOverP(Polynomial<T> poly, T p)
 			{
 				List<T> coefficients = poly.Terms.Select(t => t.CoEfficient).ToList();
 
