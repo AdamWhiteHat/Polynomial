@@ -301,11 +301,11 @@ namespace ExtendedArithmetic
 
 		#region Change Forms
 
-		public static Polynomial GetDerivativePolynomial(Polynomial poly)
+		public static Polynomial GetDerivativePolynomial(Polynomial polynomial)
 		{
 			int d;
 			List<Term> terms = new List<Term>();
-			foreach (Term term in poly.Terms)
+			foreach (Term term in polynomial.Terms)
 			{
 				d = term.Exponent - 1;
 				if (d < 0)
@@ -322,7 +322,7 @@ namespace ExtendedArithmetic
 		public static Polynomial MakeMonic(Polynomial polynomial, BigInteger polynomialBase)
 		{
 			int deg = polynomial.Degree;
-			Polynomial result = new Polynomial(polynomial.Terms.ToArray());
+			Polynomial result = polynomial.Clone();
 			if (BigInteger.Abs(result.Terms[deg].CoEfficient) > 1)
 			{
 				BigInteger toAdd = (result.Terms[deg].CoEfficient - 1) * polynomialBase;
@@ -332,22 +332,26 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
-		public static void MakeCoefficientsSmaller(Polynomial polynomial, BigInteger polynomialBase)
+		public static Polynomial MakeCoefficientsSmaller(Polynomial polynomial, BigInteger polynomialBase)
 		{
 			BigInteger max = polynomialBase / 2;
 
+			Polynomial result = polynomial.Clone();
+
 			int pos = 0;
-			int deg = polynomial.Degree;
+			int deg = result.Degree;
 			while (pos <= deg)
 			{
-				if (polynomial[pos] > max)
+				if (result[pos] > max)
 				{
-					polynomial[pos + 1] += 1;
-					polynomial[pos] = -(polynomialBase - polynomial[pos]);
+					result[pos + 1] += 1;
+					result[pos] = -(polynomialBase - result[pos]);
 				}
 
 				pos++;
 			}
+
+			return result;
 		}
 
 		#endregion
@@ -468,12 +472,12 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
-		public static Polynomial Square(Polynomial poly)
+		public static Polynomial Square(Polynomial polynomial)
 		{
-			return Polynomial.Multiply(poly, poly);
+			return Polynomial.Multiply(polynomial, polynomial);
 		}
 
-		public static Polynomial Pow(Polynomial poly, int exponent)
+		public static Polynomial Pow(Polynomial polynomial, int exponent)
 		{
 			if (exponent < 0)
 			{
@@ -485,19 +489,19 @@ namespace ExtendedArithmetic
 			}
 			else if (exponent == 1)
 			{
-				return poly.Clone();
+				return polynomial.Clone();
 			}
 			else if (exponent == 2)
 			{
-				return Square(poly);
+				return Square(polynomial);
 			}
 
-			Polynomial total = Polynomial.Square(poly);
+			Polynomial total = Polynomial.Square(polynomial);
 
 			int counter = exponent - 2;
 			while (counter != 0)
 			{
-				total = Polynomial.Multiply(total, poly);
+				total = Polynomial.Multiply(total, polynomial);
 				counter -= 1;
 			}
 
