@@ -1,43 +1,43 @@
 ﻿using System;
 using System.Numerics;
 using PolynomialLibrary;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace TestPolynomial
 {
-	[TestClass]
+	[TestFixture(Category = "PolynomialArithmetic - Complex")]
 	public class PolynomialArithmetic_Complex : PolynomialArithmetic<Complex>
 	{
-		[DataTestMethod]
-		[DataRow("(5, 0)*X^3")]
-		public override void TestBaseMExpansionConstructor(string expected)
+		[Test]
+		[TestCase("(5, 0)*X^3")]
+		public override void BaseMExpansionConstructor(string expected)
 		{
-			base.TestBaseMExpansionConstructor(expected);
+			base.BaseMExpansionConstructor(expected);
 		}
 
-		[DataTestMethod]
-		[DataRow("(1.09986237454265, 0)*X^3 + (3.63797880709171E-12, 0)")]
-		public override void TestMakeCoefficientsSmaller(string expected)
+		[Test]
+		[TestCase("(1.09986237454265, 0)*X^3 + (3.63797880709171E-12, 0)")]
+		public override void MakeCoefficientsSmaller(string expected)
 		{
-			base.TestMakeCoefficientsSmaller(expected);
+			base.MakeCoefficientsSmaller(expected);
 		}
 
-		[DataTestMethod]
-		[DataRow("(144, 0)*X^2 + (-12.5, -0.5)*X + (-3, -6.1)")]
-		public override void TestParse(string expected)
+		[Test]
+		[TestCase("(144, 0)*X^2 + (-12.5, -0.5)*X + (-3, -6.1)")]
+		public override void Parse(string expected)
 		{
-			base.TestParse(expected);
+			base.Parse(expected);
 		}
 
-		[DataTestMethod]
-		[DataRow("(24, 0)*X + (-1, 0)")]
-		public override void TestAddition(string expected)
+		[Test]
+		[TestCase("12*X + 2", "12*X - 3", "(24, 0)*X - (1, 0)")]
+		public override void Addition(string augend, string addend, string expected)
 		{
-			base.TestAddition(expected);
+			base.Addition(augend, addend, expected);
 		}
 
-		[TestMethod]
-		public void TestAddition2()
+		[Test]
+		public void Addition2()
 		{
 			string expected = "(-11.25, 1)*X^2 + (-1, -0.5)";
 
@@ -51,27 +51,27 @@ namespace TestPolynomial
 			TestContext.WriteLine("");
 			TestContext.WriteLine($"Expected: {expected}");
 			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected == actual}");
+			TestContext.WriteLine($"Passed:   {expected == actual}");
 
-			Assert.AreEqual(expected, actual.ToString());
+			Assert.AreEqual(expected, actual);
 		}
 
-		[DataTestMethod]
-		[DataRow("(7, 0)*X^2 + X")]
-		public override void TestSubtraction(string expected)
+		[Test]
+		[TestCase("7*X^2 + 3*X - 2", "2*X - 2", "(7, 0)*X^2 + X")]
+		public override void Subtraction(string minuend, string subtrahend, string expected)
 		{
-			base.TestSubtraction(expected);
+			base.Subtraction(minuend, subtrahend, expected);
 		}
 
-		[DataTestMethod]
-		[DataRow("(144, 0)*X^2 + (-12, 0)*X + (-6, 0)")]
-		public override void TestMultiply(string expected)
+		[Test]
+		[TestCase("12*X + 2", "12*X - 3", "(144, 0)*X^2 + (-12, 0)*X + (-6, 0)")]
+		public override void Multiply(string multiplicand, string multiplier, string expected)
 		{
-			base.TestMultiply(expected);
+			base.Multiply(multiplicand, multiplier, expected);
 		}
 
-		[TestMethod]
-		public void TestMultiply2()
+		[Test]
+		public void Multiply2()
 		{
 			string expected = "(9, 12)*X^4 + (10.5, -8)*X^2 + (-2, 1)";
 
@@ -85,39 +85,72 @@ namespace TestPolynomial
 			TestContext.WriteLine("");
 			TestContext.WriteLine($"Expected: {expected}");
 			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected == actual}");
+			TestContext.WriteLine($"Passed:   {expected == actual}");
 
 
-			Assert.AreEqual(expected, actual.ToString());
+			Assert.AreEqual(expected, actual);
 		}
 
-		[DataTestMethod]
-		[DataRow("(24, 0)*X + (-1, 0)")]
-		public override void TestDivide(string expected)
+		[Test]
+		[TestCase("288*X^2 + 36*X - 2", "12*X + 2", "(24, 0)*X - (1, 0)")]
+		public override void Divide(string dividend, string divisor, string expected)
 		{
-			base.TestDivide(expected);
+			base.Divide(dividend, divisor, expected);
 		}
 
-		[DataTestMethod]
-		[DataRow("(2, 0)*X + (-2, 0)")]
-		public override void TestMod(string expected)
+		[Test]
+		[TestCase("X^2 + 1", "2", "X^4 + (2, 0)*X^2 + (1, 0)")]
+		[TestCase("X^8 + 4", "2", "X^16 + (8, 0)*X^8 + (16, 0)")]
+		[TestCase("X^9 - X^8", "3", "X^27 + (-3, 0)*X^26 + (3, 0)*X^25 - X^24")]
+		public override void Pow(string polynomial, string exponent, string expected)
 		{
-			base.TestMod(expected);
+			base.Pow(polynomial, exponent, expected);
+		}
+
+		[Test]
+		[TestCase("3*X^2 + 2*X + 1", "X^2 + 1", "(2, 0)*X + (-2, 0)")]
+		public override void Mod(string dividend, string modulus, string expected)
+		{
+			base.Mod(dividend, modulus, expected);
 		}
 
 
-		[DataTestMethod]
-		[DataRow("(144, 0)*X^2 + (24, 0)*X + (1, 0)")]
-		public override void TestSquare(string expected)
+		[Test]
+		[TestCase("12*X + 1", "(144, 0)*X^2 + (24, 0)*X + (1, 0)")]
+		public override void Square(string root, string expected)
 		{
-			base.TestSquare(expected);
+			base.Square(root, expected);
 		}
 
-		[DataTestMethod]
-		[DataRow("(576, 0)*X + (36, 0)")]
-		public override void TestDerivative(string expected)
+		[Test]
+		[TestCase("288*X^2 + 36*X - 2", "(576, 0)*X + (36, 0)")]
+		public override void Derivative(string polynomial, string expected)
 		{
-			base.TestDerivative(expected);
+			base.Derivative(polynomial, expected);
+		}
+
+		[Test]
+		[TestCase("X^3 + (-15, 0)*X^2 + (71, 0)*X + (-105, 0)", "3", "5", "7")]
+		public override void FromRoots(string expected, params object[] roots)
+		{
+			base.FromRoots(expected, roots);
+		}
+
+		[Test]
+		[TestCase("X^3 - 15*X^2 + 71*X - 105", "3", "(0, 0)")]
+		[TestCase("X^2 - 4*X + 13", "2", "(9, 0)")]
+		[TestCase("X^2 + 1", "0", "(1, 0)")]
+		public override void Evaluate(string polynomial, string indeterminateValue, string expected)
+		{
+			base.Evaluate(polynomial, indeterminateValue, expected);
+		}
+
+		[Test]
+		[TestCase("2*X^3 + X^2 + 10*X + 62", "117", "X^3 + (118, 0)*X^2 + (10, 0)*X + (62, 0)")]
+		[TestCase("5*X^2 + 19*X + 43", "79", "X^2 + (335, 0)*X + (43, 0)")]
+		public override void MakeMonic(string polynomial, string polynomialBase, string expected)
+		{
+			base.MakeMonic(polynomial, polynomialBase, expected);
 		}
 	}
 }

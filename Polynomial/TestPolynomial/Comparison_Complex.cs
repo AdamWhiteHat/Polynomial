@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace TestPolynomial
 {
-	[TestClass]
-	public class Comparison_Complex : Comparison<Complex>
-	{
-	}
+    [TestFixture(Category = "Comparison - Complex")]
+    public class Comparison_Complex : Comparison<Complex>
+    {
+    }
 }

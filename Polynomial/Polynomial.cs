@@ -317,9 +317,8 @@ namespace PolynomialLibrary
 			T result = GenericArithmetic<T>.Zero;
 			foreach (Term<T> term in terms)
 			{
-				T placeValue = GenericArithmetic<T>.Power(indeterminateValue, term.Exponent);
-				T addValue = GenericArithmetic<T>.Multiply(term.CoEfficient, placeValue);
-				result = GenericArithmetic<T>.Add(result, addValue);
+				T termValue = term.Evaluate(indeterminateValue);
+				result = GenericArithmetic<T>.Add(result, termValue);
 			}
 			return result;
 		}
@@ -707,11 +706,16 @@ namespace PolynomialLibrary
 					if (term.Exponent == 0)
 					{
 						if (stringTerms.Count == 0)
-						{ stringTerms.Add("0"); }
+						{
+							stringTerms.Add(GenericArithmetic<T>.ToString(GenericArithmetic<T>.Zero));
+						}
 					}
 					continue;
 				}
 
+				stringTerms.Add(term.ToString());
+
+				/*
 				if (term.Exponent == 0)
 				{
 					stringTerms.Add($"{term.CoEfficient}");
@@ -734,6 +738,7 @@ namespace PolynomialLibrary
 					else
 					{ stringTerms.Add($"{term.CoEfficient}*X^{term.Exponent}"); }
 				}
+				*/
 			}
 			return string.Join(" + ", stringTerms).Replace("+ -", "- ");
 		}

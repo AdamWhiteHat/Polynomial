@@ -1,9 +1,9 @@
 ﻿using System.Numerics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace TestPolynomial
 {
-	[TestClass]
+	[TestFixture(Category = "TypeArithmetic - BigInteger")]
 	public class TypeArithmetic_BigInteger : TypeArithmetic<BigInteger>
 	{
 	}

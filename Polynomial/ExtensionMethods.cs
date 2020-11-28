@@ -16,6 +16,10 @@ namespace PolynomialLibrary
 
 	public static class BigIntegerExtensionMethods
 	{
+		/// <summary>
+		/// Performs modulo arithmetic on a BigInteger. 
+		/// This method differs from the remainder in that it will always return the result as a positive value.
+		/// </summary>		
 		public static BigInteger Mod(this BigInteger source, BigInteger mod)
 		{
 			if (mod.Equals(BigInteger.Zero))
@@ -27,11 +31,17 @@ namespace PolynomialLibrary
 			return (r < 0) ? (r + mod) : r;
 		}
 
+		/// <summary>
+		/// Clones a BigInteger from its internal byte array.
+		/// </summary>
 		public static BigInteger Clone(this BigInteger source)
 		{
 			return new BigInteger(source.ToByteArray());
 		}
 
+		/// <summary>
+		/// Gets the base-2 representation of a BigInteger, as an array of bool(s), in little-endian format.
+		/// </summary>
 		public static bool[] ConvertToBase2(this BigInteger value)
 		{
 			byte[] byteArray = value.ToByteArray();
@@ -39,12 +49,17 @@ namespace PolynomialLibrary
 			return bitArray;
 		}
 
+		/// <summary>
+		/// Squares a BigInteger
+		/// </summary>		
 		public static BigInteger Square(this BigInteger source)
 		{
 			return (source * source);
 		}
 
-		// Roots
+		/// <summary>
+		///  Returns the square root of a BigInteger.
+		/// </summary>
 		public static BigInteger SquareRoot(this BigInteger source)
 		{
 			if (source.IsZero) return new BigInteger(0);
@@ -69,14 +84,20 @@ namespace PolynomialLibrary
 			return source == p ? n : low;
 		}
 
-		// Returns the NTHs root of a BigInteger with Remainder.
-		// The root must be greater than or equal to 1 or value must be a positive integer.
+		/// <summary>
+		///  Returns the Nth root of a BigInteger.
+		///  The root must be greater than or equal to 1 or value must be a positive integer.
+		/// </summary>
 		public static BigInteger NthRoot(this BigInteger source, int root)
 		{
 			BigInteger remainder = new BigInteger();
 			return source.NthRoot(root, out remainder);
 		}
 
+		/// <summary>
+		///  Returns the Nth root of a BigInteger, with optional Remainder.
+		///  The root must be greater than or equal to 1 or value must be a positive integer.
+		/// </summary>
 		public static BigInteger NthRoot(this BigInteger source, int root, out BigInteger remainder)
 		{
 			if (root < 1) throw new Exception("Root must be greater than or equal to 1");
@@ -119,6 +140,9 @@ namespace PolynomialLibrary
 			return lowerbound;
 		}
 
+		/// <summary>
+		/// Efficiently checks if a  BigInteger is a square by examining its properties in base-16.
+		/// </summary>		
 		public static bool IsSquare(this BigInteger source)
 		{
 			if (source == null || source == BigInteger.Zero)
@@ -151,19 +175,25 @@ namespace PolynomialLibrary
 
 	public static class IEnumerableBigIntegerExtensionMethods
 	{
-		// Product
-		public static BigInteger Product(this IEnumerable<int> source)
+		/// <summary>
+		/// Gets the product of an IEnumerable collection of BigIntegers.
+		/// </summary>		
+		public static BigInteger Product(this IEnumerable<BigInteger> source)
 		{
-			return source.Select(n => new BigInteger(n)).Aggregate((accumulator, current) => accumulator * current);
+			return source.Aggregate((accumulator, current) => accumulator * current);
 		}
 
-		// Sum
+		/// <summary>
+		/// Gets the sum of an IEnumerable collection of BigIntegers.
+		/// </summary>		
 		public static BigInteger Sum(this IEnumerable<BigInteger> source)
 		{
 			return source.Aggregate((accumulator, current) => accumulator + current);
 		}
 
-		// GCD
+		/// <summary>
+		/// Calculates GCD of all the BigIntegers in a IEnumerable collection.
+		/// </summary>		
 		public static BigInteger GCD(this IEnumerable<BigInteger> source)
 		{
 			return source.Aggregate(BigInteger.GreatestCommonDivisor);

@@ -1,10 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace TestPolynomial
 {
-	[TestClass]
-	public class TypeArithmetic_Double : TypeArithmetic<Double>
-	{
-	}
+    [TestFixture(Category = "TypeArithmetic - Double")]
+    public class TypeArithmetic_Double : TypeArithmetic<Double>
+    {
+        [Test]
+        [TestCase("2981", "8.00001409367807")]
+        public override void Ln(string argument, string expected)
+        {
+            base.Ln(argument, expected);
+        }
+    }
 }

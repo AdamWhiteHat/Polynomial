@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace TestPolynomial
 {
-	[TestClass]
-	public class Comparison_BigInteger : Comparison<BigInteger>
-	{
-	}
+    [TestFixture(Category = "Comparison - BigInteger")]
+    public class Comparison_BigInteger : Comparison<BigInteger>
+    {
+    }
 }

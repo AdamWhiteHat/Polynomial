@@ -1,10 +1,10 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace TestPolynomial
 {
-	[TestClass]
-	public class PolynomialArithmetic_Int64 : PolynomialArithmetic<Int64>
-	{
-	}
+    [TestFixture(Category = "PolynomialArithmetic - Int64")]
+    public class PolynomialArithmetic_Int64 : PolynomialArithmetic<Int64>
+    {
+    }
 }

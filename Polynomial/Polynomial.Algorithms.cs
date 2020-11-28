@@ -118,7 +118,8 @@ namespace PolynomialLibrary
 				//    IF t ≡ 1 OUTUPUT r, p-r .
 				//    ELSE find, by repeated squaring, the lowest i in (0<i<m) , such as t^(2^i) ≡ 1
 				//    LET b ≡ c^(2^(m-i-1)), r ≡ r*b, t ≡ t*b^2 , c ≡ b^2  }        
-				BigInteger a = 0, b = 0;
+				BigInteger a = 0;
+				BigInteger b = 0;
 				BigInteger counter = 1, max = exponent;
 
 				while (t != 1 && counter < max) // Maths.LegendreSymbol(t,p) != 1

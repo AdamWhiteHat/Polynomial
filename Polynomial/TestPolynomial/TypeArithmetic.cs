@@ -1,185 +1,183 @@
 ﻿using System;
 using System.Numerics;
 using PolynomialLibrary;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace TestPolynomial
 {
-	[TestClass]
-	public class TypeArithmetic<T>
-	{
-		private TestContext m_testContext;
-		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
+    [TestFixture(Category = "TypeArithmetic")]
+    public class TypeArithmetic<T>
+    {
+        private TestContext m_testContext;
+        public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
 
-		[TestMethod]
-		public virtual void TestAddition()
-		{
-			T first = GenericArithmetic<T>.Parse("5");
-			T second = GenericArithmetic<T>.Parse("3");
+        [Test]
+        [TestCase("5", "3", "8")]
+        public virtual void Addition(string augend, string addend, string expected)
+        {
+            T left = GenericArithmetic<T>.Parse(augend);
+            T right = GenericArithmetic<T>.Parse(addend);
 
-			T expected = GenericArithmetic<T>.Parse("8");
-			T actual = GenericArithmetic<T>.Add(first, second);
+            string actual = GenericArithmetic<T>.Add(left, right).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.AreEqual(expected, actual);
+        }
 
-		[TestMethod]
-		public virtual void TestSubtraction()
-		{
-			T first = GenericArithmetic<T>.Parse("5");
-			T second = GenericArithmetic<T>.Parse("3");
+        [Test]
+        [TestCase("5", "3", "2")]
+        public virtual void Subtraction(string minuend, string subtrahend, string expected)
+        {
+            T left = GenericArithmetic<T>.Parse(minuend);
+            T right = GenericArithmetic<T>.Parse(subtrahend);
 
-			T expected = GenericArithmetic<T>.Parse("2");
-			T actual = GenericArithmetic<T>.Subtract(first, second);
+            string actual = GenericArithmetic<T>.Subtract(left, right).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.AreEqual(expected, actual);
+        }
 
-		[TestMethod]
-		public virtual void TestMultiplication()
-		{
-			T first = GenericArithmetic<T>.Parse("5");
-			T second = GenericArithmetic<T>.Parse("3");
+        [Test]
+        [TestCase("5", "3", "15")]
+        public virtual void Multiplication(string multiplicand, string multiplier, string expected)
+        {
+            T left = GenericArithmetic<T>.Parse(multiplicand);
+            T right = GenericArithmetic<T>.Parse(multiplier);
 
-			T expected = GenericArithmetic<T>.Parse("15");
-			T actual = GenericArithmetic<T>.Multiply(first, second);
+            string actual = GenericArithmetic<T>.Multiply(left, right).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.AreEqual(expected, actual);
+        }
 
-		[TestMethod]
-		public virtual void TestDivision()
-		{
-			T first = GenericArithmetic<T>.Parse("207");
-			T second = GenericArithmetic<T>.Parse("69");
+        [Test]
+        [TestCase("207", "69", "3")]
+        public virtual void Division(string dividend, string divisor, string expected)
+        {
+            T left = GenericArithmetic<T>.Parse(dividend);
+            T right = GenericArithmetic<T>.Parse(divisor);
 
-			T expected = GenericArithmetic<T>.Parse("3");
-			T actual = GenericArithmetic<T>.Divide(first, second);
+            string actual = GenericArithmetic<T>.Divide(left, right).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.AreEqual(expected, actual);
+        }
 
-		[TestMethod]
-		public virtual void TestSqrt()
-		{
-			T input = GenericArithmetic<T>.Parse("25");
+        [Test]
+        [TestCase("25", "5")]
+        public virtual void Sqrt(string radicand, string expected)
+        {
+            T input = GenericArithmetic<T>.Parse(radicand);
 
-			T expected = GenericArithmetic<T>.Parse("5");
-			T actual = GenericArithmetic<T>.SquareRoot(input);
+            string actual = GenericArithmetic<T>.SquareRoot(input).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.AreEqual(expected, actual);
+        }
 
-		[TestMethod]
-		public virtual void TestLog()
-		{
-			T input = GenericArithmetic<T>.Parse("16");
-			double logBase = 2;
+        [Test]
+        [TestCase("16", 2, "4")]
+        public virtual void Logarithm(string argument, double logBase, string expected)
+        {
+            T arg = GenericArithmetic<T>.Parse(argument);
 
-			T expected = GenericArithmetic<T>.Parse("4");
-			T actual = GenericArithmetic<T>.Log(input, logBase);
+            string actual = GenericArithmetic<T>.Log(arg, logBase).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.AreEqual(expected, actual);
+        }
 
-		[TestMethod]
-		public virtual void TestLn()
-		{
-			T input = GenericArithmetic<T>.Parse("2981");
+        [Test]
+        [TestCase("2981", "8")]
+        public virtual void Ln(string argument, string expected)
+        {
+            T input = GenericArithmetic<T>.Parse(argument);
 
-			T expected = GenericArithmetic<T>.Convert<double>(Math.Log(2981d));
-			T actual = GenericArithmetic<T>.Log(input, Math.E);
+            string actual = GenericArithmetic<T>.Log(input, Math.E).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.AreEqual(expected, actual);
+        }
 
-		[TestMethod]
-		public virtual void TestPower()
-		{
-			T input = GenericArithmetic<T>.Parse("5");
-			int exp = 2;
+        [Test]
+        [TestCase("5", 2, "25")]
+        public virtual void Power(string argument, int exponent, string expected)
+        {
+            T input = GenericArithmetic<T>.Parse(argument);
 
-			T expected = GenericArithmetic<T>.Parse("25");
-			T actual = GenericArithmetic<T>.Power(input, exp);
+            string actual = GenericArithmetic<T>.Power(input, exponent).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.AreEqual(expected, actual);
+        }
 
-		[TestMethod]
-		public virtual void TestNegate()
-		{
-			T input = GenericArithmetic<T>.Parse("4");
+        [Test]
+        [TestCase("4", "-4")]
+        public virtual void Negate(string number, string expected)
+        {
+            T input = GenericArithmetic<T>.Parse(number);
 
-			T expected = GenericArithmetic<T>.Parse("-4");
-			T actual = GenericArithmetic<T>.Negate(input);
+            string actual = GenericArithmetic<T>.Negate(input).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.AreEqual(expected, actual);
+        }
 
-		[TestMethod]
-		public virtual void TestSign()
-		{
-			T input = GenericArithmetic<T>.Parse("-4");
+        [Test]
+        [TestCase("-4", "-1")]
+        public virtual void Sign(string number, string expected)
+        {
+            T input = GenericArithmetic<T>.Parse(number);
 
-			T expected = GenericArithmetic<T>.Parse("-1");
-			T actual = GenericArithmetic<T>.Sign(input);
+            string actual = GenericArithmetic<T>.Sign(input).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.AreEqual(expected, actual);
+        }
 
-		[TestMethod]
-		public virtual void TestAbs()
-		{
-			T input = GenericArithmetic<T>.Parse("-4");
+        [Test]
+        [TestCase("-4", "4")]
+        public virtual void Abs(string number, string expected)
+        {
+            T input = GenericArithmetic<T>.Parse(number);
 
-			T expected = GenericArithmetic<T>.Parse("4");
-			T actual = GenericArithmetic<T>.Abs(input);
+            string actual = GenericArithmetic<T>.Abs(input).ToString();
 
-			TestContext.WriteLine($"Expected: {expected}");
-			TestContext.WriteLine($"Actual:   {actual}");
-			TestContext.WriteLine($"Passed  = {expected.Equals(actual)}");
+            TestContext.WriteLine($"Expected: {expected}");
+            TestContext.WriteLine($"Actual:   {actual}");
+            TestContext.WriteLine($"Passed:   {expected.Equals(actual)}");
 
-			Assert.AreEqual(expected, actual);
-		}
-	}
+            Assert.AreEqual(expected, actual);
+        }
+    }
 }

@@ -53,7 +53,9 @@ namespace PolynomialLibrary
 
 		public T Evaluate(T indeterminate)
 		{
-			return GenericArithmetic<T>.Multiply(CoEfficient, GenericArithmetic<T>.Power(indeterminate, Exponent));
+			T placeValue = GenericArithmetic<T>.Power(indeterminate, Exponent);
+			T result = GenericArithmetic<T>.Multiply(CoEfficient, placeValue);
+			return result;
 		}
 
 		public Term<T> Clone()
@@ -63,7 +65,51 @@ namespace PolynomialLibrary
 
 		public override string ToString()
 		{
-			return $"{CoEfficient}*{IndeterminateSymbol}^{Exponent}";
+			// Note: The only time the coefficient should be zero is when this term is the only term and the polynomial is a zero polynomial.
+			// Otherwise, we don't store terms who's coefficient is zero (because they contribute nothing to the polynomial).
+			if (GenericArithmetic<T>.Equal(CoEfficient, GenericArithmetic<T>.Zero))
+			{
+				return GenericArithmetic<T>.ToString(GenericArithmetic<T>.Zero);
+			}
+
+			string coefficientString = string.Empty;
+			string exponentString = string.Empty;
+			bool displayMuliplicationSymbol = false;
+
+			// Note: We do nothing in the case that the Exponent is equal to zero; it is superfluous to display the indeterminate raised to the power of zero, e.g. "X^0"
+			if (Exponent == 1)
+			{
+				exponentString = "X";
+			}
+			else if (Exponent != 0)
+			{
+				exponentString = $"X^{Exponent}";
+			}
+
+			bool displayExponentString = !string.IsNullOrWhiteSpace(exponentString);
+			if (GenericArithmetic<T>.Equal(CoEfficient, GenericArithmetic<T>.One))
+			{
+				// No need to display the indeterminate being multiplied by one, only display if the indeterminate is hidden (because it's exponent is zero).
+				if (!displayExponentString)
+				{
+					coefficientString = GenericArithmetic<T>.ToString(GenericArithmetic<T>.One);
+				}
+			}
+			else if (GenericArithmetic<T>.Equal(CoEfficient, GenericArithmetic<T>.MinusOne))
+			{
+				coefficientString = "-";
+				if (!displayExponentString)
+				{
+					coefficientString += GenericArithmetic<T>.ToString(GenericArithmetic<T>.One);
+				}
+			}
+			else
+			{
+				coefficientString = GenericArithmetic<T>.ToString(CoEfficient);
+				displayMuliplicationSymbol = displayExponentString;
+			}
+
+			return $"{coefficientString}{(displayMuliplicationSymbol ? "*" : "")}{exponentString}";
 		}
 	}
 }

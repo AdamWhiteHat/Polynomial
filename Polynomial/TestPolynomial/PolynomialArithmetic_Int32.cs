@@ -1,9 +1,9 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace TestPolynomial
 {
-	[TestClass]
+	[TestFixture(Category = "PolynomialArithmetic - Int32")]
 	public class PolynomialArithmetic_Int32 : PolynomialArithmetic<Int32>
 	{
 	}
