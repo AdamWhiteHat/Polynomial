@@ -1,5 +1,5 @@
 ﻿using System;
-using PolynomialLibrary;
+using ExtendedArithmetic;
 using NUnit.Framework;
 
 namespace TestPolynomial

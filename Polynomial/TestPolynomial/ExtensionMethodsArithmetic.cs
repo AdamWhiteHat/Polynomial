@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
-using PolynomialLibrary;
+using ExtendedArithmetic;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -211,7 +211,7 @@ namespace TestPolynomial
 
         #endregion
 
-        #region PolynomialLibrary.HelperMethods
+        #region ExtendedArithmetic.HelperMethods
 
         [Test]
         [TestCase("(1.75, -3.5)")]

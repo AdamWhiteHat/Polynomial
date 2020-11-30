@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace PolynomialLibrary
+namespace ExtendedArithmetic
 {
     public static class GenericArithmetic<T>
     {

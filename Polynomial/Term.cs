@@ -3,7 +3,7 @@ using System.Linq;
 using System.Numerics;
 using System.Collections.Generic;
 
-namespace PolynomialLibrary
+namespace ExtendedArithmetic
 {
 	public class Term<T> : ICloneable<Term<T>>
 	{

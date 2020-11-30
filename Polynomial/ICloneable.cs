@@ -1,4 +1,4 @@
-﻿namespace PolynomialLibrary
+﻿namespace ExtendedArithmetic
 {
 	public interface ICloneable<T>
 	{

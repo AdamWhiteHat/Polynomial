@@ -5,7 +5,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace PolynomialLibrary
+namespace ExtendedArithmetic
 {
 	public partial class Polynomial<T> : ICloneable<Polynomial<T>>, IComparable, IComparable<Polynomial<T>>
 	{

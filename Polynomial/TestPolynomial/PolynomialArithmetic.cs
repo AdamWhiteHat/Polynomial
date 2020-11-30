@@ -1,4 +1,4 @@
-﻿using PolynomialLibrary;
+﻿using ExtendedArithmetic;
 using System.Collections.Generic;
 using NUnit.Framework;
 

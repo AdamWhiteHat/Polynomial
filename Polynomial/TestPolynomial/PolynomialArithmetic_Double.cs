@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-using PolynomialLibrary;
+using ExtendedArithmetic;
 using NUnit.Framework;
 
 namespace TestPolynomial
