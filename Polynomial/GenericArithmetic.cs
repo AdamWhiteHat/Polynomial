@@ -15,11 +15,8 @@ namespace ExtendedArithmetic
 		public static T One;
 		public static T Two;
 
-		private static Func<T, T, T> _addFunction = null;
-		private static Func<T, T, T> _subtractFunction = null;
-		private static Func<T, T, T> _multiplyFunction = null;
-		private static Func<T, T, T> _divideFunction = null;
-		private static Func<T, T, T> _moduloFunction = null;
+		private static Dictionary<ExpressionType, Func<T, T, T>> _operationFunctionDictionary;
+
 		private static Func<T, T, T> _powerFunction = null;
 
 		private static Func<T, T, bool> _lessthanFunction = null;
@@ -38,6 +35,7 @@ namespace ExtendedArithmetic
 
 		static GenericArithmetic()
 		{
+			_operationFunctionDictionary = new Dictionary<ExpressionType, Func<T, T, T>>();
 			MinusOne = ConvertImplementation<int, T>.Convert(-1);
 			Zero = ConvertImplementation<int, T>.Convert(0);
 			One = ConvertImplementation<int, T>.Convert(1);
@@ -56,47 +54,27 @@ namespace ExtendedArithmetic
 
 		public static T Add(T a, T b)
 		{
-			if (_addFunction == null)
-			{
-				_addFunction = CreateGenericBinaryFunction(ExpressionType.Add);
-			}
-			return _addFunction.Invoke(a, b);
+			return CreateGenericBinaryFunction(ExpressionType.Add).Invoke(a, b);
 		}
 
 		public static T Subtract(T a, T b)
 		{
-			if (_subtractFunction == null)
-			{
-				_subtractFunction = CreateGenericBinaryFunction(ExpressionType.Subtract);
-			}
-			return _subtractFunction.Invoke(a, b);
+			return CreateGenericBinaryFunction(ExpressionType.Subtract).Invoke(a, b);
 		}
 
 		public static T Multiply(T a, T b)
 		{
-			if (_multiplyFunction == null)
-			{
-				_multiplyFunction = CreateGenericBinaryFunction(ExpressionType.Multiply);
-			}
-			return _multiplyFunction.Invoke(a, b);
+			return CreateGenericBinaryFunction(ExpressionType.Multiply).Invoke(a, b);
 		}
 
 		public static T Divide(T a, T b)
 		{
-			if (_divideFunction == null)
-			{
-				_divideFunction = CreateGenericBinaryFunction(ExpressionType.Divide);
-			}
-			return _divideFunction.Invoke(a, b);
+			return CreateGenericBinaryFunction(ExpressionType.Divide).Invoke(a, b);
 		}
 
 		public static T Modulo(T a, T b)
 		{
-			if (_moduloFunction == null)
-			{
-				_moduloFunction = CreateGenericBinaryFunction(ExpressionType.Modulo);
-			}
-			return _moduloFunction.Invoke(a, b);
+			return CreateGenericBinaryFunction(ExpressionType.Modulo).Invoke(a, b);
 		}
 
 		public static T Power(T a, int b)
@@ -492,6 +470,11 @@ namespace ExtendedArithmetic
 
 		private static Func<T, T, T> CreateGenericBinaryFunction(ExpressionType operationType)
 		{
+			if (_operationFunctionDictionary.ContainsKey(operationType))
+			{
+				return _operationFunctionDictionary[operationType];
+			}
+
 			ParameterExpression left = Expression.Parameter(typeof(T), "left");
 			ParameterExpression right = Expression.Parameter(typeof(T), "right");
 
@@ -526,6 +509,9 @@ namespace ExtendedArithmetic
 			}
 
 			Func<T, T, T> result = Expression.Lambda<Func<T, T, T>>(operation, left, right).Compile();
+
+			_operationFunctionDictionary.Add(operationType, result);
+
 			return result;
 		}
 
