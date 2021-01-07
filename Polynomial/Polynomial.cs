@@ -301,6 +301,113 @@ namespace ExtendedArithmetic
 
 		#region Change Forms
 
+		public static List<Polynomial> Factor(Polynomial polynomial)
+		{
+			List<Polynomial> results = new List<Polynomial>();
+
+			Polynomial remainingPoly = polynomial.Clone();
+
+			var coefficients = remainingPoly.Terms.Select(trm => trm.CoEfficient);
+			var gcd = coefficients.Aggregate(BigInteger.GreatestCommonDivisor);
+
+			if (gcd > 1)
+			{
+				Polynomial gcdPoly = Parse(gcd.ToString());
+				results.Add(gcdPoly);
+				remainingPoly = Divide(remainingPoly, gcdPoly);
+			}
+
+			var leading = remainingPoly.Terms.Last().CoEfficient;
+			var constant = remainingPoly.Terms.First().CoEfficient;
+
+			// +/- constant
+			//     --------
+			//	   leading
+
+			if (leading == 0)
+			{
+				throw new Exception("Leading coefficient is zero!?");
+			}
+
+			var constantDivisors = GetAllDivisors(constant);
+			var leadingDivisors = GetAllDivisors(leading);
+
+			constantDivisors.AddRange(constantDivisors.ToList().Select(n => BigInteger.Negate(n)));
+			if (leadingDivisors.Count > 1)
+			{
+				leadingDivisors.AddRange(leadingDivisors.ToList().Select(n => BigInteger.Negate(n)));
+			}
+
+			foreach (var denominator in leadingDivisors)
+			{
+				foreach (var numerator in constantDivisors)
+				{
+					double rational = (double)numerator / (double)denominator;
+
+					if (remainingPoly.Evaluate(rational) == 0)
+					{
+						int negatedNumerator = (int)BigInteger.Negate(numerator);
+
+						string sign = (Math.Sign(negatedNumerator) == -1) ? "-" : "+";
+
+						string denomString = (denominator == 1) ? "" : $"{denominator}*";
+
+						string factorString = $"{denomString}X {sign} {Math.Abs(negatedNumerator)}";
+
+						Polynomial factor = Parse(factorString);
+						results.Add(factor);
+
+						remainingPoly = Divide(remainingPoly, factor);
+
+						if (remainingPoly == Polynomial.One)
+						{
+							return results;
+						}
+					}
+				}
+			}
+
+			if (remainingPoly != Polynomial.One)
+			{
+				results.Add(remainingPoly);
+			}
+
+			return results;
+		}
+
+		private static List<BigInteger> GetAllDivisors(BigInteger value)
+		{
+			BigInteger n = value;
+
+			if (BigInteger.Abs(n) == 1)
+			{
+				return new List<BigInteger> { n };
+			}
+
+			List<BigInteger> results = new List<BigInteger>();
+			if (n.Sign == -1)
+			{
+				results.Add(-1);
+				n = n * BigInteger.MinusOne;
+			}
+			for (BigInteger i = 1; i * i < n; i++)
+			{
+				if (n % i == 0)
+				{
+					results.Add(i);
+				}
+			}
+			for (BigInteger i = n.SquareRoot(); i >= 1; i--)
+			{
+				if (n % i == 0)
+				{
+					results.Add(n / i);
+				}
+			}
+
+			return results;
+		}
+
 		public static Polynomial GetDerivativePolynomial(Polynomial polynomial)
 		{
 			int d;
@@ -351,7 +458,7 @@ namespace ExtendedArithmetic
 				pos++;
 			}
 
-			return result;
+			return result.Clone();
 		}
 
 		#endregion
@@ -360,31 +467,19 @@ namespace ExtendedArithmetic
 
 		public static Polynomial GCD(Polynomial left, Polynomial right)
 		{
-			Polynomial a = left.Clone();
-			Polynomial b = right.Clone();
+			List<Polynomial> leftFactors = Polynomial.Factor(left);
+			List<Polynomial> rightFactors = Polynomial.Factor(right);
 
-			if (b.Degree > a.Degree)
+			Polynomial result = Polynomial.One;
+			foreach (var factor in leftFactors)
 			{
-				Polynomial swap = b;
-				b = a;
-				a = swap;
-			}
-
-			while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
-			{
-				Polynomial temp = a.Clone();
-				a = b.Clone();
-				b = Field.Modulus(temp, b);
+				if (rightFactors.Contains(factor))
+				{
+					result = Multiply(result, factor);
+				}
 			}
 
-			if (a.Degree == 0)
-			{
-				return Polynomial.One;
-			}
-			else
-			{
-				return a;
-			}
+			return result;
 		}
 
 		public static Polynomial Divide(Polynomial left, Polynomial right)

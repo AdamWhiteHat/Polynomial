@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using ExtendedArithmetic;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TestPolynomial
@@ -200,6 +202,119 @@ namespace TestPolynomial
 			TestContext.WriteLine($"Expecting: {expecting}");
 
 			Assert.AreEqual(expecting, result.ToString());
+		}
+
+		[TestMethod]
+		public void TestFactor1()
+		{
+			Polynomial toFactor = Polynomial.Parse("X^4 - 19*X^3 + 29*X^2 + 571*X + 858");
+
+			Polynomial first = Polynomial.Parse("X - 11");
+			Polynomial second = Polynomial.Parse("X - 13");
+			Polynomial third = Polynomial.Parse("X + 2");
+			Polynomial fourth = Polynomial.Parse("X + 3");
+
+			List<Polynomial> results = Polynomial.Factor(toFactor);
+
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = ({string.Join(")(", results.Select(p => p.ToString()))})");
+			TestContext.WriteLine($"Expecting: ({first})({second})({third})({fourth})");
+
+			Assert.IsTrue(results.Contains(first), first.ToString());
+			Assert.IsTrue(results.Contains(second), second.ToString());
+			Assert.IsTrue(results.Contains(third), third.ToString());
+			Assert.IsTrue(results.Contains(fourth), fourth.ToString());
+		}
+
+		[TestMethod]
+		public void TestFactor2()
+		{
+			Polynomial toFactor = Polynomial.Parse("2*X^4 + X^3 - 19*X^2 - 9*X + 9");
+
+			Polynomial first = Polynomial.Parse("2*X - 1");
+			Polynomial second = Polynomial.Parse("X - 3");
+			Polynomial third = Polynomial.Parse("X + 1");
+			Polynomial fourth = Polynomial.Parse("X + 3");
+
+			List<Polynomial> results = Polynomial.Factor(toFactor);
+
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = ({string.Join(")(", results.Select(p => p.ToString()))})");
+			TestContext.WriteLine($"Expecting: ({first})({second})({third})({fourth})");
+
+			Assert.IsTrue(results.Contains(first), first.ToString());
+			Assert.IsTrue(results.Contains(second), second.ToString());
+			Assert.IsTrue(results.Contains(third), third.ToString());
+			Assert.IsTrue(results.Contains(fourth), fourth.ToString());
+		}
+
+		[TestMethod]
+		public void TestFactor3()
+		{
+			Polynomial toFactor = Polynomial.Parse("2*X^3 + 7*X^2 + 5*X + 1");
+
+			Polynomial first = Polynomial.Parse("2*X + 1");
+			Polynomial second = Polynomial.Parse("X^2 + 3*X + 1");
+
+			List<Polynomial> results = Polynomial.Factor(toFactor);
+
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = ({string.Join(")(", results.Select(p => p.ToString()))})");
+			TestContext.WriteLine($"Expecting: ({first})({second})");
+
+			Assert.IsTrue(results.Contains(first), first.ToString());
+			Assert.IsTrue(results.Contains(second), second.ToString());
+		}
+
+		[TestMethod]
+		public void TestFactor4()
+		{
+			Polynomial toFactor = Polynomial.Parse("84*X^3 + 36*X^2 + 12*X + 24");
+
+			Polynomial first = Polynomial.Parse("12");
+			Polynomial second = Polynomial.Parse("7*X^3 + 3*X^2 + X + 2");
+
+			List<Polynomial> results = Polynomial.Factor(toFactor);
+
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = ({string.Join(")(", results.Select(p => p.ToString()))})");
+			TestContext.WriteLine($"Expecting: ({first})({second})");
+
+			Assert.IsTrue(results.Contains(first), first.ToString());
+			Assert.IsTrue(results.Contains(second), second.ToString());
+		}
+
+		[TestMethod]
+		public void TestFactor5()
+		{
+			Polynomial toFactor = Polynomial.Parse("X^2 - 5*X - 6");
+
+			Polynomial first = Polynomial.Parse("X + 1");
+			Polynomial second = Polynomial.Parse("X - 6");
+
+			List<Polynomial> results = Polynomial.Factor(toFactor);
+
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = ({string.Join(")(", results.Select(p => p.ToString()))})");
+			TestContext.WriteLine($"Expecting: ({first})({second})");
+
+			Assert.IsTrue(results.Contains(first), first.ToString());
+			Assert.IsTrue(results.Contains(second), second.ToString());
+		}
+
+		[TestMethod]
+		public void TestFactorIrreducible()
+		{
+			Polynomial toFactor = Polynomial.Parse("7*X^3 + 3*X^2 + X + 2"); 
+			Polynomial first = Polynomial.Parse("7*X^3 + 3*X^2 + X + 2");
+
+			List<Polynomial> results = Polynomial.Factor(toFactor);
+
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = ({string.Join(")(", results.Select(p => p.ToString()))})");
+			TestContext.WriteLine($"Expecting: ({first})");
+
+			Assert.IsTrue(results.Contains(first), first.ToString());
 		}
 
 		[TestMethod]
