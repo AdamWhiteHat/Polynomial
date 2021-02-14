@@ -8,8 +8,14 @@ namespace ExtendedArithmetic
 {
 	public partial class Polynomial
 	{
+		/// <summary>
+		/// Performs arithmetic over a polynomial field.
+		/// </summary>
 		public static class Field
 		{
+			/// <summary>
+			/// Returns the Greatest Common Divisor of two polynomials, modulus the specified <see cref="System.Numerics.BigInteger"/> value.
+			/// </summary>
 			public static Polynomial GCD(Polynomial left, Polynomial right, BigInteger modulus)
 			{
 				Polynomial a = left.Clone();
@@ -39,11 +45,18 @@ namespace ExtendedArithmetic
 				}
 			}
 
+			/// <summary>
+			/// Returns the modulus of a polynomial by the specified <see cref="ExtendedArithmetic.Polynomial"/>,
+			/// with all of its Terms's coefficients reduced modulus the specified <see cref="System.Numerics.BigInteger"/> value.
+			/// </summary>
 			public static Polynomial ModMod(Polynomial toReduce, Polynomial modPoly, BigInteger primeModulus)
 			{
 				return Field.Modulus(Field.Modulus(toReduce, modPoly), primeModulus);
 			}
 
+			/// <summary>
+			/// Returns the modulus of a polynomial by the specified <see cref="ExtendedArithmetic.Polynomial"/>
+			/// </summary>
 			public static Polynomial Modulus(Polynomial poly, Polynomial mod)
 			{
 				int sortOrder = mod.CompareTo(poly);
@@ -62,6 +75,11 @@ namespace ExtendedArithmetic
 				return remainder;
 			}
 
+
+			/// <summary>
+			/// Returns the specified <see cref="ExtendedArithmetic.Polynomial"/> with all of its Terms's coefficients 
+			/// reduced modulus the specified <see cref="System.Numerics.BigInteger"/> value.
+			/// </summary>
 			public static Polynomial Modulus(Polynomial poly, BigInteger mod)
 			{
 				Polynomial clone = poly.Clone();
@@ -90,6 +108,10 @@ namespace ExtendedArithmetic
 				return result;
 			}
 
+			/// <summary>
+			/// Returns the quotient and remainder of one polynomial divided by another, with all of its Terms's coefficients
+			/// reduced modulus the specified <see cref="System.Numerics.BigInteger"/> value.
+			/// </summary>
 			public static Polynomial Divide(Polynomial left, Polynomial right, BigInteger mod, out Polynomial remainder)
 			{
 				if (left == null) throw new ArgumentNullException(nameof(left));
@@ -128,6 +150,9 @@ namespace ExtendedArithmetic
 				return quotient.Clone();
 			}
 
+			/// <summary>
+			/// Multiplies all of the coefficients of specified polynomial by a specified value, reduced mod the specified modulus.
+			/// </summary>
 			public static Polynomial Multiply(Polynomial poly, BigInteger multiplier, BigInteger mod)
 			{
 				Polynomial result = poly.Clone();
@@ -145,6 +170,10 @@ namespace ExtendedArithmetic
 				return result;
 			}
 
+			/// <summary>
+			/// Returns the specified polynomial raised to an exponent, with all of its Terms's coefficients
+			/// reduced modulus the specified <see cref="System.Numerics.BigInteger"/> value.
+			/// </summary>
 			public static Polynomial PowMod(Polynomial poly, BigInteger exponent, BigInteger mod)
 			{
 				Polynomial result = poly.Clone();
@@ -166,6 +195,10 @@ namespace ExtendedArithmetic
 				return result;
 			}
 
+			/// <summary>
+			/// Returns the specified polynomial raised to an exponent, modulus the polynomial f, and with all of its Terms's
+			/// coefficients reduced modulus the specified <see cref="System.Numerics.BigInteger"/> value p.
+			/// </summary>
 			public static Polynomial ExponentiateMod(Polynomial startPoly, BigInteger s2, Polynomial f, BigInteger p)
 			{
 				Polynomial result = Polynomial.One.Clone();
@@ -197,6 +230,9 @@ namespace ExtendedArithmetic
 				return result;
 			}
 
+			/// <summary>
+			/// Returns the specified polynomial raised to an exponent, modulo the specified polynomial.
+			/// </summary>
 			public static Polynomial ModPow(Polynomial poly, BigInteger exponent, Polynomial mod)
 			{
 				if (exponent < 0)
@@ -234,6 +270,9 @@ namespace ExtendedArithmetic
 				return total;
 			}
 
+			/// <summary>
+			/// Determines whether the specified polynomial is irreducible in the specified field p.
+			/// </summary>
 			public static bool IsIrreducibleOverField(Polynomial f, BigInteger p)
 			{
 				Polynomial splittingField = new Polynomial(
@@ -248,6 +287,9 @@ namespace ExtendedArithmetic
 				return (gcd.CompareTo(Polynomial.One) == 0);
 			}
 
+			/// <summary>
+			/// Determines whether the specified polynomial is irreducible in the specified field p.
+			/// </summary>
 			public static bool IsIrreducibleOverP(Polynomial poly, BigInteger p)
 			{
 				List<BigInteger> coefficients = poly.Terms.Select(t => t.CoEfficient).ToList();

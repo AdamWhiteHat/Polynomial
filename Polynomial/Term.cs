@@ -7,13 +7,23 @@ using System.Runtime.Serialization;
 
 namespace ExtendedArithmetic
 {
+	/// <summary>
+	/// Represents a single term in a <see cref="ExtendedArithmetic.Polynomial"/>.
+	/// </summary>
+	/// <seealso cref="ExtendedArithmetic.ICloneable{ExtendedArithmetic.Term}" />
 	public class Term : ICloneable<Term>
 	{
-		[DataMember]
-		public int Exponent { get; set; }
-
+		/// <summary>
+		/// The coefficient.
+		/// </summary>
 		[DataMember]
 		public BigInteger CoEfficient { get; set; }
+
+		/// <summary>
+		/// The exponent.
+		/// </summary>
+		[DataMember]
+		public int Exponent { get; set; }
 
 		[IgnoreDataMember]
 		private const string IndeterminateSymbol = "X";
@@ -22,12 +32,18 @@ namespace ExtendedArithmetic
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Term"/> class with the specified coefficient and exponent.
+		/// </summary>
 		public Term(BigInteger coefficient, int exponent)
 		{
 			Exponent = exponent;
 			CoEfficient = coefficient.Clone();
 		}
 
+		/// <summary>
+		/// Converts an array of <see cref="System.Numerics.BigInteger" /> into an array of <see cref="ExtendedArithmetic.Term"/>.
+		/// </summary>
 		public static Term[] GetTerms(BigInteger[] terms)
 		{
 			List<Term> results = new List<Term>();
@@ -43,21 +59,33 @@ namespace ExtendedArithmetic
 			return results.ToArray();
 		}
 
+		/// <summary>
+		/// Evaluates the value of this Term given the specified indeterminate.
+		/// </summary>
 		public BigInteger Evaluate(BigInteger indeterminate)
 		{
 			return BigInteger.Multiply(CoEfficient, BigInteger.Pow(indeterminate, Exponent));
 		}
 
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
 		public Term Clone()
 		{
 			return new Term(this.CoEfficient.Clone(), this.Exponent);
 		}
 
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
 		public override int GetHashCode()
 		{
 			return new Tuple<BigInteger, int>(CoEfficient, Exponent).GetHashCode();
 		}
 
+		/// <summary>
+		/// Returns the string representation of this Term.
+		/// </summary>
 		public override string ToString()
 		{
 			return $"{CoEfficient}*{IndeterminateSymbol}^{Exponent}";
