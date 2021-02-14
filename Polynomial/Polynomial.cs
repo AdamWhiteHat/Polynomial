@@ -357,6 +357,26 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
+		/// <summary>
+		/// Like the Evaluate method, except it replace every instance of the indeterminate (X)
+		/// with the specified Polynomial, and returns the resulting (usually large) Polynomial
+		/// </summary>
+		public Polynomial FunctionalComposition(Polynomial indeterminateValue)
+		{
+			List<Term> terms = this.Terms.ToList();
+			List<Polynomial> composedTerms = new List<Polynomial>();
+
+			foreach (Term trm in terms)
+			{
+				Polynomial constant = new Polynomial(new Term[] { new Term(trm.CoEfficient, 0) });
+				Polynomial composed = Polynomial.Multiply(constant, Polynomial.Pow(indeterminateValue, trm.Exponent));
+				composedTerms.Add(composed);
+			}
+
+			Polynomial result = Polynomial.Sum(composedTerms);
+			return result;
+		}
+
 		#endregion
 
 		#region Change Forms

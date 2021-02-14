@@ -305,7 +305,7 @@ namespace TestPolynomial
 		[TestMethod]
 		public void TestFactorIrreducible()
 		{
-			Polynomial toFactor = Polynomial.Parse("7*X^3 + 3*X^2 + X + 2"); 
+			Polynomial toFactor = Polynomial.Parse("7*X^3 + 3*X^2 + X + 2");
 			Polynomial first = Polynomial.Parse("7*X^3 + 3*X^2 + X + 2");
 
 			List<Polynomial> results = Polynomial.Factor(toFactor);
@@ -422,6 +422,46 @@ namespace TestPolynomial
 			TestContext.WriteLine($"Expecting: {expecting}");
 
 			Assert.AreEqual(expecting, result.ToString());
+		}
+
+
+		[TestMethod]
+		public void TestFunctionalComposition()
+		{
+			BigInteger N = 3218147;
+			BigInteger pBase = 117;
+			Polynomial polyn = new Polynomial(N, pBase);
+			Polynomial.MakeCoefficientsSmaller(polyn, pBase);
+
+			Polynomial indeterminate = Polynomial.Parse("6*X + 1");
+			Polynomial constant6 = Polynomial.Parse("6");
+			Polynomial constant117 = Polynomial.Parse("117");
+			Polynomial minusOne = Polynomial.Subtract(Polynomial.Zero, Polynomial.One);
+			Polynomial inversePolyn = Polynomial.Multiply(polyn, minusOne);
+
+			Polynomial composition1 = polyn.FunctionalComposition(indeterminate);
+			Polynomial composition2 = constant6.FunctionalComposition(constant117);
+			Polynomial composition3 = polyn.FunctionalComposition(Polynomial.Zero);
+			Polynomial composition4 = polyn.FunctionalComposition(minusOne);
+			Polynomial composition5 = polyn.FunctionalComposition(inversePolyn);
+
+			string expecting1 = "432*X^3 + 252*X^2 + 108*X + 75";
+			string expecting2 = "6";
+			string expecting3 = "62";
+			string expecting4 = "51";
+			string expecting5 = "-16*X^9 - 24*X^8 - 252*X^7 - 1726*X^6 - 2744*X^5 - 15811*X^4 - 55320*X^3 - 60050*X^2 - 229500*X - 473370";
+
+			string actual1 = composition1.ToString();
+			string actual2 = composition2.ToString();
+			string actual3 = composition3.ToString();
+			string actual4 = composition4.ToString();
+			string actual5 = composition5.ToString();
+
+			Assert.AreEqual(expecting1, actual1);
+			Assert.AreEqual(expecting2, actual2);
+			Assert.AreEqual(expecting3, actual3);
+			Assert.AreEqual(expecting4, actual4);
+			Assert.AreEqual(expecting5, actual5);
 		}
 	}
 }
