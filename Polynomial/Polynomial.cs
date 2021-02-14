@@ -9,21 +9,47 @@ using System.Diagnostics;
 
 namespace ExtendedArithmetic
 {
+	/// <summary>
+	/// A symbolic polynomial arithmetic class
+	/// </summary>
+	/// <seealso cref="ExtendedArithmetic.ICloneable{ExtendedArithmetic.Polynomial}" />
+	/// <seealso cref="System.IComparable" />
+	/// <seealso cref="System.IComparable{ExtendedArithmetic.Polynomial}" />
+	/// <seealso cref="System.IEquatable{ExtendedArithmetic.Polynomial}" />
 	[DataContract]
 	public partial class Polynomial : ICloneable<Polynomial>, IComparable, IComparable<Polynomial>, IEquatable<Polynomial>
 	{
+		/// <summary>
+		/// A polynomial representing the zero polynomial
+		/// </summary>
 		public static Polynomial Zero = null;
+		/// <summary>
+		/// A polynomial representing the constant polynomial 1
+		/// </summary>
 		public static Polynomial One = null;
+		/// <summary>
+		/// A polynomial representing the constant polynomial 2
+		/// </summary>
 		public static Polynomial Two = null;
 
+		/// <summary>
+		/// A read-only array for accessing the Terms of this polynomial
+		/// </summary>
 		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
 		public Term[] Terms { get { return _terms.ToArray(); } }
 
 		[DataMember(Name = "Terms")]
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private List<Term> _terms = new List<Term>();
-		public int Degree { get; set; }
 
+		/// <summary>
+		/// Gets the degree of the polynomial.
+		/// </summary>
+		public int Degree { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the Coefficient of the term of the specified degree.
+		/// </summary>
 		public BigInteger this[int degree]
 		{
 			get
@@ -103,7 +129,7 @@ namespace ExtendedArithmetic
 			SetDegree();
 		}
 
-		public void SetDegree()
+		private void SetDegree()
 		{
 			if (_terms.Any())
 			{
@@ -154,6 +180,9 @@ namespace ExtendedArithmetic
 			return result.ToList();
 		}
 
+		/// <summary>
+		/// Returns a polynomial that has the specified integer values as roots.
+		/// </summary>
 		public static Polynomial FromRoots(params BigInteger[] roots)
 		{
 			return Polynomial.Product(
@@ -169,6 +198,13 @@ namespace ExtendedArithmetic
 			);
 		}
 
+		/// <summary>
+		/// Returns a polynomial from its string representation.
+		/// All multiplication symbols must be made explicit,
+		/// although coefficient values of 1 and exponent values of 1 or 0 can be implicit.
+		/// If you are still unsure, use the ToString function on a polynomial instance,
+		/// as ToString will always produce a valid string that Parse can consume. 
+		/// </summary>
 		public static Polynomial Parse(string input)
 		{
 			if (string.IsNullOrWhiteSpace(input)) { throw new ArgumentException(); }
@@ -227,28 +263,43 @@ namespace ExtendedArithmetic
 
 		#endregion
 
-		#region Evaluate
+		#region Evaluate	
 
+		/// <summary>
+		/// Evaluates the polynomial at the specified <see cref="BigInteger"/> indeterminate value.
+		/// </summary>
 		public BigInteger Evaluate(BigInteger indeterminateValue)
 		{
 			return Polynomial.Evaluate(this, indeterminateValue);
 		}
 
+		/// <summary>
+		/// Evaluates the polynomial at the specified <see cref="double"/> indeterminate value.
+		/// </summary>
 		public double Evaluate(double indeterminateValue)
 		{
 			return Polynomial.Evaluate(this, indeterminateValue);
 		}
 
+		/// <summary>
+		/// Evaluates the polynomial at the specified <see cref="decimal"/> indeterminate value.
+		/// </summary>
 		public decimal Evaluate(decimal indeterminateValue)
 		{
 			return Polynomial.Evaluate(this, indeterminateValue);
 		}
 
+		/// <summary>
+		/// Evaluates the polynomial at the specified <see cref="Complex"/> indeterminate value.
+		/// </summary>
 		public Complex Evaluate(Complex indeterminateValue)
 		{
 			return Polynomial.Evaluate(this, indeterminateValue);
 		}
 
+		/// <summary>
+		/// Evaluates the specified polynomial at the specified <see cref="BigInteger"/> indeterminate value.
+		/// </summary>
 		public static BigInteger Evaluate(Polynomial polynomial, BigInteger indeterminateValue)
 		{
 			int counter = polynomial.Degree;
@@ -261,6 +312,9 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
+		/// <summary>
+		/// Evaluates the specified polynomial at the specified <see cref="double"/> indeterminate value.
+		/// </summary>
 		public static double Evaluate(Polynomial polynomial, double indeterminateValue)
 		{
 			int counter = polynomial.Degree;
@@ -273,6 +327,9 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
+		/// <summary>
+		/// Evaluates the specified polynomial at the specified <see cref="decimal"/> indeterminate value.
+		/// </summary>
 		public static decimal Evaluate(Polynomial polynomial, decimal indeterminateValue)
 		{
 			int counter = polynomial.Degree;
@@ -285,6 +342,9 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
+		/// <summary>
+		/// Evaluates the specified polynomial at the specified <see cref="Complex"/> indeterminate value.
+		/// </summary>
 		public static Complex Evaluate(Polynomial polynomial, Complex indeterminateValue)
 		{
 			int counter = polynomial.Degree;
@@ -301,6 +361,9 @@ namespace ExtendedArithmetic
 
 		#region Change Forms
 
+		/// <summary>
+		/// Factors the specified polynomial.
+		/// </summary>
 		public static List<Polynomial> Factor(Polynomial polynomial)
 		{
 			List<Polynomial> results = new List<Polynomial>();
@@ -408,6 +471,9 @@ namespace ExtendedArithmetic
 			return results;
 		}
 
+		/// <summary>
+		/// Gets the first derivative of this polynomial.
+		/// </summary>
 		public static Polynomial GetDerivativePolynomial(Polynomial polynomial)
 		{
 			int d;
@@ -426,6 +492,9 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
+		/// <summary>
+		/// Makes the specified polynomial monic in the specified base (indeterminant).
+		/// </summary>
 		public static Polynomial MakeMonic(Polynomial polynomial, BigInteger polynomialBase)
 		{
 			int deg = polynomial.Degree;
@@ -439,6 +508,9 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
+		/// <summary>
+		/// Reduces the coefficient of a term if it is greater than half of the polynomial base by increasing the coefficient of the next higher degree term.
+		/// </summary>
 		public static Polynomial MakeCoefficientsSmaller(Polynomial polynomial, BigInteger polynomialBase)
 		{
 			BigInteger max = polynomialBase / 2;
@@ -465,6 +537,9 @@ namespace ExtendedArithmetic
 
 		#region Arithmetic
 
+		/// <summary>
+		/// Returns the Greatest Common Divisor of the two specified polynomials.
+		/// </summary>
 		public static Polynomial GCD(Polynomial left, Polynomial right)
 		{
 			List<Polynomial> leftFactors = Polynomial.Factor(left);
@@ -482,12 +557,18 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
+		/// <summary>
+		/// Divides one polynomial by another.
+		/// </summary>
 		public static Polynomial Divide(Polynomial left, Polynomial right)
 		{
 			Polynomial remainder;
 			return Polynomial.Divide(left, right, out remainder);
 		}
 
+		/// <summary>
+		/// Divides one polynomial by another, returning the quotient and the remainder.
+		/// </summary>
 		public static Polynomial Divide(Polynomial left, Polynomial right, out Polynomial remainder)
 		{
 			if (left == null) throw new ArgumentNullException(nameof(left));
@@ -526,6 +607,9 @@ namespace ExtendedArithmetic
 			return quotient.Clone();
 		}
 
+		/// <summary>
+		/// Returns the product of two polynomials.
+		/// </summary>
 		public static Polynomial Multiply(Polynomial left, Polynomial right)
 		{
 			if (left == null) { throw new ArgumentNullException(nameof(left)); }
@@ -543,11 +627,17 @@ namespace ExtendedArithmetic
 			return new Polynomial(Term.GetTerms(terms));
 		}
 
+		/// <summary>
+		/// Returns the product of an array of polynomials.
+		/// </summary>
 		public static Polynomial Product(params Polynomial[] polys)
 		{
 			return Product(polys.ToList());
 		}
 
+		/// <summary>
+		/// Returns the product of an Enumerable collection of polynomials.
+		/// </summary>
 		public static Polynomial Product(IEnumerable<Polynomial> polys)
 		{
 			Polynomial result = null;
@@ -567,11 +657,17 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
+		/// <summary>
+		/// Returns the specified polynomial multiplied with itself.
+		/// </summary>
 		public static Polynomial Square(Polynomial polynomial)
 		{
 			return Polynomial.Multiply(polynomial, polynomial);
 		}
 
+		/// <summary>
+		/// Raises the specified polynomial by the specified power.
+		/// </summary>
 		public static Polynomial Pow(Polynomial polynomial, int exponent)
 		{
 			if (exponent < 0)
@@ -603,6 +699,9 @@ namespace ExtendedArithmetic
 			return total;
 		}
 
+		/// <summary>
+		/// Subtracts one polynomial from another.
+		/// </summary>
 		public static Polynomial Subtract(Polynomial left, Polynomial right)
 		{
 			if (left == null) throw new ArgumentNullException(nameof(left));
@@ -622,11 +721,17 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
+		/// <summary>
+		/// Returns the sum of an array of polynomials.
+		/// </summary>
 		public static Polynomial Sum(params Polynomial[] polys)
 		{
 			return Sum(polys.ToList());
 		}
 
+		/// <summary>
+		/// Returns the sum of an Enumerable collection of polynomials.
+		/// </summary>
 		public static Polynomial Sum(IEnumerable<Polynomial> polys)
 		{
 			Polynomial result = null;
@@ -646,6 +751,9 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
+		/// <summary>
+		/// Adds the two specified polynomials.
+		/// </summary>
 		public static Polynomial Add(Polynomial left, Polynomial right)
 		{
 			if (left == null) throw new ArgumentNullException(nameof(left));
@@ -665,6 +773,9 @@ namespace ExtendedArithmetic
 
 		#region Overrides and Interface implementations		
 
+		/// <summary>
+		/// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
+		/// </summary>
 		public int CompareTo(object obj)
 		{
 			if (obj == null)
@@ -682,6 +793,9 @@ namespace ExtendedArithmetic
 			return this.CompareTo(other);
 		}
 
+		/// <summary>
+		/// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
+		/// </summary>
 		public int CompareTo(Polynomial other)
 		{
 			if (other == null)
@@ -725,12 +839,18 @@ namespace ExtendedArithmetic
 			}
 		}
 
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
 		public Polynomial Clone()
 		{
 			var terms = _terms.Select(pt => pt.Clone()).ToArray();
 			return new Polynomial(terms);
 		}
 
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
 		public bool Equals(Polynomial other)
 		{
 			return (this.CompareTo(other) == 0);
@@ -741,6 +861,9 @@ namespace ExtendedArithmetic
 			return (((h1 << 5) + h1) ^ h2);
 		}
 
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
 		public override int GetHashCode()
 		{
 			int hash = this.Degree.GetHashCode();
@@ -751,6 +874,9 @@ namespace ExtendedArithmetic
 			return hash;
 		}
 
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+		/// </summary>
 		public override bool Equals(object obj)
 		{
 			if (obj == null) { return false; }
@@ -759,7 +885,7 @@ namespace ExtendedArithmetic
 			else { return Equals(otherPoly); }
 		}
 
-		public static string FormatString(Polynomial polynomial)
+		private static string FormatString(Polynomial polynomial)
 		{
 			List<string> stringTerms = new List<string>();
 			int degree = polynomial.Terms.Length;
@@ -798,6 +924,9 @@ namespace ExtendedArithmetic
 			return string.Join(" + ", stringTerms).Replace("+ -", "- ");
 		}
 
+		/// <summary>
+		/// Converts this polynomial instance to string.
+		/// </summary>
 		public override string ToString()
 		{
 			return Polynomial.FormatString(this);
