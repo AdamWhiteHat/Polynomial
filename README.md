@@ -19,14 +19,18 @@ A univariate, sparse, integer polynomial class. That is, a polynomial in only on
 * Supports **symbolic** univariate polynomial arithmetic including:
    * Addition
    * Subtraction
-   * Multiplication
    * Division
+   * Multiplication
    * Modulus
-   * Exponentiation   
+   * Factoring
+   * Derivatives
+   * Exponentiation
    * GCD of polynomials
+   * Functional composition
    * Irreducibility checking
-   * Polynomial evaluation by assigning to the invariant (X in this case) a value.
-   * All numbers use BigInteger integers, for arbitrarily large numbers.
+   * Polynomial evaluation by assigning values to the indeterminates
+   * Numeric values are of type BigInteger, so it support polynomials that evaluate to arbitrarily large numbers
+   * While all coefficents must be integers, it does support evaluating the polynomial with real and complex indeterminates, returning a real or complex result
 
 #
 
