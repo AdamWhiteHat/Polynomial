@@ -517,16 +517,34 @@ namespace ExtendedArithmetic
 		/// </summary>
 		public static Polynomial GetReciprocalPolynomial(Polynomial polynomial)
 		{
-			var coefficients = polynomial.Terms.Select(trm => trm.CoEfficient).Reverse().ToList();
-			var exponents = polynomial.Terms.Select(trm => trm.Exponent).ToList();
+			List<Term> termsList = new List<Term>();
 
-			int index = 0;
-			List<Term> newTerms = new List<Term>();
-			foreach (BigInteger coeff in coefficients)
+			int exponentIndex = 0;
+			while (exponentIndex <= polynomial.Degree)
 			{
-				Term trm = new Term(coeff, exponents[index]);
-				newTerms.Add(trm);
-				index++;
+				Term term = polynomial.Terms.Where(trm => trm.Exponent == exponentIndex).FirstOrDefault();
+				if (term == null)
+				{
+					term = new Term(0, exponentIndex);
+				}
+				termsList.Add(term);
+				exponentIndex++;
+			}
+
+			List<Term> newTerms = new List<Term>();
+
+			exponentIndex = 0;
+			int coefficientIndex = polynomial.Degree;
+			while (coefficientIndex >= 0)
+			{
+				var coeff = polynomial[coefficientIndex];
+				var exp = termsList[exponentIndex].Exponent;
+
+				Term term = new Term(coeff, exp);
+				newTerms.Add(term);
+
+				exponentIndex++;
+				coefficientIndex--;
 			}
 
 			return new Polynomial(newTerms.ToArray());

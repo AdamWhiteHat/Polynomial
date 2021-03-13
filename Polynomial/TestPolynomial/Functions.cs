@@ -58,13 +58,30 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
-		public void TestReciprocalPolynomial()
+		public void TestReciprocalPolynomial1()
 		{
 			string start = "5*X^4 + 4*X^3 + 3*X^2 + 2*X + 1";
 			string expecting = "X^4 + 2*X^3 + 3*X^2 + 4*X + 5";
 
 			Polynomial poly = Polynomial.Parse(start);
-			
+
+			Polynomial result = Polynomial.GetReciprocalPolynomial(poly);
+
+			string actual = result.ToString();
+
+			TestContext.WriteLine($"({start})^-1 = {actual}");
+			Assert.AreEqual(expecting, actual);
+		}
+
+
+		[TestMethod]
+		public void TestReciprocalPolynomial2()
+		{
+			string start = "X^4 + 2*X^3 + 3*X^2"; // 1*X^4 + 2*X^3 + 3*X^2 + 0*X^1 + 0*X^0
+			string expecting = "3*X^2 + 2*X + 1"; // 0*X^4 + 0*X^3 + 3*X^2 + 2*X^1 + 1*X^0
+
+			Polynomial poly = Polynomial.Parse(start);
+
 			Polynomial result = Polynomial.GetReciprocalPolynomial(poly);
 
 			string actual = result.ToString();
