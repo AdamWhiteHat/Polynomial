@@ -513,6 +513,26 @@ namespace ExtendedArithmetic
 		}
 
 		/// <summary>
+		/// Gets the reciprocal polynomial.
+		/// </summary>
+		public static Polynomial GetReciprocalPolynomial(Polynomial polynomial)
+		{
+			var coefficients = polynomial.Terms.Select(trm => trm.CoEfficient).Reverse().ToList();
+			var exponents = polynomial.Terms.Select(trm => trm.Exponent).ToList();
+
+			int index = 0;
+			List<Term> newTerms = new List<Term>();
+			foreach (BigInteger coeff in coefficients)
+			{
+				Term trm = new Term(coeff, exponents[index]);
+				newTerms.Add(trm);
+				index++;
+			}
+
+			return new Polynomial(newTerms.ToArray());
+		}
+
+		/// <summary>
 		/// Makes the specified polynomial monic in the specified base (indeterminant).
 		/// </summary>
 		public static Polynomial MakeMonic(Polynomial polynomial, BigInteger polynomialBase)

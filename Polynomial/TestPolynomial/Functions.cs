@@ -56,5 +56,21 @@ namespace TestPolynomial
 			Assert.AreEqual(expecting2, result2);
 			Assert.AreEqual(expecting3, result3);
 		}
+
+		[TestMethod]
+		public void TestReciprocalPolynomial()
+		{
+			string start = "5*X^4 + 4*X^3 + 3*X^2 + 2*X + 1";
+			string expecting = "X^4 + 2*X^3 + 3*X^2 + 4*X + 5";
+
+			Polynomial poly = Polynomial.Parse(start);
+			
+			Polynomial result = Polynomial.GetReciprocalPolynomial(poly);
+
+			string actual = result.ToString();
+
+			TestContext.WriteLine($"({start})^-1 = {actual}");
+			Assert.AreEqual(expecting, actual);
+		}
 	}
 }
