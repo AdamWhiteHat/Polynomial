@@ -424,6 +424,44 @@ namespace TestPolynomial
 			Assert.AreEqual(expecting, result.ToString());
 		}
 
+		[TestMethod]
+		public void TestIndefiniteIntegral()
+		{
+			string expecting1 = "96*X^3 + 18*X^2 - 2*X";
+			string expecting2 = "72*X^2 + 36*X";
+			string expecting3 = "26*X^3 - X";
+
+			Polynomial poly1 = Polynomial.Parse("288*X^2 + 36*X - 2");
+			Polynomial poly2 = Polynomial.Parse("144*X + 36");
+			Polynomial poly3 = Polynomial.Parse("78*X^2 - 1");
+
+			Polynomial result1 = poly1.IndefiniteIntegral(0);
+			Polynomial result2 = poly2.IndefiniteIntegral(0);
+			Polynomial result3 = poly3.IndefiniteIntegral(0);
+
+			TestContext.WriteLine($"∫ {poly1} dX");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = {result1}");
+			TestContext.WriteLine($"Expecting: {expecting1}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"∫ {poly2} dX");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = {result2}");
+			TestContext.WriteLine($"Expecting: {expecting2}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"∫ {poly3} dX");
+			TestContext.WriteLine("");
+			TestContext.WriteLine($"Result   = {result3}");
+			TestContext.WriteLine($"Expecting: {expecting3}");
+
+			Assert.AreEqual(expecting1, result1.ToString());
+			Assert.AreEqual(expecting2, result2.ToString());
+			Assert.AreEqual(expecting3, result3.ToString());
+		}
+
+
 
 		[TestMethod]
 		public void TestFunctionalComposition()

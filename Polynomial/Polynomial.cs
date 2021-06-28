@@ -513,6 +513,27 @@ namespace ExtendedArithmetic
 		}
 
 		/// <summary>
+		/// Finds the indefinite integral of the polynomial.
+		/// </summary>
+		/// <param name="c">The constant.</param>
+		/// <returns>The indefinite integral.</returns>
+		public Polynomial IndefiniteIntegral(BigInteger c)
+		{
+			List<Term> terms = new List<Term>();
+			terms.Add(new Term(c, 0));
+			BigInteger[] coefficients = new BigInteger[this.Degree + 2];
+			coefficients[0] = c;
+
+			for (int i = 0; i <= this.Degree; i++)
+			{
+				coefficients[i + 1] = this[i] / (i + 1);
+				terms.Add(new Term(this[i] / (i + 1), i + 1));
+			}
+
+			return new Polynomial(terms.ToArray());
+		}
+
+		/// <summary>
 		/// Gets the reciprocal polynomial.
 		/// </summary>
 		public static Polynomial GetReciprocalPolynomial(Polynomial polynomial)
