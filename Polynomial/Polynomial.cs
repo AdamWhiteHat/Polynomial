@@ -45,7 +45,20 @@ namespace ExtendedArithmetic
 		/// <summary>
 		/// Gets the degree of the polynomial.
 		/// </summary>
-		public int Degree { get; private set; }
+		public int Degree
+		{
+			get
+			{
+				if (_terms.Any())
+				{
+					return _terms.Max(term => term.Exponent);
+				}
+				else
+				{
+					return 0;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the Coefficient of the term of the specified degree.
@@ -109,7 +122,6 @@ namespace ExtendedArithmetic
 
 		public Polynomial(BigInteger n, BigInteger polynomialBase, int forceDegree)
 		{
-			Degree = forceDegree;
 			SetTerms(GetPolynomialTerms(n, polynomialBase, Degree));
 		}
 
@@ -125,19 +137,6 @@ namespace ExtendedArithmetic
 			if (!_terms.Any())
 			{
 				_terms = Term.GetTerms(new BigInteger[] { 0 }).ToList();
-			}
-			SetDegree();
-		}
-
-		private void SetDegree()
-		{
-			if (_terms.Any())
-			{
-				Degree = _terms.Max(term => term.Exponent);
-			}
-			else
-			{
-				Degree = 0;
 			}
 		}
 
