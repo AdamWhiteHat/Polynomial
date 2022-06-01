@@ -122,7 +122,7 @@ namespace ExtendedArithmetic
 
 		public Polynomial(BigInteger n, BigInteger polynomialBase, int forceDegree)
 		{
-			SetTerms(GetPolynomialTerms(n, polynomialBase, Degree));
+			SetTerms(GetPolynomialTerms(n, polynomialBase, forceDegree));
 		}
 
 		private void SetTerms(IEnumerable<Term> terms)

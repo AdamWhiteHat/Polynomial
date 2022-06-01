@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net48;net5.0</TargetFrameworks>
+		<TargetFrameworks>net45;net46;net48;netcoreapp3.1;netstandard2.1;net5.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -14,9 +14,9 @@
 		<Authors>Adam White</Authors>
 		<Company>Adam White</Company>
 		<Copyright>Made by Adam White</Copyright>
-		<PackageTags>math mathematics polynomials polynomial-arithmetic polynomial symbolic arithmetic arbitrary-precision numerics biginteger legendre-symbol tonelli-shanks gcd modulus square-root csharp</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageTags>math mathematics polynomials polynomial-arithmetic polynomial symbolic arithmetic arbitrary-precision numerics numbers biginteger legendre-symbol tonelli-shanks gcd modulus square-root csharp</PackageTags>
 		<PackageProjectUrl>https://www.nuget.org/packages/ExtendedArithmetic.Polynomial/</PackageProjectUrl>
-		<PackageLicenseUrl>https://github.com/AdamWhiteHat/Polynomial/blob/master/LICENSE</PackageLicenseUrl>
 		<RepositoryUrl>https://github.com/AdamWhiteHat/Polynomial</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 
