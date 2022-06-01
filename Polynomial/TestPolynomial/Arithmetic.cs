@@ -43,6 +43,38 @@ namespace TestPolynomial
 		}
 
 		[TestMethod]
+		public void TestTermParsing()
+		{
+			string expecting1 = "-288*X^15";
+			string expecting2 = "-128*X^0";
+			string expecting3 = "1*X^1";
+
+			Term first = Term.Parse("- 288*X^15");
+			Term second = Term.Parse("- 128");
+			Term third = Term.Parse("X");
+
+			string actual1 = first.ToString();
+			string actual2 = second.ToString();
+			string actual3 = third.ToString();
+
+			TestContext.WriteLine("#1:");
+			TestContext.WriteLine($"Expecting: {expecting1}");
+			TestContext.WriteLine($"Actual   = {actual1}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine("#2:");
+			TestContext.WriteLine($"Expecting: {expecting2}");
+			TestContext.WriteLine($"Actual   = {actual2}");
+			TestContext.WriteLine("");
+			TestContext.WriteLine("#3:");
+			TestContext.WriteLine($"Expecting: {expecting3}");
+			TestContext.WriteLine($"Actual   = {actual3}");
+
+			Assert.AreEqual(expecting1, actual1);
+			Assert.AreEqual(expecting2, actual2);
+			Assert.AreEqual(expecting3, actual3);
+		}
+
+		[TestMethod]
 		public void TestAddition()
 		{
 			string expecting = "24*X - 1";

@@ -153,7 +153,7 @@ namespace ExtendedArithmetic
 		/// </summary>
 		public static bool IsSquare(this BigInteger source)
 		{
-			if (source == null || source == BigInteger.Zero)
+			if (source == BigInteger.Zero)
 			{
 				return false;
 			}

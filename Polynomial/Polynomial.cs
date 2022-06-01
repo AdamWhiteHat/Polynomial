@@ -216,44 +216,8 @@ namespace ExtendedArithmetic
 			List<Term> polyTerms = new List<Term>();
 			foreach (string stringTerm in stringTerms)
 			{
-				string[] termParts = stringTerm.Split(new char[] { '*' });
-
-				if (termParts.Count() != 2)
-				{
-					if (termParts.Count() != 1) { throw new FormatException(); }
-
-					string temp = termParts[0];
-					if (temp.All(c => char.IsDigit(c) || c == '-'))
-					{
-						termParts = new string[] { temp, "X^0" };
-					}
-					else if (temp.All(c => char.IsLetter(c) || c == '^' || c == '-' || char.IsDigit(c)))
-					{
-						if (temp.Contains("-"))
-						{
-							temp = temp.Replace("-", "");
-							termParts = new string[] { "-1", temp };
-						}
-						else { termParts = new string[] { "1", temp }; }
-					}
-					else { throw new FormatException(); }
-				}
-
-				BigInteger coefficient = BigInteger.Parse(termParts[0]);
-
-				string[] variableParts = termParts[1].Split(new char[] { '^' });
-				if (variableParts.Count() != 2)
-				{
-					if (variableParts.Count() != 1) { throw new FormatException(); }
-
-					string tmp = variableParts[0];
-					if (tmp.All(c => char.IsLetter(c)))
-					{
-						variableParts = new string[] { tmp, "1" };
-					}
-				}
-				int exponent = int.Parse(variableParts[1]);
-				polyTerms.Add(new Term(coefficient, exponent));
+				Term newTerm = Term.Parse(stringTerm);
+				polyTerms.Add(newTerm);
 			}
 
 			if (!polyTerms.Any()) { throw new FormatException(); }
