@@ -5,21 +5,22 @@ using NUnit.Framework;
 
 namespace TestPolynomial
 {
+	[TestOf(typeof(Complex))]
 	[TestFixture(Category = "PolynomialArithmetic - Complex")]
 	public class PolynomialArithmetic_Complex : PolynomialArithmetic<Complex>
 	{
 		[Test]
-		[TestCase("(5, 0)*X^3")]
-		public override void BaseMExpansionConstructor(string expected)
+		[TestCase("24565", "17", "(5, 0)*X^3")]
+		public override void BaseMExpansionConstructor(string value, string polyBase, string expected)
 		{
-			base.BaseMExpansionConstructor(expected);
+			base.BaseMExpansionConstructor(value, polyBase, expected);
 		}
 
 		[Test]
-		[TestCase("(1.09986237454265, 0)*X^3 + (3.63797880709171E-12, 0)")]
-		public override void MakeCoefficientsSmaller(string expected)
+		[TestCase("32766", "31", "3", "(1.09986237454265, 0)*X^3 + (3.63797880709171E-12, 0)")]
+		public override void MakeCoefficientsSmaller(string value, string polybase, string forceDegree, string expected)
 		{
-			base.MakeCoefficientsSmaller(expected);
+			base.MakeCoefficientsSmaller(value, polybase, forceDegree, expected);
 		}
 
 		[Test]

@@ -11,11 +11,11 @@ namespace TestPolynomial
 		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
 
 		[Test]
-		[TestCase("5*X^3")]
-		public virtual void BaseMExpansionConstructor(string expected)
+		[TestCase("24565", "17", "5*X^3")]
+		public virtual void BaseMExpansionConstructor(string value, string polyBase, string expected)
 		{
-			T n = GenericArithmetic<T>.Parse("24565");
-			T m = GenericArithmetic<T>.Parse("17");
+			T n = GenericArithmetic<T>.Parse(value);
+			T m = GenericArithmetic<T>.Parse(polyBase);
 
 			Polynomial<T> poly = new Polynomial<T>(n, m, 3);
 
@@ -31,16 +31,18 @@ namespace TestPolynomial
 		}
 
 		[Test]
-		[TestCase("X^3 + 3*X^2 + 3*X - 1")]
-		public virtual void MakeCoefficientsSmaller(string expected)
+		[TestCase("32766", "31", "3", "X^3 + 3*X^2 + 3*X - 1")]
+		public virtual void MakeCoefficientsSmaller(string value, string polybase, string forceDegree, string expected)
 		{
-			T n = GenericArithmetic<T>.Parse("32766");
-			T polyBase = GenericArithmetic<T>.Parse("31");
+			T n = GenericArithmetic<T>.Parse(value);
+			T polyBase = GenericArithmetic<T>.Parse(polybase);
 
-			Polynomial<T> poly = new Polynomial<T>(n, polyBase, 3);
-			Polynomial<T>.MakeCoefficientsSmaller(poly, polyBase);
+			int degree = int.Parse(forceDegree);
 
-			string actual = poly.ToString();
+			Polynomial<T> poly = new Polynomial<T>(n, polyBase, degree);
+			Polynomial<T> smaller = Polynomial<T>.MakeCoefficientsSmaller(poly, polyBase);
+
+			string actual = smaller.ToString();
 
 			TestContext.WriteLine($"{poly}");
 			TestContext.WriteLine("");

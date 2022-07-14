@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace ExtendedArithmetic
 {
@@ -30,22 +31,23 @@ namespace ExtendedArithmetic
 		private static Func<string, T> _parseFunction = null;
 		private static Func<T, double, T> _logFunction = null;
 		private static Func<T, byte[]> _tobytesFunction = null;
+		private static MethodInfo _memberwiseCloneFunction = null;
 
 		private static string _numberDecimalSeparator = null;
 
 		static GenericArithmetic()
 		{
 			_operationFunctionDictionary = new Dictionary<ExpressionType, Func<T, T, T>>();
-			MinusOne = ConvertImplementation<int, T>.Convert(-1);
-			Zero = ConvertImplementation<int, T>.Convert(0);
-			One = ConvertImplementation<int, T>.Convert(1);
-			Two = ConvertImplementation<int, T>.Convert(2);
+			MinusOne = GenericArithmetic<T>.Parse("-1");
+			Zero = GenericArithmetic<T>.Parse("0");
+			One = GenericArithmetic<T>.Parse("1");
+			Two = GenericArithmetic<T>.Parse("2");
 			_numberDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
 		}
 
 		public static T Convert<TFrom>(TFrom value)
 		{
-			if (IsComplexValueType(typeof(T)))
+			if (typeof(T) == typeof(Complex))
 			{
 				return (T)((object)new Complex((double)System.Convert.ChangeType(value, typeof(double)), 0d));
 			}
@@ -110,11 +112,11 @@ namespace ExtendedArithmetic
 		{
 			if (IsComplexValueType(typeof(T)))
 			{
-				return ComplexComparisonInternal(a, b, ExpressionType.GreaterThan);
+				return ComplexEqualityOperator(a, b, ExpressionType.GreaterThan);
 			}
 			if (_greaterthanFunction == null)
 			{
-				_greaterthanFunction = CreateGenericComparisonFunction(ExpressionType.GreaterThan);
+				_greaterthanFunction = CreateGenericEqualityOperator(ExpressionType.GreaterThan);
 			}
 			return _greaterthanFunction.Invoke(a, b);
 		}
@@ -123,11 +125,11 @@ namespace ExtendedArithmetic
 		{
 			if (IsComplexValueType(typeof(T)))
 			{
-				return ComplexComparisonInternal(a, b, ExpressionType.LessThan);
+				return ComplexEqualityOperator(a, b, ExpressionType.LessThan);
 			}
 			if (_lessthanFunction == null)
 			{
-				_lessthanFunction = CreateGenericComparisonFunction(ExpressionType.LessThan);
+				_lessthanFunction = CreateGenericEqualityOperator(ExpressionType.LessThan);
 			}
 			return _lessthanFunction.Invoke(a, b);
 		}
@@ -146,7 +148,12 @@ namespace ExtendedArithmetic
 		{
 			if (_equalFunction == null)
 			{
-				_equalFunction = CreateGenericComparisonFunction(ExpressionType.Equal);
+				_equalFunction = CreateGenericEqualityOperator(ExpressionType.Equal);
+			}
+
+			if (a == null)
+			{
+				return (b == null);
 			}
 			return _equalFunction.Invoke(a, b);
 		}
@@ -238,8 +245,11 @@ namespace ExtendedArithmetic
 
 		public static T Clone(T obj)
 		{
-			var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-			return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(serialized);
+			if (_memberwiseCloneFunction == null)
+			{
+				_memberwiseCloneFunction = typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic);
+			}
+			return (T)_memberwiseCloneFunction.Invoke(obj, null);
 		}
 
 		public static T GCD(IEnumerable<T> array)
@@ -363,7 +373,7 @@ namespace ExtendedArithmetic
 
 		public static bool IsComplexValueType(Type type)
 		{
-			return (type == typeof(Complex));
+			return type.Name.Contains("Complex");
 		}
 
 		public static TypeCode GetTypeCode(Type fromType)
@@ -408,38 +418,132 @@ namespace ExtendedArithmetic
 			return Modulo(power, modulus);
 		}
 
-		private static bool ComplexComparisonInternal(T left, T right, ExpressionType operationType)
+		private static bool ComplexEqualityOperator(T left, T right, ExpressionType operationType)
 		{
 			if (!IsComplexValueType(typeof(T)))
 			{
-				throw new Exception("T must be of type: Complex.");
+				throw new Exception("T must be a Complex type.");
 			}
 
-			Complex? l = left as Complex?;
-			Complex? r = right as Complex?;
-			if (!l.HasValue || !r.HasValue)
+			if (typeof(T) == typeof(Complex))
 			{
-				throw new Exception("Could not cast parameters to type: Complex.");
+				Complex? l = left as Complex?;
+				Complex? r = right as Complex?;
+				if (!l.HasValue || !r.HasValue)
+				{
+					throw new Exception("Could not cast parameters to type: Complex.");
+				}
+
+				double lft = Complex.Abs(l.Value);
+				double rght = Complex.Abs(r.Value);
+
+				if (Math.Sign(l.Value.Real) == -1)
+				{
+					lft = -lft;
+				}
+				if (Math.Sign(r.Value.Real) == -1)
+				{
+					rght = -rght;
+				}
+
+				if (operationType == ExpressionType.GreaterThan) { return (lft > rght); }
+				else if (operationType == ExpressionType.LessThan) { return (lft < rght); }
+				else
+				{
+					throw new NotSupportedException($"Not a comparison expression type: {Enum.GetName(typeof(ExpressionType), operationType)}.");
+				}
 			}
 
-			double lft = Complex.Abs(l.Value);
-			double rght = Complex.Abs(r.Value);
+			PropertyInfo realProperty = typeof(T).GetProperty("Real", BindingFlags.Public | BindingFlags.Instance);
+			Type realType = realProperty.PropertyType;
 
-			if (Math.Sign(l.Value.Real) == -1)
+			object leftReal = realProperty.GetValue(left);
+			object rightReal = realProperty.GetValue(right);
+
+			int leftRealSign;
+			int rightRealSign;
+
+			MethodInfo signMethod = null;
+			if (IsArithmeticValueType(realType))
 			{
-				lft = -lft;
+				signMethod = typeof(Math).GetMethod("Sign", BindingFlags.Static | BindingFlags.Public);
+
+				leftRealSign = (int)signMethod.Invoke(null, new object[] { leftReal });
+				rightRealSign = (int)signMethod.Invoke(null, new object[] { rightReal });
 			}
-			if (Math.Sign(r.Value.Real) == -1)
+			else
 			{
-				rght = -rght;
+				var signProperty = realType.GetProperty("Sign", BindingFlags.Public | BindingFlags.Instance);
+
+				leftRealSign = (int)signProperty.GetValue(leftReal);
+				rightRealSign = (int)signProperty.GetValue(rightReal);
 			}
 
-			if (operationType == ExpressionType.GreaterThan) { return (lft > rght); }
-			else if (operationType == ExpressionType.LessThan) { return (lft < rght); }
-			//else if (operationType == ExpressionType.Equal) { return (lft == rght); }
-			//else if (operationType == ExpressionType.GreaterThanOrEqual) { return (lft >= rght); }
-			//else if (operationType == ExpressionType.LessThanOrEqual) { return (lft <= rght); }
-			//else if (operationType == ExpressionType.NotEqual) { return (lft != rght); }
+			Delegate absFunction = CreateAbsFunction_UnlikeReturnType();
+
+			object abs_left = absFunction.DynamicInvoke(left);
+			object abs_right = absFunction.DynamicInvoke(right);
+
+			Type absResultType = absFunction.Method.ReturnType;
+
+			MethodInfo negateMethod = null;
+			if (IsArithmeticValueType(absResultType))
+			{
+				ParameterExpression absValueParam = Expression.Parameter(absResultType, "value");
+
+				Delegate negateDelegate = Expression.Lambda(Expression.Negate(Expression.Variable(absResultType)), absValueParam).Compile();
+				negateMethod = negateDelegate.GetMethodInfo();
+
+				if (leftRealSign == -1)
+				{
+					abs_left = negateMethod.Invoke(abs_left, null);
+				}
+				if (rightRealSign == -1)
+				{
+					abs_right = negateMethod.Invoke(abs_right, null);
+				}
+			}
+			else
+			{
+				negateMethod = absResultType.GetMethod("Negate", BindingFlags.Public | BindingFlags.Static);
+
+				if (leftRealSign == -1)
+				{
+					abs_left = negateMethod.Invoke(null, new object[] { abs_left });
+				}
+				if (rightRealSign == -1)
+				{
+					abs_right = negateMethod.Invoke(null, new object[] { abs_right });
+				}
+			}
+
+			MethodInfo compareMethod = absResultType.GetMethod("Compare", BindingFlags.Static | BindingFlags.Public);
+
+			Type compareReturnType = compareMethod.ReturnType;
+
+			ParameterExpression leftParameter = Expression.Parameter(typeof(object), "left");
+			ParameterExpression rightParameter = Expression.Parameter(typeof(object), "right");
+
+			// Expression.TypeAs
+			Expression lp = ConvertIfNeeded(leftParameter, absResultType);
+			Expression rp = ConvertIfNeeded(rightParameter, absResultType);
+
+			Expression methodCallExpression = Expression.Call(compareMethod, lp, rp);
+			Expression methodCall_AutoConversion = ConvertIfNeeded(methodCallExpression, compareMethod.ReturnType);
+
+			var compareLambda = Expression.Lambda(methodCall_AutoConversion, leftParameter, rightParameter).Compile();
+
+			object invokeResult = compareLambda.DynamicInvoke(abs_left, abs_right);
+
+			int compareResult = (int)invokeResult;
+			if (operationType == ExpressionType.GreaterThan)
+			{
+				return compareResult > 0;
+			}
+			else if (operationType == ExpressionType.LessThan)
+			{
+				return compareResult < 0;
+			}
 			else
 			{
 				throw new NotSupportedException($"Not a comparison expression type: {Enum.GetName(typeof(ExpressionType), operationType)}.");
@@ -533,7 +637,7 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
-		private static Func<T, T, bool> CreateGenericComparisonFunction(ExpressionType operationType)
+		private static Func<T, T, bool> CreateGenericEqualityOperator(ExpressionType operationType)
 		{
 			ParameterExpression left = Expression.Parameter(typeof(T), "left");
 			ParameterExpression right = Expression.Parameter(typeof(T), "right");
@@ -667,6 +771,12 @@ namespace ExtendedArithmetic
 				var absMethods = methods.Where(mi => mi.Name == "Abs");
 				absMethods = absMethods.Where(mi => mi.GetParameters()[0].ParameterType == typeOfT);
 				method = absMethods.FirstOrDefault();
+
+				if (method == null)
+				{
+					throw new NotSupportedException($"Cannot find public static method 'Abs' for type of {typeOfT.FullName}.");
+				}
+
 				methodCall_AutoConversion = Expression.Call(method, value);
 			}
 			else
@@ -675,14 +785,36 @@ namespace ExtendedArithmetic
 				var absMethods = methods.Where(mi => mi.Name == "Abs").ToList();
 				method = absMethods.FirstOrDefault();
 
-				if (method != null)
+				if (method == null)
 				{
-					Expression methodCallExpression = Expression.Call(method, value);
-					methodCall_AutoConversion = ConvertIfNeeded(methodCallExpression, typeOfT);
+					throw new NotSupportedException($"Cannot find public static method 'Abs' for type of {typeOfT.FullName}.");
 				}
+
+				Expression methodCallExpression = Expression.Call(method, value);
+				methodCall_AutoConversion = ConvertIfNeeded(methodCallExpression, typeOfT);
 			}
 
 			Func<T, T> result = Expression.Lambda<Func<T, T>>(methodCall_AutoConversion, value).Compile();
+			return result;
+		}
+
+		private static Delegate CreateAbsFunction_UnlikeReturnType()
+		{
+			Type typeOfT = typeof(T);
+			var methods = typeOfT.GetMethods(BindingFlags.Static | BindingFlags.Public);
+			var absMethods = methods.Where(mi => mi.Name == "Abs").ToList();
+			MethodInfo method = absMethods.FirstOrDefault();
+
+			if (method == null)
+			{
+				throw new NotSupportedException($"Cannot find public static method 'Abs' for type of {typeOfT.FullName}.");
+			}
+
+			ParameterExpression parameter = Expression.Parameter(typeOfT, "value");
+			Expression methodCallExpression = Expression.Call(method, parameter);
+			Expression methodCall_AutoConversion = ConvertIfNeeded(methodCallExpression, method.ReturnType);
+
+			Delegate result = Expression.Lambda(methodCall_AutoConversion, parameter).Compile();
 			return result;
 		}
 
@@ -717,11 +849,11 @@ namespace ExtendedArithmetic
 
 			MethodInfo[] methods = typeFromHandle.GetMethods(BindingFlags.Static | BindingFlags.Public);
 			var filteredMethods =
-			 methods.Where(
-				 mi => mi.Name == "Parse"
-				 && mi.GetParameters().Count() == 1
-				 && mi.GetParameters().First().ParameterType == typeof(string)
-			 );
+				methods.Where(
+					mi => mi.Name == "Parse"
+					&& mi.GetParameters().Count() == 1
+					&& mi.GetParameters().First().ParameterType == typeof(string)
+				);
 
 			MethodInfo method = null;
 			if (typeFromHandle == typeof(Complex))

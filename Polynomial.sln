@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polynomial", "Polynomial\Polynomial.csproj", "{61ABADE1-8A86-481F-8080-76778BD4082C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestPolynomial", "TestPolynomial\TestPolynomial.csproj", "{F52BBA30-EE7C-4883-8C2D-D365B80B895E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{61ABADE1-8A86-481F-8080-76778BD4082C}.Debug|x64.ActiveCfg = Debug|x64
+		{61ABADE1-8A86-481F-8080-76778BD4082C}.Debug|x64.Build.0 = Debug|x64
+		{61ABADE1-8A86-481F-8080-76778BD4082C}.Release|x64.ActiveCfg = Release|x64
+		{61ABADE1-8A86-481F-8080-76778BD4082C}.Release|x64.Build.0 = Release|x64
+		{F52BBA30-EE7C-4883-8C2D-D365B80B895E}.Debug|x64.ActiveCfg = Debug|x64
+		{F52BBA30-EE7C-4883-8C2D-D365B80B895E}.Debug|x64.Build.0 = Debug|x64
+		{F52BBA30-EE7C-4883-8C2D-D365B80B895E}.Release|x64.ActiveCfg = Release|x64
+		{F52BBA30-EE7C-4883-8C2D-D365B80B895E}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C28A20E2-74BC-47D7-AE13-CD1EEEA691D5}
+	EndGlobalSection
+EndGlobal

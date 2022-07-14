@@ -358,37 +358,34 @@ namespace ExtendedArithmetic
 			return result;
 		}
 
-		public static void MakeCoefficientsSmaller(Polynomial<T> polynomial, T polynomialBase, T maxCoefficientSize = default(T))
+		public static Polynomial<T> MakeCoefficientsSmaller(Polynomial<T> polynomial, T polynomialBase, T maxCoefficientSize = default(T))
 		{
-			T maxSize = maxCoefficientSize;
+			T max = maxCoefficientSize;
 
-			if (GenericArithmetic<T>.Equal(maxSize, default(T)))
+			if (GenericArithmetic<T>.Equal(max, default(T)))
 			{
-
-				maxSize = GenericArithmetic<T>.Divide(polynomialBase, GenericArithmetic<T>.Two);
+				max = GenericArithmetic<T>.Divide(polynomialBase, GenericArithmetic<T>.Two);
 			}
 
-			int pos = 0;
-			int deg = polynomial.Degree;
+			Polynomial<T> result = polynomial.Clone();
 
+			int pos = 0;
+			int deg = result.Degree;
 			while (pos < deg)
 			{
 				int posInc = pos + 1;
 
-				if (GenericArithmetic<T>.GreaterThan(polynomial[pos], maxSize) &&
-					GenericArithmetic<T>.GreaterThan(polynomial[pos], polynomial[posInc]))
+				if (GenericArithmetic<T>.GreaterThan(result[pos], max))
 				{
-					T diff = GenericArithmetic<T>.Subtract(polynomial[pos], maxSize);
 
-					T toAdd = GenericArithmetic<T>.Increment(GenericArithmetic<T>.Divide(diff, polynomialBase));
-					T toRemove = GenericArithmetic<T>.Multiply(toAdd, polynomialBase);
-
-					polynomial[pos] = GenericArithmetic<T>.Subtract(polynomial[pos], toRemove);
-					polynomial[posInc] = GenericArithmetic<T>.Add(polynomial[posInc], toAdd);
+					result[pos + 1] = GenericArithmetic<T>.Add(result[pos + 1], GenericArithmetic<T>.One);
+					result[pos] = GenericArithmetic<T>.Negate(GenericArithmetic<T>.Subtract(polynomialBase, result[pos]));
 				}
 
-				pos += 1;
+				pos++;
 			}
+
+			return result;
 		}
 
 		#endregion
@@ -503,7 +500,7 @@ namespace ExtendedArithmetic
 
 			int length = (left.Degree + right.Degree + 1);
 
-			T[] terms = new T[length];
+			T[] terms = Enumerable.Repeat(GenericArithmetic<T>.Zero, length).ToArray();
 
 			for (int i = 0; i <= left.Degree; i++)
 			{
@@ -714,31 +711,6 @@ namespace ExtendedArithmetic
 				}
 
 				stringTerms.Add(term.ToString());
-
-				/*
-				if (term.Exponent == 0)
-				{
-					stringTerms.Add($"{term.CoEfficient}");
-				}
-				else if (term.Exponent == 1)
-				{
-					if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.One))
-					{ stringTerms.Add("X"); }
-					else if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.MinusOne))
-					{ stringTerms.Add("-X"); }
-					else
-					{ stringTerms.Add($"{term.CoEfficient}*X"); }
-				}
-				else
-				{
-					if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.One))
-					{ stringTerms.Add($"X^{term.Exponent}"); }
-					else if (GenericArithmetic<T>.Equal(term.CoEfficient, GenericArithmetic<T>.MinusOne))
-					{ stringTerms.Add($"-X^{term.Exponent}"); }
-					else
-					{ stringTerms.Add($"{term.CoEfficient}*X^{term.Exponent}"); }
-				}
-				*/
 			}
 			return string.Join(" + ", stringTerms).Replace("+ -", "- ");
 		}

@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net48</TargetFrameworks>
+		<Platforms>x64</Platforms>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -16,11 +17,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="ExtendedNumerics.BigComplex" Version="2022.195.434" />
+		<PackageReference Include="ExtendedNumerics.BigDecimal" Version="2022.187.2158" />
+		<PackageReference Include="ExtendedNumerics.BigRational" Version="2022.195.942" />
 		<PackageReference Include="NUnit" Version="3.13.3" />
 		<PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Polynomial.csproj" />
+		<ProjectReference Include="..\Polynomial\Polynomial.csproj" />
 	</ItemGroup>
 </Project>
