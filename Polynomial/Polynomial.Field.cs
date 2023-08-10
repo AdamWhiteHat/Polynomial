@@ -138,7 +138,10 @@ namespace ExtendedArithmetic
 
 					for (int j = rightDegree + i - 1; j >= i; j--)
 					{
-						rem[j] = BigInteger.Subtract(rem[j], BigInteger.Multiply(quotient[i], right[j - i]).Mod(mod)).Mod(mod);
+						rem[j] = BigInteger.Subtract(
+									rem[j], 
+									BigInteger.Multiply(quotient[i], right[j - i]).Mod(mod)
+								).Mod(mod);
 					}
 				}
 

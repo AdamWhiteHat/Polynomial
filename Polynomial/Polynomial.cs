@@ -602,30 +602,32 @@ namespace ExtendedArithmetic
 		/// <summary>
 		/// Divides one polynomial by another.
 		/// </summary>
-		public static Polynomial Divide(Polynomial left, Polynomial right)
+		/// <returns>The quotient.</returns>
+		public static Polynomial Divide(Polynomial dividend, Polynomial divisor)
 		{
 			Polynomial remainder;
-			return Polynomial.Divide(left, right, out remainder);
+			return Polynomial.Divide(dividend, divisor, out remainder);
 		}
 
 		/// <summary>
 		/// Divides one polynomial by another, returning the quotient and the remainder.
 		/// </summary>
-		public static Polynomial Divide(Polynomial left, Polynomial right, out Polynomial remainder)
+		/// <returns>The quotient.</returns>
+		public static Polynomial Divide(Polynomial dividend, Polynomial divisor, out Polynomial remainder)
 		{
-			if (left == null) throw new ArgumentNullException(nameof(left));
-			if (right == null) throw new ArgumentNullException(nameof(right));
-			if (right.Degree > left.Degree || right.CompareTo(left) == 1)
+			if (dividend == null) throw new ArgumentNullException(nameof(dividend));
+			if (divisor == null) throw new ArgumentNullException(nameof(divisor));
+			if (divisor.Degree > dividend.Degree || divisor.CompareTo(dividend) == 1)
 			{
 				remainder = new Polynomial(new Term[] { new Term(new BigInteger(0), 0) });
-				return left.Clone();
+				return dividend.Clone();
 			}
 
-			int rightDegree = right.Degree;
-			int quotientDegree = (left.Degree - rightDegree) + 1;
-			BigInteger leadingCoefficent = right[rightDegree].Clone();
+			int rightDegree = divisor.Degree;
+			int quotientDegree = (dividend.Degree - rightDegree) + 1;
+			BigInteger leadingCoefficent = divisor[rightDegree].Clone();
 
-			Polynomial rem = (Polynomial)left.Clone();
+			Polynomial rem = (Polynomial)dividend.Clone();
 			Polynomial quotient = (Polynomial)new Polynomial(new Term[] { new Term(new BigInteger(0), 0) });
 
 			// The leading coefficient is the only number we ever divide by
@@ -637,7 +639,7 @@ namespace ExtendedArithmetic
 
 				for (int j = rightDegree + i - 1; j >= i; j--)
 				{
-					rem[j] = BigInteger.Subtract(rem[j], BigInteger.Multiply(quotient[i], right[j - i]));
+					rem[j] = BigInteger.Subtract(rem[j], BigInteger.Multiply(quotient[i], divisor[j - i]));
 				}
 			}
 
@@ -652,34 +654,37 @@ namespace ExtendedArithmetic
 		/// <summary>
 		/// Returns the product of two polynomials.
 		/// </summary>
-		public static Polynomial Multiply(Polynomial left, Polynomial right)
+		/// <returns>The product.</returns>
+		public static Polynomial Multiply(Polynomial multiplicand, Polynomial multiplier)
 		{
-			if (left == null) { throw new ArgumentNullException(nameof(left)); }
-			if (right == null) { throw new ArgumentNullException(nameof(right)); }
+			if (multiplicand == null) { throw new ArgumentNullException(nameof(multiplicand)); }
+			if (multiplier == null) { throw new ArgumentNullException(nameof(multiplier)); }
 
-			BigInteger[] terms = new BigInteger[left.Degree + right.Degree + 1];
+			BigInteger[] terms = new BigInteger[multiplicand.Degree + multiplier.Degree + 1];
 
-			for (int i = 0; i <= left.Degree; i++)
+			for (int i = 0; i <= multiplicand.Degree; i++)
 			{
-				for (int j = 0; j <= right.Degree; j++)
+				for (int j = 0; j <= multiplier.Degree; j++)
 				{
-					terms[(i + j)] += BigInteger.Multiply(left[i], right[j]);
+					terms[(i + j)] += BigInteger.Multiply(multiplicand[i], multiplier[j]);
 				}
 			}
 			return new Polynomial(Term.GetTerms(terms));
 		}
 
 		/// <summary>
-		/// Returns the product of an array of polynomials.
+		/// Multiplies many polynomials together.
 		/// </summary>
+		/// <returns>The product.</returns>
 		public static Polynomial Product(params Polynomial[] polys)
 		{
 			return Product(polys.ToList());
 		}
 
 		/// <summary>
-		/// Returns the product of an Enumerable collection of polynomials.
+		/// Multiplies many polynomials together.
 		/// </summary>
+		/// <returns>The product.</returns>
 		public static Polynomial Product(IEnumerable<Polynomial> polys)
 		{
 			Polynomial result = null;
@@ -702,6 +707,7 @@ namespace ExtendedArithmetic
 		/// <summary>
 		/// Returns the specified polynomial multiplied with itself.
 		/// </summary>
+		/// <returns>The square.</returns>
 		public static Polynomial Square(Polynomial polynomial)
 		{
 			return Polynomial.Multiply(polynomial, polynomial);
@@ -710,7 +716,8 @@ namespace ExtendedArithmetic
 		/// <summary>
 		/// Raises the specified polynomial by the specified power.
 		/// </summary>
-		public static Polynomial Pow(Polynomial polynomial, int exponent)
+		/// <returns>The power.</returns>
+		public static Polynomial Pow(Polynomial @base, int exponent)
 		{
 			if (exponent < 0)
 			{
@@ -722,19 +729,19 @@ namespace ExtendedArithmetic
 			}
 			else if (exponent == 1)
 			{
-				return polynomial.Clone();
+				return @base.Clone();
 			}
 			else if (exponent == 2)
 			{
-				return Square(polynomial);
+				return Square(@base);
 			}
 
-			Polynomial total = Polynomial.Square(polynomial);
+			Polynomial total = Polynomial.Square(@base);
 
 			int counter = exponent - 2;
 			while (counter != 0)
 			{
-				total = Polynomial.Multiply(total, polynomial);
+				total = Polynomial.Multiply(total, @base);
 				counter -= 1;
 			}
 
@@ -744,16 +751,17 @@ namespace ExtendedArithmetic
 		/// <summary>
 		/// Subtracts one polynomial from another.
 		/// </summary>
-		public static Polynomial Subtract(Polynomial left, Polynomial right)
+		/// <returns>The difference.</returns>
+		public static Polynomial Subtract(Polynomial minuend, Polynomial subtrahend)
 		{
-			if (left == null) throw new ArgumentNullException(nameof(left));
-			if (right == null) throw new ArgumentNullException(nameof(right));
+			if (minuend == null) throw new ArgumentNullException(nameof(minuend));
+			if (subtrahend == null) throw new ArgumentNullException(nameof(subtrahend));
 
-			BigInteger[] terms = new BigInteger[Math.Max(left.Degree, right.Degree) + 1];
+			BigInteger[] terms = new BigInteger[Math.Max(minuend.Degree, subtrahend.Degree) + 1];
 			for (int i = 0; i < terms.Length; i++)
 			{
-				BigInteger l = left[i];
-				BigInteger r = right[i];
+				BigInteger l = minuend[i];
+				BigInteger r = subtrahend[i];
 
 				terms[i] = (l - r);
 			}
@@ -764,16 +772,18 @@ namespace ExtendedArithmetic
 		}
 
 		/// <summary>
-		/// Returns the sum of an array of polynomials.
+		/// Adds many polynomials together.
 		/// </summary>
+		/// <returns>The sum.</returns>
 		public static Polynomial Sum(params Polynomial[] polys)
 		{
 			return Sum(polys.ToList());
 		}
 
 		/// <summary>
-		/// Returns the sum of an Enumerable collection of polynomials.
+		/// Adds many polynomials together.
 		/// </summary>
+		/// <returns>The sum.</returns>
 		public static Polynomial Sum(IEnumerable<Polynomial> polys)
 		{
 			Polynomial result = null;
@@ -796,28 +806,99 @@ namespace ExtendedArithmetic
 		/// <summary>
 		/// Adds the two specified polynomials.
 		/// </summary>
-		public static Polynomial Add(Polynomial left, Polynomial right)
+		/// <returns>The sum.</returns>
+		public static Polynomial Add(Polynomial augend, Polynomial addend)
 		{
-			if (left == null) throw new ArgumentNullException(nameof(left));
-			if (right == null) throw new ArgumentNullException(nameof(right));
+			if (augend == null) throw new ArgumentNullException(nameof(augend));
+			if (addend == null) throw new ArgumentNullException(nameof(addend));
 
-			BigInteger[] terms = new BigInteger[Math.Max(left.Degree, right.Degree) + 1];
+			BigInteger[] terms = new BigInteger[Math.Max(augend.Degree, addend.Degree) + 1];
 			for (int i = 0; i < terms.Length; i++)
 			{
-				terms[i] = (left[i] + right[i]);
+				terms[i] = (augend[i] + addend[i]);
 			}
 
 			Polynomial result = new Polynomial(Term.GetTerms(terms.ToArray()));
 			return result;
 		}
 
+		#region Operator Overloads
+
+		/// <summary>
+		/// Adds the two specified polynomials.
+		/// </summary>
+		/// <returns>The sum.</returns>
+		public static Polynomial operator +(Polynomial augend, Polynomial addend) => Add(augend, addend);
+
+		/// <summary>
+		/// Subtracts one polynomial from another.
+		/// </summary>
+		/// <returns>The difference.</returns>
+		public static Polynomial operator -(Polynomial minuend, Polynomial subtrahend) => Subtract(minuend, subtrahend);
+
+		/// <summary>
+		/// Multiplies two polynomials.
+		/// </summary>
+		/// <returns>The product.</returns>
+		public static Polynomial operator *(Polynomial multiplicand, Polynomial multiplier) => Multiply(multiplicand, multiplier);
+
+		/// <summary>
+		/// Divides one polynomial by another.
+		/// </summary>
+		/// <returns>The quotient.</returns>
+		public static Polynomial operator /(Polynomial dividend, Polynomial divisor) => Divide(dividend, divisor);
+
+		/// <summary>
+		/// Modulus one polynomial by another.
+		/// </summary>
+		/// <returns>The remainder or modulus.</returns>
+		public static Polynomial operator %(Polynomial dividend, Polynomial divisor) { Polynomial remainder; Divide(dividend, divisor, out remainder); return remainder; }
+
+		/// <summary>
+		/// Returns a value that indicates whether the left <see cref="T:ExtendedArithmetic.Polynomial" /> value is 
+		/// less than the right <see cref="T:ExtendedArithmetic.Polynomial" /> value.
+		/// </summary>
+		/// <returns>true if left is less than right; otherwise, false.</returns>
+		public static bool operator <(Polynomial left, Polynomial right) => (left.CompareTo(right) < 0);
+
+		/// <summary>
+		/// Returns a value that indicates whether the left <see cref="T:ExtendedArithmetic.Polynomial" /> value is 
+		/// greater than the right <see cref="T:ExtendedArithmetic.Polynomial" /> value.
+		/// </summary>
+		/// <returns>true if left is greater than right; otherwise, false.</returns>
+		public static bool operator >(Polynomial left, Polynomial right) => (left.CompareTo(right) > 0);
+
+		/// <summary>
+		/// Returns a value that indicates whether the left <see cref="T:ExtendedArithmetic.Polynomial" /> value is 
+		/// less than or equal to the right <see cref="T:ExtendedArithmetic.Polynomial" /> value.
+		/// </summary>
+		/// <returns>true if left is less than or equal to right; otherwise, false.</returns>
+		public static bool operator <=(Polynomial left, Polynomial right) => (left.CompareTo(right) <= 0);
+
+		/// <summary>
+		/// Returns a value that indicates whether the left <see cref="T:ExtendedArithmetic.Polynomial" /> value is 
+		/// greater than or equal to the right <see cref="T:ExtendedArithmetic.Polynomial" /> value.
+		/// </summary>
+		/// <returns>true if left is greater than or equal to right; otherwise, false.</returns>
+		public static bool operator >=(Polynomial left, Polynomial right) => (left.CompareTo(right) >= 0);
+
+		#endregion
+
 		#endregion
 
 		#region Overrides and Interface implementations		
 
 		/// <summary>
-		/// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
+		/// Compares the current instance with another object of the same type and returns an integer that indicates 
+		/// whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
 		/// </summary>
+		/// <returns>
+		/// If the current instance is less than other, Less than zero.
+		/// If the current instance equals other, Zero
+		/// If the current instance is greater than other, Greater than zero.
+		/// </returns>
+		/// <exception cref="NullReferenceException"></exception>
+		/// <exception cref="ArgumentException"></exception>
 		public int CompareTo(object obj)
 		{
 			if (obj == null)
@@ -836,8 +917,16 @@ namespace ExtendedArithmetic
 		}
 
 		/// <summary>
-		/// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
+		/// Compares the current instance with another object of the same type and returns an integer that indicates
+		/// whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
 		/// </summary>
+		/// <returns>
+		/// If the current instance is less than other, Less than zero.
+		/// If the current instance equals other, Zero
+		/// If the current instance is greater than other, Greater than zero.
+		/// </returns>
+		/// <exception cref="NullReferenceException"></exception>
+		/// <exception cref="ArgumentException"></exception>
 		public int CompareTo(Polynomial other)
 		{
 			if (other == null)
