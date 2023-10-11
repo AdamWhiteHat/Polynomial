@@ -1,47 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>net45;net46;net48;netcoreapp3.1;netstandard2.1;net5.0</TargetFrameworks>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net45;net46;net48;netcoreapp3.1;netstandard2.1;net5.0</TargetFrameworks>
+  </PropertyGroup>
 
-	<PropertyGroup>
-		<Title>ExtendedArithmetic.Polynomial</Title>
-		<Product>ExtendedArithmetic.Polynomial</Product>
-		<AssemblyName>ExtendedArithmetic.Polynomial</AssemblyName>
-		<AssemblyTitle>ExtendedArithmetic.Polynomial</AssemblyTitle>
-		<PackageId>ExtendedArithmetic.Polynomial</PackageId>
-		<Description>A univariate, sparse, symbolic, BigInteger polynomial arithmetic class.</Description>
-		<Authors>Adam White</Authors>
-		<Company>Adam White</Company>
-		<Copyright>Made by Adam White</Copyright>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageTags>math mathematics polynomials polynomial-arithmetic polynomial symbolic arithmetic arbitrary-precision numerics numbers biginteger legendre-symbol tonelli-shanks gcd modulus square-root csharp</PackageTags>
-		<PackageProjectUrl>https://www.nuget.org/packages/ExtendedArithmetic.Polynomial/</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/AdamWhiteHat/Polynomial</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
+  <PropertyGroup>
+    <Title>ExtendedArithmetic.Polynomial</Title>
+    <Product>ExtendedArithmetic.Polynomial</Product>
+    <AssemblyName>ExtendedArithmetic.Polynomial</AssemblyName>
+    <AssemblyTitle>ExtendedArithmetic.Polynomial</AssemblyTitle>
+    <PackageId>ExtendedArithmetic.Polynomial</PackageId>
+    <Description>A univariate, sparse, symbolic, BigInteger polynomial arithmetic class.</Description>
+    <Authors>Adam White</Authors>
+    <Company>Adam White</Company>
+    <Copyright>Made by Adam White</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>math mathematics polynomials polynomial-arithmetic polynomial symbolic arithmetic arbitrary-precision numerics numbers biginteger legendre-symbol tonelli-shanks gcd modulus square-root csharp</PackageTags>
+    <PackageProjectUrl>https://www.nuget.org/packages/ExtendedArithmetic.Polynomial/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AdamWhiteHat/Polynomial</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
 
-		<Version>$([System.DateTime]::Now.ToString("yyyy."$([System.DateTime]::Now.DayOfYear)".HHmm"))</Version>
-		<AssemblyVersion>$([System.DateTime]::Now.ToString("yyyy."$([System.DateTime]::Now.DayOfYear)".HHmm"))</AssemblyVersion>
-		<FileVersion>$([System.DateTime]::Now.ToString("yyyy."$([System.DateTime]::Now.DayOfYear)".HHmm"))</FileVersion>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-	</PropertyGroup>
+    <Version>$([System.DateTime]::Now.ToString("yyyy."$([System.DateTime]::Now.DayOfYear)".HHmm"))</Version>
+    <AssemblyVersion>$([System.DateTime]::Now.ToString("yyyy."$([System.DateTime]::Now.DayOfYear)".HHmm"))</AssemblyVersion>
+    <FileVersion>$([System.DateTime]::Now.ToString("yyyy."$([System.DateTime]::Now.DayOfYear)".HHmm"))</FileVersion>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<Compile Remove="TestPolynomial\**" />
-		<EmbeddedResource Remove="TestPolynomial\**" />
-		<None Remove="TestPolynomial\**" />
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Remove="TestPolynomial\**" />
+    <EmbeddedResource Remove="TestPolynomial\**" />
+    <None Remove="TestPolynomial\**" />
+  </ItemGroup>
 
-	<ItemGroup>
-	  <None Include="..\README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	</ItemGroup>
-
-	<Target Name="UploadNugetPackage" AfterTargets="Pack" Condition="'$(Configuration)'=='Release'">
-		<Exec WorkingDirectory="$(PackageOutputPath)" Command="nuget push $(PackageId).$(PackageVersion).nupkg -source https://api.nuget.org/v3/index.json" />
-	</Target>
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
