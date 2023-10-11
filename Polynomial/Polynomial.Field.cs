@@ -21,28 +21,53 @@ namespace ExtendedArithmetic
 				Polynomial a = left.Clone();
 				Polynomial b = right.Clone();
 
-				if (b.Degree > a.Degree)
+				if (a.Degree > b.Degree)
 				{
-					Polynomial swap = b;
-					b = a;
-					a = swap;
+					a = right.Clone();
+					b = left.Clone();
 				}
 
-				while (!(b.Terms.Length == 0 || b.Terms[0].CoEfficient == 0))
+				if (a == Polynomial.Zero)
 				{
-					Polynomial temp = a;
-					a = b;
-					b = Field.ModMod(temp, b, modulus);
+					return b;
 				}
 
-				if (a.Degree == 0)
-				{
-					return Polynomial.One.Clone();
-				}
-				else
+				if (b == Polynomial.Zero)
 				{
 					return a;
 				}
+
+				while (true)
+				{
+					for (int i = 0; i <= b.Degree; i++)
+					{
+						b[i] = IntegerDivideInternal(b[i], b[b.Degree], modulus);
+					}
+
+					Polynomial rem = ModMod(a, b, modulus);
+					if (rem.Degree == 0 && rem[0] == 0)
+					{
+						return b;
+					}
+
+					a = b;
+					b = rem;
+				}
+			}
+
+			/// <summary>
+			/// Internal integer division over a field
+			/// </summary>
+			private static BigInteger IntegerDivideInternal(BigInteger dividend, BigInteger divisor, BigInteger modulus)
+			{
+				for (int i = 0; i < modulus; i++)
+				{
+					if ((dividend + modulus * i) % divisor == 0)
+					{
+						return (dividend + modulus * i) / divisor;
+					}
+				}
+				return 0;
 			}
 
 			/// <summary>
@@ -51,8 +76,82 @@ namespace ExtendedArithmetic
 			/// </summary>
 			public static Polynomial ModMod(Polynomial toReduce, Polynomial modPoly, BigInteger primeModulus)
 			{
-				return Field.Modulus(Field.Modulus(toReduce, modPoly), primeModulus);
+				int compare = modPoly.CompareTo(toReduce);
+				if (compare > 0)
+				{
+					return toReduce;
+				}
+				if (compare == 0)
+				{
+					return Polynomial.Zero;
+				}
+
+				return Remainder(toReduce, modPoly, primeModulus);
 			}
+
+			/// <summary>
+			/// Returns the remainder of division of one polynomial by another with all coefficients reduced by a modulus. 
+			/// If you don't care about the quotient, use this method as it offers a significant boost in performance 
+			/// by only keeping track of the remainder at each step. 
+			/// This method is especially useful when dividing a high degree polynomial by a low degree polynomial.
+			/// </summary>
+			/// <param name="left">The left.</param>
+			/// <param name="right">The right.</param>
+			/// <param name="mod">The mod.</param>
+			/// <returns>Polynomial.</returns>
+			/// <exception cref="System.ArgumentNullException">left</exception>
+			/// <exception cref="System.ArgumentNullException">right</exception>
+			/// <exception cref="System.ArgumentNullException">right - This method was expecting only monomials (leading coefficient is 1) for the right-hand-side polynomial.</exception>
+			public static Polynomial Remainder(Polynomial left, Polynomial right, BigInteger mod)
+			{
+				if (left == null)
+				{
+					throw new ArgumentNullException("left");
+				}
+				if (right == null)
+				{
+					throw new ArgumentNullException("right");
+				}
+				if (right.Degree > left.Degree || right.CompareTo(left) == 1)
+				{
+					return Polynomial.Zero.Clone();
+				}
+
+				int rightDegree = right.Degree;
+				int quotientDegree = left.Degree - rightDegree + 1;
+
+				BigInteger leadingCoefficent = right[rightDegree].Mod(mod);
+				bool leadingCoefficientIsOne = (leadingCoefficent == 1);
+
+				if (!leadingCoefficientIsOne) { throw new ArgumentNullException("right", "This method was expecting only monomials (leading coefficient is 1) for the right-hand-side polynomial."); }
+
+				Polynomial rem = left.Clone();
+				BigInteger quot = 0;
+
+				for (int i = quotientDegree - 1; i >= 0; i--)
+				{
+
+					quot = BigInteger.Remainder(rem[rightDegree + i], mod);//.Mod(mod);
+
+					if (!leadingCoefficientIsOne)
+					{
+						quot = BigInteger.Remainder(BigInteger.Divide(quot, leadingCoefficent), mod).Mod(mod);
+					}
+
+					rem[rightDegree + i] = 0;
+
+					for (int j = rightDegree + i - 1; j >= i; j--)
+					{
+						rem[j] = BigInteger.Subtract(
+														rem[j],
+														BigInteger.Multiply(quot, right[j - i]).Mod(mod)
+													).Mod(mod);
+					}
+				}
+
+				return new Polynomial(rem.Terms);
+			}
+
 
 			/// <summary>
 			/// Returns the modulus of a polynomial by the specified <see cref="ExtendedArithmetic.Polynomial"/>
@@ -139,7 +238,7 @@ namespace ExtendedArithmetic
 					for (int j = rightDegree + i - 1; j >= i; j--)
 					{
 						rem[j] = BigInteger.Subtract(
-									rem[j], 
+									rem[j],
 									BigInteger.Multiply(quotient[i], right[j - i]).Mod(mod)
 								).Mod(mod);
 					}

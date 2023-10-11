@@ -24,6 +24,7 @@
 		<AssemblyVersion>$([System.DateTime]::Now.ToString("yyyy."$([System.DateTime]::Now.DayOfYear)".HHmm"))</AssemblyVersion>
 		<FileVersion>$([System.DateTime]::Now.ToString("yyyy."$([System.DateTime]::Now.DayOfYear)".HHmm"))</FileVersion>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,5 +32,16 @@
 		<EmbeddedResource Remove="TestPolynomial\**" />
 		<None Remove="TestPolynomial\**" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+
+	<Target Name="UploadNugetPackage" AfterTargets="Pack" Condition="'$(Configuration)'=='Release'">
+		<Exec WorkingDirectory="$(PackageOutputPath)" Command="nuget push $(PackageId).$(PackageVersion).nupkg -source https://api.nuget.org/v3/index.json" />
+	</Target>
 
 </Project>
