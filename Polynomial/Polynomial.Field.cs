@@ -16,6 +16,7 @@ namespace ExtendedArithmetic
 			/// <summary>
 			/// Returns the Greatest Common Divisor of two polynomials, modulus the specified <see cref="System.Numerics.BigInteger"/> value.
 			/// </summary>
+			/// <remarks>Thank you to Nikita Tsyrlin, who's factoring polynomial code taught me the right way to do this.</remarks>
 			public static Polynomial GCD(Polynomial left, Polynomial right, BigInteger modulus)
 			{
 				Polynomial a = left.Clone();
@@ -97,61 +98,68 @@ namespace ExtendedArithmetic
 			/// </summary>
 			/// <param name="left">The left.</param>
 			/// <param name="right">The right.</param>
-			/// <param name="mod">The mod.</param>
+			/// <param name="modulus">The modulus.</param>
 			/// <returns>Polynomial.</returns>
 			/// <exception cref="System.ArgumentNullException">left</exception>
 			/// <exception cref="System.ArgumentNullException">right</exception>
-			/// <exception cref="System.ArgumentNullException">right - This method was expecting only monomials (leading coefficient is 1) for the right-hand-side polynomial.</exception>
-			public static Polynomial Remainder(Polynomial left, Polynomial right, BigInteger mod)
+			public static Polynomial Remainder(Polynomial dividend, Polynomial divisor, BigInteger modulus)
 			{
-				if (left == null)
+				BigInteger divisorLeadingCoefficient = divisor[divisor.Degree];
+
+				if (divisor.Degree > dividend.Degree)
 				{
-					throw new ArgumentNullException("left");
-				}
-				if (right == null)
-				{
-					throw new ArgumentNullException("right");
-				}
-				if (right.Degree > left.Degree || right.CompareTo(left) == 1)
-				{
-					return Polynomial.Zero.Clone();
+					return dividend;
 				}
 
-				int rightDegree = right.Degree;
-				int quotientDegree = left.Degree - rightDegree + 1;
-
-				BigInteger leadingCoefficent = right[rightDegree].Mod(mod);
-				bool leadingCoefficientIsOne = (leadingCoefficent == 1);
-
-				if (!leadingCoefficientIsOne) { throw new ArgumentNullException("right", "This method was expecting only monomials (leading coefficient is 1) for the right-hand-side polynomial."); }
-
-				Polynomial rem = left.Clone();
-				BigInteger quot = 0;
-
-				for (int i = quotientDegree - 1; i >= 0; i--)
+				Polynomial result = dividend.Clone();
+				while (result.Degree >= divisor.Degree && (result.Degree != 0 || result[0] != 0))
 				{
+					BigInteger quotient = IntegerDivideInternal(result[result.Degree], divisorLeadingCoefficient, modulus);
 
-					quot = BigInteger.Remainder(rem[rightDegree + i], mod);//.Mod(mod);
-
-					if (!leadingCoefficientIsOne)
+					Polynomial toSubtract = new Polynomial();
+					for (int i = 0; i <= divisor.Degree; i++)
 					{
-						quot = BigInteger.Remainder(BigInteger.Divide(quot, leadingCoefficent), mod).Mod(mod);
+						toSubtract[i + (result.Degree - divisor.Degree)] = (divisor[i] * quotient) % modulus;
 					}
 
-					rem[rightDegree + i] = 0;
-
-					for (int j = rightDegree + i - 1; j >= i; j--)
-					{
-						rem[j] = BigInteger.Subtract(
-														rem[j],
-														BigInteger.Multiply(quot, right[j - i]).Mod(mod)
-													).Mod(mod);
-					}
+					result = Subtract(result, toSubtract, modulus);
 				}
 
-				return new Polynomial(rem.Terms);
+				return result;
 			}
 
+
+			/// <summary>
+			/// Subtraction of two polynomials performed in a field.
+			/// </summary>
+			/// <param name="minuend">The minuend.</param>
+			/// <param name="subtrahend">The subtrahend.</param>
+			/// <param name="modulus">The modulus.</param>
+			/// <returns>Polynomial.</returns>
+			public static Polynomial Subtract(Polynomial minuend, Polynomial subtrahend, BigInteger modulus)
+			{
+				List<int> relevantDegrees = subtrahend.Terms.Select(trm => trm.Exponent)
+													  .Concat(minuend.Terms.Select(trm => trm.Exponent))
+													  .Distinct()
+													  .OrderBy(n => n)
+													  .ToList();
+
+				Polynomial result = new Polynomial();
+				foreach (int index in relevantDegrees)
+				{
+					result[index] = (minuend[index] - subtrahend[index]).Mod(modulus);
+				}
+
+				return result;
+			}
+
+			/// <summary>
+			/// Returns the modular multiplicative inverse of a polynomial and some modulus
+			/// </summary>
+			public static Polynomial ModularInverse(Polynomial poly, BigInteger modulus)
+			{
+				return new Polynomial(Term.GetTerms(poly.Terms.Select(trm => (modulus - trm.CoEfficient).Mod(modulus)).ToArray()));
+			}
 
 			/// <summary>
 			/// Returns the modulus of a polynomial by the specified <see cref="ExtendedArithmetic.Polynomial"/>
